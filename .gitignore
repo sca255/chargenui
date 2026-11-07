@@ -1,0 +1,59 @@
+# Dependencies & Environment
+node_modules/
+.env
+.env.*
+!.env.example
+*.log
+session-ses_*.md
+
+# Build & Runtime Cache
+dist/
+.cache/
+bun.lockb
+bun.lock
+data/
+
+# Local reference materials & private configurations
+reference_*/
+config/*.private.json
+config/*.custom.json
+*.private.json
+*.custom.json
+.active-profile
+config/.active-profile
+
+# Python
+__pycache__/
+*.pyc
+
+# Local tool config & data
+.opencode/
+idea_generator/agent_era_session.json
+idea_generator/households.json
+idea_generator/dispatch_queue.json
+idea_generator/grimoire.json
+
+# experimental local data & backups
+experimental/idea_generator/dispatch_queue.json
+experimental/idea_generator/grimoire.json
+experimental/idea_generator/history.json
+experimental/idea_generator/user_eras.json
+*backup*
+*.current
+
+
+# Personal data, sessions, configs
+idea_generator/agent_char_session.json
+idea_generator/config.json
+idea_generator/eras_db.json
+idea_generator/history.json
+idea_generator/user_eras.json
+experimental/idea_generator/config.json
+experimental/idea_generator/eras_db.json
+ERA_AUTHORING_SPEC.md
+
+# Archives / misc
+*.zip
+*-backup
+config/*.local*.json
+config/prompts.default.json

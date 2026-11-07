@@ -1,0 +1,2668 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CharGen Harness - Uncensored RP Character &amp; Vision Studio</title>
+<link href="style.css" rel="stylesheet"/>
+</head>
+<body>
+<!-- Top Header Navigation -->
+<header>
+<div class="brand">
+<span class="brand-badge">UNCENSORED</span>
+<span class="brand-title">CHARGEN HARNESS</span>
+<span class="brand-sub">/ RP Architect &amp; Vision Forge</span>
+</div>
+<div class="header-actions">
+<!-- Direct Header Prompt Preset Switcher -->
+<div id="header-prompt-container" style="display: flex; align-items: center; gap: 4px;" title="Switch Prompt Architecture &amp; Engine Preset">
+<select class="form-select" id="header-prompt-select" style="font-size: 11px; font-weight: 700; padding: 4px 8px; height: 28px; min-width: 170px; max-width: 250px; background: rgba(6, 182, 212, 0.15); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); cursor: pointer; border-radius: 6px;">
+<!-- Dynamically populated -->
+</select>
+<button class="btn btn-xs" id="btn-header-edit-prompt" style="padding: 4px 7px; height: 28px; font-size: 11px; background: rgba(255,255,255,0.06); border: 1px solid var(--border-color); color: var(--text-muted); border-radius: 6px;" title="Inspect &amp; Customize Prompt Templates in Settings" type="button">
+          ⚙️
+        </button>
+</div>
+<div id="header-provider-badge" style="font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 6px; background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #f87171; cursor: pointer;" title="Click to configure API key">
+        ⚠️ NO API KEY (NO FREE AI)
+      </div>
+<div id="header-ipc-badge" style="font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 6px; background: rgba(59, 130, 246, 0.15); border: 1px solid #3b82f6; color: #60a5fa; cursor: pointer;" title="IPC WebSocket Bridge for External QML / Desktop Apps">
+        ⚡ IPC Connecting...
+      </div>
+<button class="btn btn-sm" id="btn-toggle-llm-cache" style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #34d399;" title="Toggle Persistent LLM Response Cache. When active, failed/interrupted runs or repeated prompts use saved responses instantly without re-calling the AI.">
+        ⚡ Cache: ON (<span id="llm-cache-count">0</span>)
+      </button>
+<button class="btn btn-sm" id="btn-restore-autosave" style="display:none; background: rgba(245, 158, 11, 0.15); border: 1px solid #f59e0b; color: #fbbf24;" title="Recover autosaved card draft">
+        ⚡ Recover Autosave
+      </button>
+<button class="btn btn-sm" id="btn-open-library" title="Manage your saved cards, variants &amp; local decks">
+        📚 Library <span id="library-count-badge" style="font-size: 10px; background: rgba(59, 130, 246, 0.3); padding: 1px 5px; border-radius: 8px;">0</span>
+</button>
+<button class="btn btn-sm" id="btn-open-households" style="background: rgba(236, 72, 153, 0.15); border: 1px solid #ec4899; color: #f472b6;" title="Manage Custom Households, Courts &amp; Group Encounter Binders">
+        👑 Households &amp; Courts <span id="households-count-badge" style="font-size: 10px; background: rgba(236, 72, 153, 0.4); color: #fff; padding: 1px 6px; border-radius: 8px;">0</span>
+</button>
+<button class="btn btn-sm" id="btn-open-image-queue" style="background: rgba(147, 51, 234, 0.15); border: 1px solid #9333ea; color: #c084fc;" title="Offline Image Prompt Queue: generate prompts for multiple characters, then turn off LLM and run ComfyUI">
+        🖼️ Image Queue <span id="image-queue-count-badge" style="font-size: 10px; background: rgba(168, 85, 247, 0.4); color: #fff; padding: 1px 6px; border-radius: 8px;">0</span>
+</button>
+<button class="btn btn-sm" id="btn-open-agent-fullscreen" style="background: rgba(6, 182, 212, 0.15); border: 1px solid #06b6d4; color: #22d3ee; font-weight: 600;" title="Full Screen Agent Co-Pilot Studio (Large chat view with collapsable card sidebar)">
+        🤖 Agent Studio (Fullscreen)
+      </button>
+<button class="btn btn-sm" id="btn-open-history" title="View revision history and visual before/after diff">
+        🕒 History &amp; Diff <span id="history-count-badge" style="font-size: 10px; background: rgba(16, 185, 129, 0.3); padding: 1px 5px; border-radius: 8px;">1</span>
+</button>
+<button class="btn btn-sm" id="btn-import-card">
+        📂 Import (PNG/JSON/CharX)
+      </button>
+<input accept=".png,.json,.charx" id="file-import-input" style="display:none;" type="file"/>
+<button class="btn btn-sm btn-success" id="btn-export-png" title="Export PNG with dual V2 (chara) and V3 (ccv3) metadata chunks embedded">
+        💾 Export PNG (V2+V3)
+      </button>
+<button class="btn btn-sm" id="btn-export-charx" style="background: rgba(168, 85, 247, 0.18); border: 1px solid var(--accent-purple); color: #c084fc;" title="Export standard Character Card V3 / Lumiverse .charx container bundle">
+        📦 Export .charx (V3)
+      </button>
+<button class="btn btn-sm" id="btn-export-json">
+        📄 Export JSON
+      </button>
+<button class="btn btn-sm" id="btn-open-settings">
+        ⚙️ Settings
+      </button>
+</div>
+</header>
+<!-- Main Three-Column Application Grid -->
+<div class="app-container">
+<!-- Left Column: Generator, Vision Scanner & Enhancer Toolbox -->
+<div class="panel">
+<div class="panel-header">
+<span class="panel-title">Workspace Tools</span>
+<span id="active-tool-indicator" style="font-size: 11px; color: var(--accent-cyan); font-weight: 600;">NEW CARD</span>
+</div>
+<div class="panel-body">
+<!-- Navigation Tabs -->
+<div class="nav-tabs">
+<button class="nav-tab active" data-tab="tab-generate">🔮 Spark New</button>
+<button class="nav-tab" data-tab="tab-vision">👁️ Vision Scan</button>
+<button class="nav-tab" data-tab="tab-enhance">⚡ Enhancer</button>
+<button class="nav-tab" data-tab="tab-agent">🤖 Agent Mode</button>
+<button class="nav-tab" data-tab="tab-reimagine">✨ Reimagine</button>
+<button class="nav-tab" data-tab="tab-companion">📖 Lore Companion</button>
+<button class="nav-tab" data-tab="tab-eras">📜 Era Forge</button>
+</div>
+<!-- TAB 1: Generate from Spark / Concept -->
+<div class="tab-content" id="tab-generate">
+<div class="form-group">
+<label class="form-label">Bot Generation Mode</label>
+<div id="bot-mode-selector" style="display: flex; gap: 8px; margin-bottom: 4px;">
+<button class="btn btn-sm bot-mode-btn active" data-mode="single" style="flex: 1; justify-content: center; font-weight: 600; border-color: var(--accent-cyan); background: rgba(56, 189, 248, 0.15); color: #38bdf8;" type="button">👤 Solo Character</button>
+<button class="btn btn-sm bot-mode-btn" data-mode="multi_character" style="flex: 1; justify-content: center; font-weight: 600; border-color: var(--border-main); background: var(--bg-card); color: var(--text-muted);" type="button">👥 Multi Cast</button>
+<button class="btn btn-sm bot-mode-btn" data-mode="rpg_world" style="flex: 1; justify-content: center; font-weight: 600; border-color: var(--border-main); background: var(--bg-card); color: var(--text-muted);" type="button">🗺️ RPG World</button>
+</div>
+</div>
+<div class="form-group">
+<label class="form-label" id="gen-concept-label">Character Concept / Seed / Trope</label>
+<textarea class="form-textarea" id="gen-concept" placeholder="e.g. A weary inquisitor who broke their sacred oath to protect a heretic child. Cold, formal, scarred, haunted by ghosts they refuse to name." rows="4"></textarea>
+</div>
+<div class="form-group">
+<label class="form-label">Primary Setting / Genre</label>
+<select class="form-select" id="gen-genre">
+<option value="Dark Fantasy">Dark Fantasy / Grimdark</option>
+<option value="Cyberpunk">Cyberpunk / Dystopian</option>
+<option value="Modern Dark / Noir">Modern Dark / Noir</option>
+<option value="Sci-Fi / Space Opera">Sci-Fi / Space Opera</option>
+<option value="Psychological Horror">Psychological Horror</option>
+<option value="Romance / Slice of Life">Romance / Slice of Life</option>
+<option value="Supernatural / Urban Fantasy">Supernatural / Urban Fantasy</option>
+<option value="Post-Apocalyptic">Post-Apocalyptic / Survival</option>
+<option value="Historical / Period">Historical / Period Drama</option>
+<option value="Gothic / Cosmic Eldritch">Gothic / Cosmic Eldritch</option>
+<option value="Mystery / Crime Thriller">Mystery / Crime Thriller</option>
+<option value="Anime / Action">Anime / Action</option>
+</select>
+</div>
+<!-- Multi-Theme & Custom Trope Picker -->
+<div class="form-group">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+<label class="form-label" style="margin-bottom: 0;">Multi-Theme &amp; Trope Picker (Combine freely)</label>
+<button class="btn btn-sm btn-ghost" id="btn-clear-themes" style="font-size: 11px; padding: 2px 6px; display: none;" type="button">Clear Themes</button>
+</div>
+<!-- Active Selected Themes Pills -->
+<div class="selected-themes-container" id="selected-themes-box" style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; min-height: 28px; padding: 6px; background: var(--bg-card); border-radius: var(--radius-sm); border: 1px dashed var(--border-color);">
+<span id="no-themes-hint" style="font-size: 11px; color: var(--text-muted); align-self: center;">Click themes below or type custom tropes to tag...</span>
+</div>
+<!-- Custom Theme Write-in Input -->
+<div style="display: flex; gap: 6px; margin-bottom: 8px;">
+<input class="form-input" id="custom-theme-input" placeholder="Type custom theme/trope (e.g. 'Vampire Mistress', 'Stockholm Syndrome')..." style="font-size: 12px; height: 32px;" type="text"/>
+<button class="btn btn-sm" id="btn-add-custom-theme" style="white-space: nowrap; height: 32px;" type="button">+ Add Theme</button>
+</div>
+<!-- Categorized Theme Chips -->
+<div class="theme-categories-wrapper" style="display: flex; flex-direction: column; gap: 8px;">
+<!-- Mature, BDSM & Power Exchange -->
+<div class="theme-category-group">
+<div class="theme-category-title" style="font-size: 11px; font-weight: 600; color: #ff5277; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; display: flex; align-items: center; gap: 4px;">
+<span>⛓️ Mature / BDSM &amp; Power Exchange</span>
+</div>
+<div class="theme-chips-row" style="display: flex; flex-wrap: wrap; gap: 5px;">
+<button class="theme-chip theme-chip-bdsm" data-theme="BDSM / Power Exchange" type="button">⛓️ BDSM / Power Exchange</button>
+<button class="theme-chip theme-chip-bdsm" data-theme="Dominant / Sadistic" type="button">👑 Dominant / Sadistic</button>
+<button class="theme-chip theme-chip-bdsm" data-theme="Submissive / Masochistic" type="button">🙇 Submissive / Masochistic</button>
+<button class="theme-chip theme-chip-bdsm" data-theme="Femdom / Domme" type="button">👠 Femdom / Domme</button>
+<button class="theme-chip theme-chip-bdsm" data-theme="Maledom / Master" type="button">🐺 Maledom / Master</button>
+<button class="theme-chip theme-chip-bdsm" data-theme="Switch" type="button">🔄 Switch</button>
+<button class="theme-chip theme-chip-bdsm" data-theme="Bondage / Shibari" type="button">🪢 Bondage / Shibari</button>
+<button class="theme-chip theme-chip-bdsm" data-theme="Brat / Brat Tamer" type="button">😼 Brat / Brat Tamer</button>
+<button class="theme-chip theme-chip-bdsm" data-theme="Petplay &amp; Collaring" type="button">🐾 Petplay &amp; Collaring</button>
+<button class="theme-chip theme-chip-bdsm" data-theme="Praise &amp; Degradation" type="button">👄 Praise &amp; Degradation</button>
+<button class="theme-chip theme-chip-bdsm" data-theme="Taboo &amp; Dark Erotica" type="button">🔞 Taboo &amp; Dark Erotica</button>
+<button class="theme-chip theme-chip-bdsm" data-theme="Sensory Deprivation" type="button">🕶️ Sensory Deprivation</button>
+</div>
+</div>
+<!-- Romance & Relational Tropes -->
+<div class="theme-category-group">
+<div class="theme-category-title" style="font-size: 11px; font-weight: 600; color: #ff76c8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; display: flex; align-items: center; gap: 4px;">
+<span>❤️ Romance &amp; Relational Tropes</span>
+</div>
+<div class="theme-chips-row" style="display: flex; flex-wrap: wrap; gap: 5px;">
+<button class="theme-chip" data-theme="Slow Burn" type="button">🕯️ Slow Burn</button>
+<button class="theme-chip" data-theme="Enemies to Lovers" type="button">⚔️ Enemies to Lovers</button>
+<button class="theme-chip" data-theme="Dark Romance" type="button">🥀 Dark Romance</button>
+<button class="theme-chip" data-theme="Tsundere" type="button">💢 Tsundere</button>
+<button class="theme-chip" data-theme="Kuudere" type="button">🧊 Kuudere</button>
+<button class="theme-chip" data-theme="Yandere / Obsessive" type="button">🔪 Yandere / Obsessive</button>
+<button class="theme-chip" data-theme="Arranged Marriage" type="button">💍 Arranged Marriage</button>
+<button class="theme-chip" data-theme="Forced Proximity" type="button">🚪 Forced Proximity</button>
+<button class="theme-chip" data-theme="Forbidden Love" type="button">🚫 Forbidden Love</button>
+<button class="theme-chip" data-theme="Mutual Yearning" type="button">🌊 Mutual Yearning</button>
+</div>
+</div>
+<!-- Tone & Psychological Friction -->
+<div class="theme-category-group">
+<div class="theme-category-title" style="font-size: 11px; font-weight: 600; color: #a78bfa; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; display: flex; align-items: center; gap: 4px;">
+<span>🎭 Tone &amp; Atmosphere</span>
+</div>
+<div class="theme-chips-row" style="display: flex; flex-wrap: wrap; gap: 5px;">
+<button class="theme-chip" data-theme="Psychological Thriller" type="button">🧠 Psychological Thriller</button>
+<button class="theme-chip" data-theme="Grimdark &amp; Gritty" type="button">💀 Grimdark &amp; Gritty</button>
+<button class="theme-chip" data-theme="Melancholic &amp; Tragic" type="button">🌧️ Melancholic &amp; Tragic</button>
+<button class="theme-chip" data-theme="Moral Ambiguity" type="button">⚖️ Moral Ambiguity</button>
+<button class="theme-chip" data-theme="Wholesome &amp; Cozy" type="button">☕ Wholesome &amp; Cozy</button>
+<button class="theme-chip" data-theme="Dry Wit &amp; Sarcasm" type="button">🍸 Dry Wit &amp; Sarcasm</button>
+</div>
+</div>
+</div>
+</div>
+<div class="form-group">
+<label class="form-label">Tone &amp; Dynamics</label>
+<input class="form-input" id="gen-tone" placeholder="e.g. Gritty, melancholic, dry wit, restrained yearning" type="text"/>
+</div>
+<div class="form-group">
+<label class="form-label">📖 Story Arc &amp; Narrative Trajectory (Steer Greetings &amp; Scenario)</label>
+<textarea class="form-textarea" id="gen-story-arc" placeholder="e.g. Arc: An uneasy truce forged during an ambush. Starts with suspicion and cold negotiation, builds toward reluctant mutual reliance, culminating in a shared defense against a common enemy." rows="2"></textarea>
+</div>
+<div class="form-group">
+<div style="display:flex; justify-content:space-between; align-items:center;">
+<label class="form-label" style="margin-bottom:0;">Minimum Alternate Greetings</label>
+<span style="font-size:11px; color:var(--text-muted);">Forces AI to author at least N distinct openings</span>
+</div>
+<input class="form-input" id="gen-min-alts" min="1" max="10" style="margin-top:4px;" type="number" value="3"/>
+</div>
+<div class="form-group">
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+<label class="form-label" style="margin:0;">⏳ Era &amp; Temporal Setting Constraints</label>
+<button class="btn btn-xs" id="btn-open-era-modal" style="background: rgba(168, 85, 247, 0.2); border: 1px solid var(--accent-purple); color: #c084fc; font-weight: 700; padding: 2px 8px;" type="button">
+                🏛️ Era Discovery Studio (82+ Eras)
+              </button>
+</div>
+<div class="era-quick-chips">
+<button class="era-chip-btn" id="btn-era-quick-off" title="Turn era constraints completely off" type="button">🚫 Off</button>
+<button class="era-chip-btn" id="btn-era-quick-fantasy" title="Timeless High Fantasy (Disregards historical time)" type="button">🌌 Fantasy</button>
+<button class="era-chip-btn" id="btn-era-quick-medieval" title="Open Medieval Europe &amp; Asia Catalog" type="button">🏰 Medieval (50+)</button>
+<button class="era-chip-btn" id="btn-era-quick-antiquity" title="Open Ancient Civilizations" type="button">🏛️ Antiquity</button>
+<button class="era-chip-btn" id="btn-era-quick-victorian" title="Open Victorian &amp; Frontier" type="button">⚙️ Victorian</button>
+<button class="era-chip-btn" id="btn-era-quick-user" title="Open User Custom Templates" type="button">📜 User Eras</button>
+</div>
+<div style="display:flex; gap:6px;">
+<input class="form-input" id="gen-era" placeholder="e.g. Plantagenet England (c. 1154 – 1399 CE), Sengoku Japan, Victorian Gaslamp, or Timeless Fantasy" style="flex:1;" type="text"/>
+<button class="btn btn-secondary btn-sm" id="btn-browse-era-addon" title="Search &amp; pick an era" type="button">🏛️ Browse</button>
+<button class="btn btn-ghost btn-sm" id="btn-clear-era" title="Clear era constraints" type="button">✕</button>
+</div>
+<!-- Era Dossier Card & Prompt Directive Preview -->
+<div id="era-dossier-preview" style="display: none; margin-top: 8px; padding: 10px; background: #0c101d; border: 1px solid #7c3aed; border-radius: 6px;">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px;">
+<div id="era-dossier-title" style="font-weight: 700; font-size: 12px; color: #c084fc;">HISTORICAL ERA</div>
+<span id="era-dossier-span" style="font-size: 10px; background: #1e1b4b; color: #a5b4fc; padding: 2px 6px; border-radius: 4px; border: 1px solid #4338ca; white-space: nowrap;">Span</span>
+</div>
+<div id="era-dossier-aesthetic" style="font-size: 11px; color: #cbd5e1; margin-bottom: 6px; line-height: 1.35;"></div>
+<div id="era-dossier-details" style="font-size: 10px; color: #94a3b8; margin-bottom: 6px; display: flex; flex-direction: column; gap: 2px;">
+<div id="era-dossier-tech"></div>
+<div id="era-dossier-social"></div>
+</div>
+<!-- Expandable Injected Prompt Preview -->
+<div style="background: #060911; border: 1px solid #1e293b; border-radius: 4px; padding: 6px;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
+<span style="font-size: 10px; font-weight: 700; color: #38bdf8;">🤖 Injected Prompt Directive Preview</span>
+<button class="btn btn-ghost btn-xs" id="btn-toggle-era-prompt-snippet" style="font-size: 9px; padding: 1px 4px; color: #818cf8;" type="button">▼ Show Prompt</button>
+</div>
+<div id="era-dossier-prompt-snippet" style="font-size: 10px; font-family: monospace; color: #94a3b8; white-space: pre-wrap; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.35;"></div>
+</div>
+</div>
+</div>
+<div class="form-group">
+<label class="form-label">Card Format Preference</label>
+<select class="form-select" id="gen-format">
+<option value="prose">Rich Evocative Prose (Natural &amp; Atmospheric)</option>
+<option value="boostyle">Boostyle Pseudocode [Character("Name"){...}]</option>
+<option value="wxx">W++ Format [character("Name"){...}]</option>
+<option value="markdown">Dense Structured Markdown</option>
+</select>
+</div>
+<div class="form-group">
+<label class="checkbox-label">
+<input checked="" id="gen-nsfw" type="checkbox"/>
+<span>Unrestricted / Mature / NSFW Elements Allowed</span>
+</label>
+</div>
+<div class="form-group">
+<label class="checkbox-label">
+<input id="gen-web-search" type="checkbox"/>
+<span>🌐 Web Lore Search &amp; Canon Retrieval (Fandom/Wikis)</span>
+</label>
+<div class="hidden" id="box-search-query" style="margin-top: 8px;">
+<div style="display:flex; gap:6px;">
+<input class="form-input" id="gen-search-query" placeholder="Search query (e.g. 'Malenia Elden Ring lore weapons')" type="text"/>
+<button class="btn btn-sm" id="btn-preview-search" title="Test search &amp; retrieve lore" type="button">🔎 Fetch</button>
+</div>
+<label class="checkbox-label" style="font-size: 11px; margin-top: 6px;">
+<input checked="" id="gen-include-headcanons" type="checkbox"/>
+<span>Extract Fan Headcanons, Mindcanons &amp; Dynamic Tropes</span>
+</label>
+<div class="hidden" id="search-lore-preview" style="margin-top: 6px; padding: 8px; background: var(--bg-card); border-radius: var(--radius-sm); border: 1px solid var(--border-color); font-size: 11px; max-height: 120px; overflow-y: auto; color: var(--text-muted);"></div>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px;">
+<button class="btn" id="btn-weaver-interview" style="width: 100%; justify-content: center; background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(168, 85, 247, 0.25)); border: 1px solid var(--accent-purple); color: #e0e7ff; font-weight: 700; padding: 10px 14px; font-size: 13px;" type="button">
+<span>🧠 Weaver Guided Interview (Q&amp;A Workshop)</span>
+</button>
+<div style="text-align: center; font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px;">— OR ONE-SHOT FORGE —</div>
+<div style="display: flex; gap: 6px;">
+<button class="btn btn-primary" id="btn-run-generate" style="flex: 2; justify-content: center;">
+<span>⚡ Quick Forge (One-Shot)</span>
+</button>
+<button class="btn" id="btn-run-reroll" style="flex: 1; justify-content: center; background: rgba(168, 85, 247, 0.15); border: 1px solid var(--accent-purple); color: #c084fc; font-weight: 700;" title="Reroll character card with current concept, themes & era" type="button">
+<span>🎲 Reroll</span>
+</button>
+<button class="btn" id="btn-run-steer-reroll" style="padding: 0 10px; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.5); color: #38bdf8; font-weight: 700;" title="Reroll with custom influence / steering direction" type="button">
+<span>🎯 Influence</span>
+</button>
+</div>
+<div style="display: flex; gap: 6px; margin-top: 6px;">
+<button class="btn" id="btn-run-greetings-spine" style="flex: 1; justify-content: center; background: linear-gradient(135deg, #7c3aed, #a855f7); border: none; color: #fff; font-weight: 700; opacity: 0.5; cursor: not-allowed;" type="button" disabled title="Requires stored Authoring Spine (create via Spark/Weaver or use Spine Synthesis modal)">
+🧬 Regenerate with Spine (Arc-Aware)
+</button>
+<button class="btn" id="btn-open-synthesize-spine-generate" style="flex: 1; justify-content: center; background: rgba(147, 51, 234, 0.15); border: 1px solid #a855f7; color: #c084fc; font-weight: 700;" type="button" title="Synthesize spine from existing character using original prompt/story arc">
+🧬 Synthesize Spine
+</button>
+</div>
+</div>
+</div>
+<!-- TAB 2: Multimodal Vision Image Scanner -->
+<div class="tab-content hidden" id="tab-vision">
+<div class="form-group">
+<label class="form-label">Upload Character Portrait / Concept Art</label>
+<div class="dropzone" id="vision-dropzone">
+<div class="dropzone-icon">📷</div>
+<div class="dropzone-text"><strong>Drag &amp; Drop</strong> single or multiple character images, or click to browse</div>
+<input accept="image/png,image/jpeg,image/webp" id="vision-file-input" multiple="" style="display:none;" type="file"/>
+</div>
+<div class="hidden" id="vision-batch-status" style="margin-top: 8px; font-size: 11px; color: var(--accent-cyan); font-weight: 600;">
+              📁 <span id="vision-batch-count">0</span> images selected for batch scan
+            </div>
+<div class="image-preview-container hidden" id="vision-preview-box">
+<img alt="Portrait preview" class="image-preview" id="vision-img-preview" src=""/>
+</div>
+</div>
+<div class="form-group">
+<label class="form-label">Additional Character Context / Hints (Optional)</label>
+<input class="form-input" id="vision-hints" placeholder="e.g. Cyberpunk mercenary, sarcastic, secretly protective" type="text"/>
+</div>
+<div class="form-group">
+<label class="checkbox-label">
+<input checked="" id="vision-nsfw" type="checkbox"/>
+<span>Uncensored character synthesis from visual scan</span>
+</label>
+</div>
+<button class="btn btn-primary" id="btn-run-vision" style="width: 100%; justify-content: center; margin-top: 8px;">
+<span>👁️ Scan Image &amp; Synthesize Card</span>
+</button>
+<!-- Vision Findings Box -->
+<div class="hidden" id="vision-findings-box" style="margin-top: 14px; padding: 12px; background: var(--bg-card); border-radius: var(--radius-sm); border: 1px solid var(--border-color); font-size: 11px;">
+<div style="font-weight: 700; color: var(--accent-cyan); margin-bottom: 6px;">FORENSIC VISUAL DECONSTRUCTION</div>
+<div id="vision-findings-text" style="color: var(--text-muted); line-height: 1.4;"></div>
+</div>
+</div>
+<!-- TAB 3: Character Enhancer Suite -->
+<div class="tab-content hidden" id="tab-enhance">
+<!-- Legacy/Unmaintained Warning -->
+<div style="background: rgba(245, 158, 11, 0.15); border: 1px solid #f59e0b; border-radius: var(--radius-sm); padding: 8px 12px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; font-size: 11px;">
+  <span style="color: #fbbf24; font-weight: 700;">⚠️ LEGACY / UNMAINTAINED</span>
+  <span style="color: var(--text-muted); flex: 1;">This Enhancer tab uses older enhancement pipeline. Prefer <strong>Agent Mode (Tab 4)</strong> or <strong>Spark/Weaver</strong> for new characters. Spine-aware regeneration via "Regenerate with Spine" button in Generate tab.</span>
+</div>
+<div style="margin-bottom: 10px; display: flex; gap: 8px;">
+<button class="btn btn-sm" id="btn-run-audit" style="flex: 1;" type="button">
+              🩺 Run Card Audit
+            </button>
+<button class="btn btn-sm btn-primary" id="btn-full-overhaul" style="flex: 1;" type="button">
+              🚀 Full Overhaul
+            </button>
+</div>
+<!-- Global AI Steering Panel (Director's Directive) -->
+<div class="steering-panel">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+<label class="form-label" style="margin: 0; font-size: 11px; display: flex; align-items: center; gap: 4px;">
+<span>🎯</span> <strong>AI Steering Directive (Director's Notes)</strong>
+</label>
+<button id="btn-clear-steering" style="font-size: 10px; color: var(--text-dim); border: none; background: none; cursor: pointer; padding: 0;" type="button">Clear</button>
+</div>
+<textarea class="form-textarea" id="enhance-steering-notes" placeholder="Guide the AI: e.g. 'Emphasize her academic detachment vs hidden longing for {{user}}, keep her icy exterior intact, sharp scientific vocabulary'" rows="2"></textarea>
+<div class="steering-pills-row" id="steering-chips">
+<span class="steering-chip" data-text="High emotional walls, guarded suspicion, and slow-burn trust">❄️ Guarded</span>
+<span class="steering-chip" data-text="Suppressed romantic yearning and visceral physical tension">🔥 Slow-Burn</span>
+<span class="steering-chip" data-text="Academic precision, clinical vocabulary, and analytical rigor">🧠 Intellectual</span>
+<span class="steering-chip" data-text="Razor-sharp dry wit, cynical teasing, and sarcastic banter">🗡️ Sarcastic</span>
+<span class="steering-chip" data-text="Heavy sensory tells (scent of ozone, chilled breath, physical flinching)">👁️ Sensory Tells</span>
+<span class="steering-chip" data-text="Dark psychological conflict, moral ambiguity, and taboo tension">🌑 Dark Noir</span>
+<span class="steering-chip" data-text="Dominant authority, command protocols, psychological discipline, and intoxicating control">👑 Dominant</span>
+<span class="steering-chip" data-text="Trembling submission, sensory vulnerability, surrender of autonomy, and safe-word trust">⛓️ Submissive</span>
+<span class="steering-chip" data-text="Bratty defiance, playful rebellion, and testing boundaries to provoke discipline">😼 Brat</span>
+<span class="steering-chip" data-text="Intense praise, degradation, humiliation, and psychological contrast">👄 Praise/Degradation</span>
+</div>
+<!-- Optional Web Lore Search & Canon Retrieval (Feeds Overhaul & Modules) -->
+<div style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed rgba(255, 255, 255, 0.1);">
+<div style="display: flex; justify-content: space-between; align-items: center;">
+<label class="checkbox-label" style="font-size: 11px; font-weight: 600; margin: 0;">
+<input id="enhance-web-search" type="checkbox"/>
+<span>🌐 Web Lore Search &amp; Canon Retrieval (Optional)</span>
+</label>
+<span style="font-size: 10px; color: var(--text-dim);">Feeds Overhaul &amp; Modules</span>
+</div>
+<div class="hidden" id="box-enhance-search" style="margin-top: 8px;">
+<div style="display: flex; gap: 6px;">
+<input class="form-input" id="enhance-search-query" placeholder="Search query (e.g. 'Si Arknights lore powers personality')" type="text"/>
+<button class="btn btn-sm" id="btn-enhance-preview-search" title="Test search &amp; retrieve lore" type="button">🔎 Fetch</button>
+</div>
+<label class="checkbox-label" style="font-size: 11px; margin-top: 6px;">
+<input checked="" id="enhance-include-headcanons" type="checkbox"/>
+<span>Extract Fan Headcanons, Mindcanons &amp; Dynamic Tropes</span>
+</label>
+<div class="hidden" id="enhance-search-lore-preview" style="margin-top: 6px; padding: 8px; background: var(--bg-card); border-radius: var(--radius-sm); border: 1px solid var(--border-color); font-size: 11px; max-height: 120px; overflow-y: auto; color: var(--text-muted);"></div>
+</div>
+</div>
+</div>
+<div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-dim); margin: 12px 0 6px;">
+            Targeted Enhancement Modules
+          </div>
+<!-- Module 0: Scenario Matrix (4 Dynamic Branches) -->
+<div class="action-card" id="act-scenario-matrix" style="border-color: rgba(59, 130, 246, 0.4); background: rgba(59, 130, 246, 0.05);">
+<div class="action-card-header">
+<span style="color: var(--accent-cyan);">🎭 Scenario Matrix (4 Dynamic Branches)</span>
+<span class="chevron">▾</span>
+</div>
+<div class="action-card-desc">
+              Generate 4 instant roleplay branches: Canon Encounter, Crisis (In Media Res), Late-Night Intimacy, and Hostile Interrogation.
+            </div>
+<div class="enhancer-drawer">
+<div class="drawer-field">
+<label class="drawer-label">Optional Branching Directive / Context</label>
+<input class="form-input" id="matrix-custom-steering" placeholder="e.g. Set in an abandoned subterranean lab during a blizzard" type="text"/>
+</div>
+<button class="btn btn-sm btn-primary" id="btn-generate-matrix" style="width: 100%; justify-content: center; margin-top: 4px;" type="button">
+                ⚡ Forge 4-Branch Scenario Matrix
+              </button>
+</div>
+</div>
+<!-- Module 1: Deepen Persona -->
+<div class="action-card" id="act-deepen-persona">
+<div class="action-card-header">
+<span>🧠 Deepen Persona &amp; Psychology</span>
+<span class="chevron">▾</span>
+</div>
+<div class="action-card-desc">
+              Sharpen the central contradiction, sensory tells, formative experiences, and reaction gradient.
+            </div>
+<div class="enhancer-drawer">
+<div class="drawer-field">
+<label class="drawer-label">Focus Areas to Accentuate</label>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; font-size: 11px;">
+<label class="checkbox-label" style="font-size: 11px;"><input checked="" class="deepen-focus" type="checkbox" value="Central Contradiction &amp; Internal Friction"/> Contradiction</label>
+<label class="checkbox-label" style="font-size: 11px;"><input checked="" class="deepen-focus" type="checkbox" value="Sensory Presence, Posture &amp; Physical Tells"/> Sensory Presence</label>
+<label class="checkbox-label" style="font-size: 11px;"><input checked="" class="deepen-focus" type="checkbox" value="Reaction Gradient (Cold/Limits/Cravings/Trust)"/> Reaction Gradient</label>
+<label class="checkbox-label" style="font-size: 11px;"><input class="deepen-focus" type="checkbox" value="Formative Trauma &amp; Secret Insecurities"/> Dark Subtext</label>
+</div>
+</div>
+<div class="drawer-field">
+<label class="drawer-label">Specific Persona Steering</label>
+<input class="form-input" id="deepen-custom-hint" placeholder="e.g. Focus on her fear of intimacy and obsession with precision" type="text"/>
+</div>
+<button class="btn btn-sm btn-primary" id="btn-run-deepen" style="width: 100%; justify-content: center; margin-top: 4px;" type="button">
+                ⚡ Deepen Persona with Steering
+              </button>
+</div>
+</div>
+<!-- Module 2: Polish Voice & Example Messages -->
+<div class="action-card" id="act-polish-voice">
+<div class="action-card-header">
+<span>🎙️ Voice Rules &amp; Example Messages</span>
+<span class="chevron">▾</span>
+</div>
+<div class="action-card-desc">
+              Establish idiolect, forbidden words, and craft 3-5 multi-beat example exchanges with &lt;START&gt; tags.
+            </div>
+<div class="enhancer-drawer">
+<div class="drawer-field">
+<label class="drawer-label">Speech Register / Vocal Cadence</label>
+<select class="form-select" id="voice-register-select">
+<option selected="" value="Natural &amp; grounded human speech (Authentic cadence, natural contractions, dry irony - strictly bans robotic jargon)">✨ Natural &amp; Grounded (Grounded human - strictly bans robot cliches)</option>
+<option value="Informal &amp; casual (Relaxed, colloquial rhythm, zero stiffness, natural familiarity)">Informal &amp; Casual (Warm, colloquial, zero stiffness)</option>
+<option value="Biting dry wit &amp; understated sarcasm (Deadpan, cynical, realistic subtext)">Biting Dry Wit &amp; Sarcasm (Deadpan, sharp subtext)</option>
+<option value="Clipped &amp; laconic (Short, blunt, few words, practical)">Clipped &amp; Laconic (Short, blunt, no fluff)</option>
+<option value="Soft, quiet &amp; guarded (Hesitant, low-toned, watchful)">Soft, Quiet &amp; Guarded (Watchful, observant)</option>
+<option value="Measured &amp; articulate (Intellectual without sounding like a thesaurus or calculator)">Measured &amp; Articulate (Sharp mind, but natural)</option>
+<option value="Formal &amp; ceremonial (High lexicon - only use for royalty or ancient rituals)">Formal &amp; Ceremonial (Stiff, archaic - use with caution)</option>
+<option value="custom">Custom Register (Specified in steering notes)...</option>
+</select>
+</div>
+<div class="drawer-field">
+<label class="checkbox-label" style="font-size: 11px; margin-top: 2px;">
+<input checked="" id="voice-ban-robot" type="checkbox"/>
+<span>Strictly Ban Robotic / Spock Jargon ("statistical anomaly", "nutrient density", etc.)</span>
+</label>
+</div>
+<div class="drawer-field">
+<label class="drawer-label">Dialogue Scenario Steering</label>
+<input class="form-input" id="voice-scenario-hint" placeholder="e.g. Include an argument over mission protocol where she refuses to break" type="text"/>
+</div>
+<button class="btn btn-sm btn-primary" id="btn-run-voice" style="width: 100%; justify-content: center; margin-top: 4px;" type="button">
+                ⚡ Polish Voice with Steering
+              </button>
+</div>
+</div>
+<!-- Module 3: Punch First Message & Alternate Greetings -->
+<div class="action-card" id="act-punch-first-mes">
+<div class="action-card-header">
+<span>🎬 Scene Starter &amp; Alternate Greetings</span>
+<span class="chevron">▾</span>
+</div>
+<div class="action-card-desc">
+              Elevate first message with vivid atmosphere and generate 3 alternate scenario openings.
+            </div>
+<div class="enhancer-drawer">
+<div class="drawer-field">
+<label class="drawer-label">Opening Scene Atmosphere &amp; Context</label>
+<input class="form-input" id="greetings-scene-hint" placeholder="e.g. Late night in the frozen command module during a reactor alarm" type="text"/>
+</div>
+<div class="drawer-field">
+<label class="drawer-label">Alternate Greeting Themes</label>
+<input class="form-input" id="greeting-theme-1" style="margin-bottom: 4px;" type="text" value="Hostile / Guarded Encounter (weapons drawn, suspicious evaluation)"/>
+<input class="form-input" id="greeting-theme-2" style="margin-bottom: 4px;" type="text" value="Quiet Vulnerability / Intimate Late-Night (alone together, defenses lowered)"/>
+<input class="form-input" id="greeting-theme-3" type="text" value="In Media Res / Emergency Crisis (immediate shared danger or action)"/>
+</div>
+<button class="btn btn-sm btn-primary" id="btn-run-greetings" style="width: 100%; justify-content: center; margin-top: 4px;" type="button">
+                ⚡ Punch Greetings with Steering
+              </button>
+              <button class="btn btn-sm" id="btn-improve-greetings" style="width: 100%; justify-content: center; margin-top: 4px; background: linear-gradient(135deg, #059669, #0d9488); border: none; color: #fff; font-weight: 700;" type="button">
+                ✨ Improve Greetings (First Mes + Alts)
+              </button>
+</div>
+</div>
+<!-- Module 4: Format Optimizer & Token Compressor -->
+<div class="action-card" id="act-format-optimize">
+<div class="action-card-header">
+<span>🗜️ Token Compressor &amp; Formatter</span>
+<span class="chevron">▾</span>
+</div>
+<div class="action-card-desc">
+              Convert between Prose, Boostyle, W++, or Markdown and compress token footprint.
+            </div>
+<div class="enhancer-drawer">
+<div class="drawer-field">
+<label class="drawer-label">Target Format</label>
+<select class="form-select" id="format-target-select">
+<option value="prose">Rich Evocative Prose (Natural paragraphs)</option>
+<option value="boostyle">Boostyle Pseudocode [Character("Name"){...}]</option>
+<option value="wxx">W++ Format [character("Name"){...}]</option>
+<option value="markdown">Dense Structured Markdown Bullets</option>
+</select>
+</div>
+<div class="drawer-field">
+<label class="drawer-label">Target Token Budget (Optional)</label>
+<input class="form-input" id="format-token-budget" placeholder="e.g. 500, 750 (Leave blank for auto-compression)" type="number"/>
+</div>
+<button class="btn btn-sm btn-primary" id="btn-run-format" style="width: 100%; justify-content: center; margin-top: 4px;" type="button">
+                ⚡ Compress &amp; Convert Format
+              </button>
+</div>
+</div>
+<!-- Module 5: Lorebook Builder -->
+<div class="action-card" id="act-lorebook-builder">
+<div class="action-card-header">
+<span>📚 World Info &amp; Lorebook Generator</span>
+<span class="chevron">▾</span>
+</div>
+<div class="action-card-desc">
+              Auto-generate embedded SillyTavern character_book entries for weapons, factions, and lore.
+            </div>
+<div class="enhancer-drawer">
+<div class="drawer-field">
+<label class="drawer-label">Lorebook Depth</label>
+<select class="form-select" id="lorebook-depth-select">
+<option value="detailed">Detailed (6 to 10 entries with rich keys)</option>
+<option value="compact">Compact (3 to 5 crucial signature entries)</option>
+</select>
+</div>
+<div class="drawer-field">
+<label class="drawer-label">Priority Lore Topics / Entities</label>
+<input class="form-input" id="lorebook-topics-hint" placeholder="e.g. Cryo-tech weapons, Endfield Foundation, personal relics, faction rivals" type="text"/>
+</div>
+<button class="btn btn-sm btn-primary" id="btn-run-lorebook" style="width: 100%; justify-content: center; margin-top: 4px;" type="button">
+                ⚡ Generate Lorebook with Steering
+              </button>
+</div>
+</div>
+<!-- Module 6: Tone Shifter -->
+<div class="action-card" id="act-tone-shift">
+<div class="action-card-header">
+<span>🎭 Tone &amp; Dynamic Calibrator</span>
+<span class="chevron">▾</span>
+</div>
+<div class="action-card-desc">
+              Shift attitude toward Grittier, Sensual, Tsundere, Yandere, Stoic, or Playful.
+            </div>
+<div class="enhancer-drawer">
+<div class="drawer-field">
+<label class="drawer-label">Quick Tone Presets</label>
+<div class="preset-pills-container" id="tone-preset-chips">
+<span class="preset-pill" data-tone="Cold, authoritative, intellectually rigorous, emotionally guarded">Cold &amp; Guarded</span>
+<span class="preset-pill" data-tone="Darker, predatory, cynical, and morally ambiguous">Dark &amp; Predatory</span>
+<span class="preset-pill" data-tone="Sharp prickly tsundere, defensive exterior with hidden affection">Tsundere</span>
+<span class="preset-pill" data-tone="Obsessive, unhinged yandere, quietly possessive and dangerous">Yandere</span>
+<span class="preset-pill" data-tone="Playful, witty, teasing, dry humor with subtle flirtation">Playful Banter</span>
+<span class="preset-pill" data-tone="Melancholic noir, weary, stoic, haunted by past mistakes">Noir / Weary</span>
+</div>
+</div>
+<div class="drawer-field">
+<label class="drawer-label">Target Tone / Emotional Dynamic</label>
+<input class="form-input" id="tone-custom-input" type="text" value="Cold, authoritative, intellectually rigorous, emotionally guarded"/>
+</div>
+<button class="btn btn-sm btn-primary" id="btn-run-tone" style="width: 100%; justify-content: center; margin-top: 4px;" type="button">
+                ⚡ Calibrate Tone with Steering
+              </button>
+</div>
+</div>
+</div>
+<!-- Module 7: Synthesize Spine for Existing Character (Retroactive) -->
+<div class="action-card" id="act-synthesize-spine" style="border-color: rgba(147, 51, 234, 0.5); background: rgba(147, 51, 234, 0.06);">
+  <div class="action-card-header">
+    <span style="color: #c084fc;">🧬 Synthesize Authoring Spine (Retroactive)</span>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="action-card-desc">
+    Reverse-engineer internal psychometric scaffolding (archetype, contradiction, reaction gradient, voice, scene frame) from an existing card using your original prompt & story arc. Enables arc-aware 'Regenerate with Spine' enhancer mode later.
+  </div>
+  <div class="enhancer-drawer">
+    <button class="btn btn-sm btn-primary" id="btn-open-synthesize-spine" style="width: 100%; justify-content: center; margin-top: 4px; background: linear-gradient(135deg, #7c3aed, #a855f7); border: none;" type="button">
+      🧬 Open Spine Synthesis Modal
+    </button>
+    <div style="margin-top: 8px; font-size: 10px; color: var(--text-muted); text-align: center;">
+      Use if you have the original prompt and/or story arc for a character created before spine persistence.
+    </div>
+  </div>
+</div>
+<!-- TAB 4: Agent Mode (Interactive AI Co-Writer & Card Doctor - Full Chat Experience) -->
+<div class="tab-content hidden" id="tab-agent" style="display: flex; flex-direction: column; gap: 8px;">
+<!-- Top Header Info & Reset -->
+<div style="background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: var(--radius-md); padding: 8px 12px; display: flex; justify-content: space-between; align-items: center;">
+<div style="display: flex; align-items: center; gap: 6px;">
+<span style="font-size: 14px;">🤖</span>
+<div>
+<div style="font-weight: 700; font-size: 12px; color: var(--accent-cyan);">Agent Co-Pilot (Interactive Chat)</div>
+<div style="font-size: 10px; color: var(--text-muted);">Chat to edit, rewrite, critique, or brainstorm changes</div>
+</div>
+</div>
+<div style="display: flex; gap: 4px; align-items: center;">
+<button class="btn btn-xs" id="btn-agent-expand-fullscreen" style="background: rgba(6, 182, 212, 0.2); border: 1px solid #06b6d4; color: #22d3ee; font-weight: 600;" title="Open in Full Screen Studio with Card Sidebar" type="button">⛶ Fullscreen</button>
+<button class="btn btn-xs" id="btn-agent-clear-chat" title="Clear conversation thread" type="button">🧹 Reset Chat</button>
+<button class="btn btn-xs" id="btn-agent-import-card" title="Import PNG, JSON, or CharX into Agent Mode" type="button">📂 Import Card</button>
+</div>
+</div>
+<!-- Quick Suggestion / Directive Chips -->
+<div>
+<div class="steering-pills-row" style="flex-wrap: wrap; gap: 4px;">
+<span class="steering-chip agent-prescription-chip" id="btn-agent-prescription" style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #34d399; font-weight: 700; cursor: pointer;" title="Run automated diagnostic prescription checkup on active card with 1-click action fixes">🩺 Prescription Checkup</span>
+<span class="steering-chip agent-preset-chip" data-wish="Purge all robotic, academic, or thesaurus tropes. Rewrite dialogue examples and personality to sound completely natural and grounded in realistic spoken English with contractions and dry sarcasm, while keeping her core character.">🗣️ Naturalize Dialogue</span>
+<span class="steering-chip agent-preset-chip" data-wish="Trim wordiness and purple prose across description and personality by ~25% to optimize token efficiency without losing sensory depth.">✂️ Token Optimize</span>
+<span class="steering-chip agent-preset-chip" data-wish="Amplify the central contradiction and interpersonal friction between {{char}} and {{user}}, making interactions more charged and slow-burn.">🔥 Heighten Friction</span>
+<span class="steering-chip agent-preset-chip" data-wish="Add vivid sensory details, physical tells, and involuntary reactions (posture shifts, eye tells, trembling hands) when defensive or emotional.">👁️ Sensory Tells</span>
+<span class="steering-chip agent-preset-chip" data-wish="Make the first message start in media res during an active operational crisis, raising immediate tension.">⚡ Crisis Starter</span>
+<span class="steering-chip agent-preset-chip" data-wish="Review this card: what are its top 3 strengths and top 3 weaknesses or plot holes? Give me concrete recommendations.">📋 Critique Card</span>
+</div>
+</div>
+<!-- Pinned Directives / Working Memory Bar -->
+<div id="agent-pinned-directives-bar" style="background: rgba(147, 51, 234, 0.08); border: 1px dashed rgba(168, 85, 247, 0.4); border-radius: var(--radius-sm); padding: 6px 10px; font-size: 11px;">
+<div id="agent-toggle-pinned" style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+<span style="font-weight: 600; color: #c084fc; display: flex; align-items: center; gap: 6px;">
+<span>📌 Working Memory &amp; Pinned Rules</span>
+<span id="agent-pinned-count-badge" style="background: rgba(168, 85, 247, 0.35); color: #fff; font-size: 10px; padding: 1px 6px; border-radius: 8px;">0</span>
+</span>
+<span id="agent-pinned-chevron" style="font-size: 10px; color: var(--text-dim);">▼</span>
+</div>
+<div class="hidden" id="agent-pinned-content" style="margin-top: 6px; display: flex; flex-direction: column; gap: 6px;">
+<div id="agent-pinned-chips" style="display: flex; flex-wrap: wrap; gap: 4px;">
+<span id="agent-pinned-empty-hint" style="font-size: 10px; color: var(--text-muted); font-style: italic;">No pinned rules yet. Pin rules like "Never apologize", "Keep dialogue under 2 sentences", or "Enforce gothic cadence".</span>
+</div>
+<div style="display: flex; gap: 4px; margin-top: 2px;">
+<input class="form-input" id="agent-new-pinned-input" placeholder="Add persistent rule (e.g. 'Never apologize', 'Enforce sarcastic cadence')..." style="font-size: 11px; padding: 3px 6px; height: 26px; flex: 1;" type="text"/>
+<button class="btn btn-xs btn-primary" id="btn-add-pinned-rule" style="white-space: nowrap;" type="button">Pin 📌</button>
+</div>
+</div>
+</div>
+<!-- Chat Stream Messages Container -->
+<div id="agent-chat-stream" style="min-height: 280px; max-height: 380px; overflow-y: auto; padding: 10px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); display: flex; flex-direction: column; gap: 10px;">
+<!-- Chat messages dynamically rendered here -->
+</div>
+<!-- Controls Bar: Scope, Guardrails, 2 Takes & Review Diffs -->
+<div style="display: flex; gap: 8px; align-items: center; justify-content: space-between; font-size: 11px; flex-wrap: wrap;">
+<div style="display: flex; gap: 6px; align-items: center; flex: 1; min-width: 140px;">
+<label style="color: var(--text-dim); white-space: nowrap; font-size: 11px;">Scope:</label>
+<select class="form-select" id="agent-target-scope" style="font-size: 11px; padding: 2px 6px; height: 24px;">
+<option value="auto">✨ Auto-Detect (Agent chooses fields)</option>
+<option value="dialogue">💬 Voice &amp; Dialogue (mes_example + personality)</option>
+<option value="description">📖 Description Only</option>
+<option value="personality">🧠 Personality &amp; Triggers Only</option>
+<option value="first_mes">🎬 Starter &amp; Greetings</option>
+<option value="scenario">🎭 Scenario / Scene Frame</option>
+<option value="post_history">📜 Post-History Directives</option>
+<option value="advice_only">💡 Chat / Advice Only (No Card Edits)</option>
+</select>
+</div>
+<div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+<label class="checkbox-label" style="font-size: 11px; margin: 0; white-space: nowrap;" title="Provides Take A vs Take B creative alternatives to choose from">
+<input id="agent-two-takes" type="checkbox"/>
+<span>🎲 2 Takes (A vs B)</span>
+</label>
+<label class="checkbox-label" style="font-size: 11px; margin: 0; white-space: nowrap;" title="Granular review: inspect side-by-side diff and accept or discard each field individually">
+<input checked="" id="agent-review-diffs" type="checkbox"/>
+<span>🎛️ Review Diffs</span>
+</label>
+<label class="checkbox-label" style="font-size: 11px; margin: 0; white-space: nowrap;" title="Enforces natural spoken English contractions and bans Spock/academic jargon">
+<input checked="" id="agent-enforce-natural-voice" type="checkbox"/>
+<span>Natural Voice</span>
+</label>
+</div>
+</div>
+<!-- Chat Message Input & Send Button -->
+<div style="display: flex; gap: 6px;">
+<textarea class="form-textarea" id="agent-chat-input" placeholder="Message Agent: e.g. 'Make her dialogue more sarcastic', 'Critique the first message', 'Trim description' (Enter to send, Shift+Enter for newline)" rows="2" style="flex: 1; resize: none; font-size: 12px; padding: 6px 8px;"></textarea>
+<button class="btn btn-primary" id="btn-agent-send" style="align-self: flex-end; padding: 8px 14px; height: 42px;" type="button">
+<span>Send 🚀</span>
+</button>
+<button class="btn btn-danger hidden" id="btn-agent-cancel" style="align-self: flex-end; padding: 8px 14px; height: 42px; font-weight: 700;" type="button" title="Cancel generation">
+<span>Stop ⏹️</span>
+</button>
+</div>
+</div>
+<div class="tab-content hidden" id="tab-reimagine" style="display: flex; flex-direction: column; gap: 10px;">
+<div class="agent-reimagine-header">
+<div>
+<strong>✨ Reimagine the current card</strong>
+<div class="muted">Send the active RoleplayCharacter to the same agent service for a cohesive redesign or a fresh inspired direction.</div>
+</div>
+<span class="status-badge" id="reimagine-card-name">No card</span>
+</div>
+<div class="reimagine-mode-row">
+<button class="btn btn-sm reimagine-mode active" data-mode="redesign" type="button">🛠️ Redesign</button>
+<button class="btn btn-sm reimagine-mode" data-mode="inspire" type="button">💡 Inspire</button>
+</div>
+<textarea class="form-textarea" id="reimagine-prompt" placeholder="Optional direction: preserve her voice, move the conflict to a haunted lighthouse, make the opening more immediate..." rows="3"></textarea>
+<button class="btn btn-primary" id="btn-run-reimagine" type="button">✨ Reimagine Current Card</button>
+<div class="agent-reimagine-result hidden" id="reimagine-result"></div>
+</div>
+<!-- TAB: Lorebook Companion Creator -->
+<div class="tab-content hidden" id="tab-companion" style="display: flex; flex-direction: column; gap: 12px;">
+<!-- Banner -->
+<div style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(6, 182, 212, 0.12)); border: 1px solid var(--accent-emerald, #10b981); border-radius: var(--radius-sm); padding: 10px;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+<span style="font-size: 13px; font-weight: 700; color: #a7f3d0;">📖 Lorebook Companion Creator</span>
+<span style="font-size: 10px; background: rgba(16, 185, 129, 0.25); color: #34d399; padding: 2px 6px; border-radius: 4px; font-weight: 600;">LOREBOOK-INTEGRATED</span>
+</div>
+<p style="font-size: 11px; color: var(--text-muted); margin: 0;">
+              Forge an authentic living companion, guide, bodyguard, or scholar specifically attuned to navigate and trigger any SillyTavern Lorebook.
+            </p>
+</div>
+<!-- Section 1: Lorebook Input -->
+<div class="form-group" style="margin-bottom: 4px;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+<label class="form-label" style="margin-bottom: 0;">World Lorebook / Setting Input</label>
+<div style="display: flex; gap: 6px;">
+<button class="btn btn-sm" id="btn-companion-use-active-lore" style="padding: 2px 8px; font-size: 10px; color: var(--accent-cyan); border-color: var(--accent-cyan); background: rgba(56, 189, 248, 0.1);" title="Load lorebook from currently active character card" type="button">
+<span>⚡ Use Active Card Lorebook</span>
+</button>
+<label class="btn btn-sm" style="padding: 2px 8px; font-size: 10px; cursor: pointer; color: #c084fc; border: 1px solid rgba(192, 132, 252, 0.4); background: rgba(192, 132, 252, 0.1);" title="Upload a SillyTavern Lorebook JSON file">
+<span>📁 Upload JSON</span>
+<input accept=".json" id="companion-lorebook-file" style="display: none;" type="file"/>
+</label>
+</div>
+</div>
+<textarea class="form-textarea" id="companion-lorebook-input" placeholder="Paste SillyTavern Lorebook JSON, worldbuilding notes, faction wikis, or markdown entries with headers..." rows="4"></textarea>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
+<button class="btn btn-sm" id="btn-companion-analyze" style="padding: 3px 10px; font-size: 11px; background: rgba(56, 189, 248, 0.15); border: 1px solid var(--accent-cyan); color: #38bdf8;" type="button">
+<span>🔍 Analyze Lorebook</span>
+</button>
+<div id="companion-lorebook-badge" style="font-size: 11px; color: var(--text-dim);">No lorebook loaded yet</div>
+</div>
+<div class="hidden" id="companion-entities-preview" style="margin-top: 6px; display: flex; flex-wrap: wrap; gap: 4px;"></div>
+</div>
+<!-- Section 2: Companion Role -->
+<div class="form-group" style="margin-bottom: 4px;">
+<label class="form-label">Companion Archetype &amp; Role</label>
+<div class="steering-chips" id="companion-role-chips" style="gap: 4px;">
+<span class="steering-chip companion-role-chip active" data-role="guide" style="border-color: var(--accent-purple); background: rgba(168, 85, 247, 0.2); color: #c084fc;">🧭 Native Guide</span>
+<span class="steering-chip companion-role-chip" data-role="scholar">📜 Lorekeeper Scholar</span>
+<span class="steering-chip companion-role-chip" data-role="bodyguard">⚔️ Mercenary Escort</span>
+<span class="steering-chip companion-role-chip" data-role="defector">🗡️ Faction Defector</span>
+<span class="steering-chip companion-role-chip" data-role="scoundrel">🎭 Underworld Smuggler</span>
+<span class="steering-chip companion-role-chip" data-role="bound_familiar">🔮 Bound Familiar</span>
+<span class="steering-chip companion-role-chip" data-role="rival">⚡ Reluctant Ally</span>
+<span class="steering-chip companion-role-chip" data-role="custom">✍️ Custom</span>
+</div>
+<input class="form-input hidden" id="companion-custom-role-input" placeholder="Specify custom role: e.g. 'Blind oracle of the Obsidian Coven'..." style="margin-top: 6px;" type="text"/>
+</div>
+<!-- Section 3: Relationship to {{user}} -->
+<div class="form-group" style="margin-bottom: 4px;">
+<label class="form-label">{{user}}'s Identity &amp; Relationship in this World</label>
+<div class="steering-chips" id="companion-rel-chips" style="gap: 4px;">
+<span class="steering-chip companion-rel-chip active" data-rel="stranger" style="border-color: var(--accent-cyan); background: rgba(56, 189, 248, 0.2); color: #38bdf8;">🌍 Outsider / Stranger</span>
+<span class="steering-chip companion-rel-chip" data-rel="amnesiac">❓ Amnesiac with Relic</span>
+<span class="steering-chip companion-rel-chip" data-rel="heir">👑 Fallen Heir</span>
+<span class="steering-chip companion-rel-chip" data-rel="contractor">📜 Employer / Contractor</span>
+<span class="steering-chip companion-rel-chip" data-rel="fugitive">🏹 Fugitives on the Run</span>
+<span class="steering-chip companion-rel-chip" data-rel="custom">✍️ Custom</span>
+</div>
+<input class="form-input hidden" id="companion-custom-rel-input" placeholder="Specify custom relationship: e.g. 'Childhood pact rekindled after a 10-year siege'..." style="margin-top: 6px;" type="text"/>
+</div>
+<!-- Section 4: Preferences & Steering -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+<div class="form-group" style="margin-bottom: 0;">
+<label class="form-label" style="font-size: 11px;">Gender</label>
+<select class="form-select" id="companion-gender" style="font-size: 11px;">
+<option value="any">Any / Flexible</option>
+<option value="female">Female</option>
+<option value="male">Male</option>
+<option value="nonbinary">Non-Binary</option>
+</select>
+</div>
+<div class="form-group" style="margin-bottom: 0;">
+<label class="form-label" style="font-size: 11px;">Mature / NSFW</label>
+<div style="display: flex; align-items: center; height: 32px;">
+<input checked="" id="companion-nsfw" style="margin-right: 6px;" type="checkbox"/>
+<label for="companion-nsfw" style="font-size: 11px; color: var(--text-muted); cursor: pointer;">Enable Mature / NSFW</label>
+</div>
+</div>
+</div>
+<div class="form-group" style="margin-bottom: 4px;">
+<label class="form-label" style="font-size: 11px;">Tone &amp; Atmosphere</label>
+<input class="form-input" id="companion-tone" style="font-size: 11px;" type="text" value="Tactical, atmospheric, dry banter, sharp perceptiveness"/>
+</div>
+<div class="form-group" style="margin-bottom: 4px;">
+<label class="form-label" style="font-size: 11px;">Director's Steering Notes (Optional)</label>
+<input class="form-input" id="companion-steering" placeholder="e.g. 'She has a secret bounty from the Nightfall Syndicate'..." style="font-size: 11px;" type="text"/>
+</div>
+<!-- Section 5: Forge Button -->
+<button class="btn" id="btn-companion-forge" style="justify-content: center; background: linear-gradient(135deg, #059669, #0d9488); border: 1px solid #34d399; color: #ffffff; font-weight: 700; padding: 10px; margin-top: 4px;" type="button">
+<span>⚡ Forge Lorebook Companion (Embeds Lorebook)</span>
+</button>
+</div>
+<!-- TAB 5: Era Forge & Mythic Temporal Settings -->
+<div class="tab-content hidden" id="tab-eras" style="display: flex; flex-direction: column; gap: 10px;">
+<div style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(168, 85, 247, 0.12)); border: 1px solid var(--accent-purple); border-radius: var(--radius-sm); padding: 10px;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+<span style="font-size: 13px; font-weight: 700; color: #e0e7ff;">📜 Era Forge &amp; Mythic Settings</span>
+<span style="font-size: 10px; background: rgba(99, 102, 241, 0.25); color: var(--accent-cyan); padding: 2px 6px; border-radius: 4px; font-weight: 600;">TOOL CALLING &amp; QUALITY LINTER</span>
+</div>
+<p style="font-size: 11px; color: var(--text-muted); margin: 0;">
+              Agent-assisted worldbuilder. Generates paired eras (Multi-Partner &amp; Sole Partner), audits structural quality, and saves directly to <code>data/eras_extensions/</code>.
+            </p>
+</div>
+<!-- Preset Concept Chips -->
+<div>
+<label class="form-label" style="font-size: 11px; margin-bottom: 4px;">Inspiration Presets:</label>
+<div class="steering-chips" style="gap: 4px;">
+<span class="steering-chip era-preset-chip" data-concept="Floating Sky-Island Freehold high above the clouds with Aether-Skiff captain, crystal levitation sails, and zero ground watchers">☁️ Sky Island</span>
+<span class="steering-chip era-preset-chip" data-concept="Volcanic Geothermal Hot Springs Sanctuary in secluded obsidian caldera with mineral baths and thermal privacy wards">🌋 Hot Springs</span>
+<span class="steering-chip era-preset-chip" data-concept="Abyssal Pearl Trench in deep bioluminescent underwater grotto with deep-diver master and siren/mermaid brides">🌊 Abyssal Trench</span>
+<span class="steering-chip era-preset-chip" data-concept="Desert Mirage Oasis Estate hidden behind perpetual sand-veil wards with caravan master and silk-tent solariums">🏜️ Sand Oasis</span>
+<span class="steering-chip era-preset-chip" data-concept="Enchanted Alpine Hearth &amp; Ironwood Timber Lodge secluded in snowy mountain pass with master wood-smith">🏔️ Alpine Hearth</span>
+<span class="steering-chip era-preset-chip" data-concept="Astral Lighthouse Sanctuary atop a lonely sea-spire with star-navigator master and acoustic silence runes">🔮 Astral Spire</span>
+</div>
+</div>
+<!-- Era Input Form -->
+<div class="form-group" style="margin-bottom: 6px; position: relative;">
+<label class="form-label" style="font-size: 11px;">Era Premise / Setting Request (type <code>era:</code> for setting or <code>erac:</code> for category):</label>
+<textarea class="form-textarea" id="era-agent-prompt" placeholder="Describe your setting: e.g. 'era: desert fortress' or 'erac: Fantasy' or 'Secluded geothermal cavern hot springs...'" rows="3" style="font-size: 12px; resize: vertical;"></textarea>
+<div class="hidden" id="era-agent-autocomplete" style="position: absolute; left: 0; right: 0; top: 100%; z-index: 1050; background: var(--bg-card, #1e293b); border: 1px solid var(--accent-indigo, #6366f1); border-radius: var(--radius-sm, 6px); box-shadow: 0 10px 25px rgba(0,0,0,0.5); max-height: 220px; overflow-y: auto;"></div>
+</div>
+<!-- Controls: Dual-Pair, Extension File, Generate Button -->
+<div style="display: flex; gap: 8px; align-items: center; justify-content: space-between; flex-wrap: wrap; background: var(--bg-card); padding: 8px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+<div style="display: flex; gap: 10px; align-items: center;">
+<label class="checkbox-label" style="font-size: 11px; margin: 0;" title="Generates both Version A (Multi-Wife Polygyny) and Version B (Sole Bride Monogamy)">
+<input checked="" id="chk-era-dual-pair" type="checkbox"/>
+<span>⚔️ Dual-Format Pair (Multi-Wife &amp; Sole Bride)</span>
+</label>
+</div>
+<div style="display: flex; gap: 6px; align-items: center;">
+<span style="font-size: 11px; color: var(--text-muted);">File:</span>
+<input class="form-input" id="era-extension-filename" placeholder="custom_eras.json" style="width: 140px; padding: 2px 6px; font-size: 11px; height: 26px;" type="text" value="my_fantasy_eras.json"/>
+<button class="btn btn-sm btn-primary" id="btn-era-agent-generate" style="padding: 4px 12px; height: 26px;" type="button">
+<span>⚡ Forge Era Pair</span>
+</button>
+</div>
+</div>
+<!-- Agent Tool Execution Feed & Status -->
+<div class="hidden" id="era-agent-feed" style="background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 8px; font-size: 11px; max-height: 120px; overflow-y: auto;">
+<div style="font-weight: 700; color: var(--accent-cyan); margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+<span>🤖 Era Architect Feedback &amp; Tool Logs:</span>
+<span class="status-indicator" id="era-agent-status-indicator"></span>
+</div>
+<div id="era-agent-message-body" style="color: var(--text-main); white-space: pre-wrap; margin-bottom: 6px;"></div>
+<div id="era-tool-calls-container" style="display: flex; gap: 4px; flex-wrap: wrap;"></div>
+</div>
+<!-- Dual-Card Preview Section -->
+<div class="hidden" id="era-preview-section" style="display: flex; flex-direction: column; gap: 8px;">
+<div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 6px;">
+<div style="display: flex; gap: 4px;">
+<button class="nav-tab active" id="btn-preview-poly" style="padding: 4px 10px; font-size: 11px;" type="button">🌸 Multi-Wife (Polygyny)</button>
+<button class="nav-tab" id="btn-preview-mono" style="padding: 4px 10px; font-size: 11px;" type="button">💍 Sole Bride (Monogamy)</button>
+</div>
+<div id="era-compliance-badge-summary" style="font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.4);">
+                🛡️ 100% Compliant
+              </div>
+</div>
+<!-- Active Era Card Content -->
+<div id="era-card-display" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+<div style="display: flex; justify-content: space-between; align-items: flex-start;">
+<div>
+<h4 id="era-preview-title" style="margin: 0 0 2px 0; font-size: 14px; color: var(--accent-cyan);">☁️ Floating Sky-Island Freehold</h4>
+<div style="display: flex; gap: 6px; font-size: 10px; color: var(--text-dim);">
+<span id="era-preview-span" style="background: var(--bg-input); padding: 1px 6px; border-radius: 3px;">Age of the Bound Clouds</span>
+<span id="era-preview-region" style="background: var(--bg-input); padding: 1px 6px; border-radius: 3px;">The Untamed Cloud-Sea</span>
+</div>
+</div>
+<button class="btn btn-sm" id="btn-copy-era-json" style="font-size: 10px; padding: 2px 6px;" type="button">📋 Copy JSON</button>
+</div>
+<div>
+<label style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Sensory Aesthetic:</label>
+<p id="era-preview-aesthetic" style="font-size: 11px; margin: 2px 0; color: var(--text-main); line-height: 1.4;"></p>
+</div>
+<div>
+<label style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Tech &amp; Domestic Enchantments:</label>
+<p id="era-preview-tech" style="font-size: 11px; margin: 2px 0; color: var(--text-main); line-height: 1.4;"></p>
+</div>
+<div>
+<label style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Social Codes, Non-Royal Privacy &amp; Domestic Authority:</label>
+<p id="era-preview-social" style="font-size: 11px; margin: 2px 0; color: #e2e8f0; line-height: 1.45; background: rgba(0,0,0,0.25); padding: 8px; border-radius: 4px; border-left: 3px solid var(--accent-purple);"></p>
+</div>
+<div>
+<label style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Character Archetypes &amp; Bride Titles:</label>
+<div id="era-preview-titles" style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 2px;"></div>
+</div>
+<div>
+<label style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Tags:</label>
+<div id="era-preview-tags" style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 2px;"></div>
+</div>
+</div>
+<!-- Era Quality Audit Checklist -->
+<div id="era-compliance-details" style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 10px;">
+<div style="font-size: 11px; font-weight: 700; color: var(--accent-purple); margin-bottom: 6px;">🛡️ Era Architecture &amp; Quality Audit:</div>
+<div id="era-pillars-checklist" style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 11px;">
+<div id="pillar-check-dual">⚔️ Dual-Format Pair: <span style="font-weight:600;">...</span></div>
+<div id="pillar-check-depth">🏰 Setting &amp; Aesthetic Depth: <span style="font-weight:600;">...</span></div>
+<div id="pillar-check-social">📜 Social Codes &amp; Dynamic: <span style="font-weight:600;">...</span></div>
+<div id="pillar-check-richness">📚 Rich Names &amp; Archetypes: <span style="font-weight:600;">...</span></div>
+</div>
+<div id="era-compliance-issues" style="margin-top: 6px; font-size: 10px; color: #f87171;"></div>
+</div>
+<!-- Action Toolbar -->
+<div style="display: flex; gap: 8px; justify-content: flex-end; align-items: center; margin-top: 4px; flex-wrap: wrap;">
+<div style="display: flex; align-items: center; gap: 4px; margin-right: auto;">
+<label for="era-save-destination" style="font-size: 11px; color: var(--text-dim);">Target:</label>
+<select class="form-input" id="era-save-destination" style="font-size: 11px; padding: 2px 6px; height: 26px;">
+<option selected="" value="project_data">Project data/eras_extensions</option>
+<option value="local_user">OS User AppData (.local / AppData)</option>
+</select>
+</div>
+<button class="btn btn-sm" id="btn-test-era-spark" style="background: rgba(99, 102, 241, 0.15); border: 1px solid var(--accent-cyan); color: var(--accent-cyan);" title="Test spark a new character card concept set in this exact era" type="button">
+                ⚡ Test Spark Character in Era
+              </button>
+<button class="btn btn-sm btn-primary" id="btn-save-era-extension" title="Save this paired era definition into extension folder" type="button">
+                💾 Save to Extensions Folder
+              </button>
+</div>
+</div>
+<!-- Existing Extensions Drawer Section -->
+<div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 10px; margin-top: 4px;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+<span style="font-size: 12px; font-weight: 700; color: var(--text-main);">📁 Installed Extension Packs (data/ + user AppData)</span>
+<button class="btn btn-sm" id="btn-refresh-extensions" style="font-size: 10px; padding: 2px 6px;" type="button">🔄 Refresh</button>
+</div>
+<div id="installed-extensions-list" style="display: flex; flex-direction: column; gap: 4px; max-height: 140px; overflow-y: auto;">
+<span style="font-size: 11px; color: var(--text-dim);">Scanning extensions...</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Center Column: Character Deck & Live Editor -->
+<div class="panel" style="background-color: var(--bg-primary);">
+<!-- Character Header Card -->
+<div class="editor-top">
+<div class="char-avatar-slot" id="avatar-container" title="Click or drag &amp; drop custom avatar (PNG / JPG / WEBP)">
+<img alt="Avatar" id="char-avatar-img" src="" style="display:none;"/>
+<span id="char-avatar-placeholder" style="font-size: 24px; color: var(--text-dim);">👤</span>
+<div class="avatar-hover-overlay">
+<span class="avatar-hover-icon">📷</span>
+<span class="avatar-hover-text">Avatar</span>
+</div>
+<button class="btn-avatar-remove hidden" id="btn-remove-avatar" title="Remove custom avatar" type="button">×</button>
+</div>
+<input accept="image/png,image/jpeg,image/webp,image/gif" id="avatar-file-input" style="display:none;" type="file"/>
+<div class="editor-info">
+<input class="char-name-input" id="char-name" placeholder="Character Name" type="text" value=""/>
+<div id="active-card-pill" style="display:none; font-size: 10px; align-items: center; gap: 6px; margin: 2px 0 4px;">
+<span style="background: rgba(99, 102, 241, 0.15); color: var(--accent-cyan); padding: 1px 6px; border-radius: 4px; font-weight: 600;">🔗 Linked: <span id="active-card-name-label"></span></span>
+<button id="btn-unlink-card" style="border: none; background: none; color: var(--text-dim); text-decoration: underline; font-size: 10px; cursor: pointer; padding: 0;" type="button">Unlink (Save as New Card)</button>
+</div>
+<input class="char-tags-input" id="char-tags" placeholder="Tags (comma-separated, e.g. dark fantasy, scarred, stoic)" type="text" value=""/>
+</div>
+<div style="display:flex; flex-direction:column; gap:6px; align-items:flex-end;">
+<div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;">
+<button class="btn btn-sm" id="btn-upload-avatar" title="Upload custom PNG/JPG avatar for card export">
+              🖼️ Upload Avatar
+            </button>
+<button class="btn btn-sm" id="btn-gen-img-prompt" style="background: rgba(168, 85, 247, 0.15); border: 1px solid #a855f7; color: #d8b4fe;" title="Generate ComfyUI / SDXL / Flux / Pony image generation prompt and add to offline queue">
+              🎨 Gen Image Prompt
+            </button>
+<button class="btn btn-sm btn-primary" id="btn-save-to-library" title="Save / Update this character in your local library">
+              💾 Save Card
+            </button>
+<button class="btn btn-sm" id="btn-save-as-new-card" title="Save as a separate new card in your library (fork / create copy)">
+              📋 Save as New
+            </button>
+<button class="btn btn-sm" id="btn-new-card" title="Clear workspace and start a fresh character card">
+              ➕ New Card
+            </button>
+<button class="btn btn-sm" id="btn-reroll-card-header" style="background: rgba(168, 85, 247, 0.15); border: 1px solid var(--accent-purple); color: #c084fc;" title="Reroll character card with current concept, themes &amp; era">
+              🎲 Reroll Card
+            </button>
+<button class="btn btn-sm" id="btn-fix-macros" title="Standardize {{user}} &amp; {{char}} macros and convert spoken dialogue to standard double quotes for Lumiverse &amp; SillyTavern">
+              🪄 Fix Macros &amp; Quotes
+            </button>
+</div>
+<div style="display:flex; align-items:center; gap:6px; font-size:11px;">
+<label class="checkbox-label" style="font-size:11px;">
+<input id="chk-macro-preview" type="checkbox"/>
+<span>Preview as:</span>
+</label>
+<input class="form-input" id="macro-preview-user" style="width:70px; padding:2px 6px; font-size:11px; height:24px;" type="text" value="Anon"/>
+</div>
+</div>
+</div>
+<!-- Section Tabs for Editor -->
+<div style="background-color: var(--bg-card); border-bottom: 1px solid var(--border-color); padding: 0 16px; display: flex; gap: 4px; overflow-x: auto;">
+<button class="nav-tab active ed-tab" data-edtab="ed-desc">Description</button>
+<button class="nav-tab ed-tab" data-edtab="ed-personality">Personality</button>
+<button class="nav-tab ed-tab" data-edtab="ed-scenario">Scenario &amp; Starter</button>
+<button class="nav-tab ed-tab" data-edtab="ed-alts">Alt Greetings</button>
+<button class="nav-tab ed-tab" data-edtab="ed-examples">Example Messages</button>
+<button class="nav-tab ed-tab" data-edtab="ed-lorebook">Lorebook</button>
+<button class="nav-tab ed-tab" data-edtab="ed-system">System Directives</button>
+<button class="nav-tab ed-tab" data-edtab="ed-gallery" id="tab-btn-gallery">🖼️ Gallery (<span id="gallery-tab-count">0</span>)</button>
+</div>
+<!-- Editor Content Body -->
+<div class="panel-body" style="background-color: var(--bg-primary);">
+<!-- Tab: Description -->
+<div class="ed-tab-content" id="ed-desc">
+<div class="form-group">
+<div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+<label class="form-label" style="margin:0;">Description (Persona, Physical Form, History, Nuances)</label>
+<span id="token-badge-desc" style="font-size:11px; color:var(--accent-cyan);">0 tokens</span>
+</div>
+<textarea class="form-textarea" id="field-description" style="min-height: 380px; font-family: monospace; font-size: 13px;"></textarea>
+</div>
+</div>
+<!-- Tab: Personality -->
+<div class="ed-tab-content hidden" id="ed-personality">
+<div class="form-group">
+<div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+<label class="form-label" style="margin:0;">Personality (Behavioral Signatures, Demeanor, Quirks)</label>
+<span id="token-badge-pers" style="font-size:11px; color:var(--accent-cyan);">0 tokens</span>
+</div>
+<textarea class="form-textarea" id="field-personality" style="min-height: 380px; font-family: monospace; font-size: 13px;"></textarea>
+</div>
+</div>
+<!-- Tab: Scenario & Starter -->
+<div class="ed-tab-content hidden" id="ed-scenario">
+<div class="form-group">
+<div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+<label class="form-label" style="margin:0;">Scenario (Atmospheric Stage Setting &amp; Scene Objective)</label>
+<span id="token-badge-scenario" style="font-size:11px; color:var(--accent-cyan);">0 tokens</span>
+</div>
+<textarea class="form-textarea" id="field-scenario" style="min-height: 120px; font-family: monospace; font-size: 13px;"></textarea>
+</div>
+<div class="form-group">
+<div style="display:flex; justify-content:space-between; margin-bottom:6px; align-items:center;">
+<label class="form-label" style="margin:0;">First Message (Primary Scene Opener)</label>
+<div style="display:flex; align-items:center; gap:8px;">
+<button class="btn btn-xs" id="btn-queue-first-greeting-img" style="background: rgba(168, 85, 247, 0.2); border: 1px solid rgba(168, 85, 247, 0.4); color: rgb(216, 180, 254);" title="Generate &amp; queue an active scene illustration for this opening greeting" type="button">🖼️ Queue Greeting Scene</button>
+<button class="btn btn-xs" id="btn-queue-first-greeting-bg" style="background: rgba(56, 189, 248, 0.2); border: 1px solid rgba(56, 189, 248, 0.4); color: rgb(125, 211, 252);" title="Generate &amp; queue an environmental chat background wallpaper for this greeting" type="button">🌄 Queue Chat BG</button>
+<span id="token-badge-first" style="font-size: 11px; color: var(--accent-cyan);">0 tokens</span>
+</div>
+</div>
+<textarea class="form-textarea" id="field-first-mes" style="min-height: 240px; font-family: monospace; font-size: 13px;"></textarea>
+</div>
+</div>
+<!-- Tab: Alternate Greetings -->
+<div class="ed-tab-content hidden" id="ed-alts">
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+<div style="font-size: 12px; color: var(--text-muted);">Alternative Opening Greetings for different roleplay scenarios</div>
+<button class="btn btn-sm" id="btn-add-alt-greeting">➕ Add Alternate Greeting</button>
+</div>
+<div id="alt-greetings-list"></div>
+</div>
+<!-- Tab: Example Messages -->
+<div class="ed-tab-content hidden" id="ed-examples">
+<div class="form-group">
+<div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+<label class="form-label" style="margin:0;">Example Dialogues (&lt;START&gt; tags)</label>
+<span id="token-badge-examples" style="font-size:11px; color:var(--accent-cyan);">0 tokens</span>
+</div>
+<textarea class="form-textarea" id="field-mes-example" placeholder="&lt;START&gt;
+{{user}}: Turn
+{{char}}: Turn" style="min-height: 380px; font-family: monospace; font-size: 13px;"></textarea>
+</div>
+</div>
+<!-- Tab: Lorebook -->
+<div class="ed-tab-content hidden" id="ed-lorebook">
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+<div style="font-size: 12px; color: var(--text-muted);">Embedded SillyTavern Character Book (World Info)</div>
+<div style="display:flex; gap:8px;">
+<button class="btn btn-sm" id="btn-add-lorebook-entry">➕ Add Entry</button>
+<button class="btn btn-sm btn-danger" id="btn-clear-lorebook" title="Clear all lorebook entries from this card">🗑️ Clear Lorebook</button>
+</div>
+</div>
+<div id="lorebook-entries-list"></div>
+</div>
+<!-- Tab: System Directives & AI Incorporator -->
+<div class="ed-tab-content hidden" id="ed-system">
+<!-- AI Incorporator Box -->
+<div class="incorporator-card" style="background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.35); border-radius: var(--radius-md); padding: 14px; margin-bottom: 16px;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+<span style="font-weight: 700; font-size: 13px; color: var(--accent-cyan); display: flex; align-items: center; gap: 6px;">
+<span>✨ AI Directive &amp; System Prompt Incorporator</span>
+</span>
+<span style="font-size: 10px; color: #10b981; font-weight: 600;">🔒 ST Client Preset Safe</span>
+</div>
+<div style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px; line-height: 1.4;">
+              Have a legacy system prompt or raw roleplay directives? Use the LLM to intelligently incorporate the content into <strong>Post-History Instructions</strong>, <strong>Description</strong>, or <strong>Both</strong>.
+            </div>
+<div class="form-group" style="margin-bottom: 10px;">
+<label class="form-label" style="font-size: 11px;">System Prompt / Directives to Incorporate:</label>
+<textarea class="form-textarea" id="field-system-prompt" placeholder="Paste legacy system prompt or directives here (or loaded from imported card)..." style="min-height: 80px; font-family: monospace; font-size: 12px;"></textarea>
+</div>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+<div>
+<label class="form-label" style="font-size: 11px;">Incorporate Destination:</label>
+<select class="form-select" id="incorporate-target" style="font-size: 12px; height: 34px;">
+<option value="both">⚡ Both: Split Lore to Description &amp; Rules to Post-History (Recommended)</option>
+<option value="post_history">📜 Post-History Instructions Only</option>
+<option value="description">📖 Description Only</option>
+</select>
+</div>
+<div>
+<label class="form-label" style="font-size: 11px;">Optional AI Guidance / Steering:</label>
+<input class="form-input" id="incorporate-guidance" placeholder="e.g. Keep voice sharp, emphasize sensory tells" style="font-size: 12px; height: 34px;" type="text"/>
+</div>
+</div>
+<div style="display: flex; gap: 8px; justify-content: flex-end; align-items: center;">
+<button class="btn btn-sm" id="btn-plain-move-post-history" title="Move directly to Post-History Instructions without calling AI" type="button">
+                📋 Plain Move to Post-History
+              </button>
+<button class="btn btn-sm btn-primary" id="btn-run-incorporate" title="Use AI to intelligently weave into selected target" type="button">
+<span>✨ Incorporate with AI</span>
+</button>
+</div>
+<div class="hidden" id="incorporate-status-box" style="margin-top: 10px; padding: 8px 12px; border-radius: var(--radius-sm); font-size: 11px; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main);"></div>
+</div>
+<div class="form-group">
+<div style="display: flex; justify-content: space-between; align-items: center;">
+<label class="form-label">Post-History Instructions (Uncensored Persona Directives &amp; Agency)</label>
+<span style="font-size: 11px; color: var(--text-dim);">Placed at context end in SillyTavern</span>
+</div>
+<textarea class="form-textarea" id="field-post-history" style="min-height: 160px; font-family: monospace; font-size: 13px;"></textarea>
+<div style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">Placed at context end in SillyTavern / frontends without wiping out your global system prompt.</div>
+</div>
+<div class="form-group">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+<label class="form-label" style="margin: 0;">Creator Notes</label>
+<button class="btn btn-xs" id="btn-preview-creator-notes" style="background: rgba(16, 185, 129, 0.15); border: 1px solid var(--accent-emerald); color: #6ee7b7; font-weight: 600; padding: 2px 8px;" type="button">
+                👁️ View Formatted Notes
+              </button>
+</div>
+<textarea class="form-textarea" id="field-creator-notes" placeholder="Author notes, concept overview, lore references, or custom HTML styling..." style="min-height: 80px;"></textarea>
+</div>
+</div>
+<!-- Tab: Image Gallery Browser -->
+<div class="ed-tab-content hidden" id="ed-gallery">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+<div>
+<div style="font-size: 13px; font-weight: 700; color: #ffffff; display: flex; align-items: center; gap: 6px;">
+<span>🖼️ Character Image Gallery &amp; Assets</span>
+<span class="badge" id="gallery-count-pill" style="background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.4); color: #c084fc; font-size: 10px;">0 images</span>
+</div>
+<div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
+                Scene illustrations, chat backgrounds, and alternate expressions bundled into your character card (CharX assets).
+              </div>
+</div>
+<div style="display: flex; gap: 8px; align-items: center;">
+<button class="btn btn-sm btn-primary" id="btn-gallery-upload" style="background: linear-gradient(135deg, #7c3aed, #a855f7); border: none;" type="button">
+<span>➕ Upload Images</span>
+</button>
+<button class="btn btn-sm" id="btn-gallery-gen-prompt" style="background: rgba(168, 85, 247, 0.15); border: 1px solid #a855f7; color: #d8b4fe;" title="Generate a new image generation prompt" type="button">
+<span>🎨 Gen Prompt</span>
+</button>
+<button class="btn btn-sm btn-danger" id="btn-gallery-clear-all" title="Remove all gallery images from this card" type="button">
+<span>🗑️ Clear All</span>
+</button>
+<input accept="image/png,image/jpeg,image/webp,image/gif,image/avif" id="gallery-file-input" multiple="" style="display:none;" type="file"/>
+</div>
+</div>
+<!-- Drag and Drop Zone -->
+<div id="gallery-dropzone" style="border: 2px dashed rgba(168, 85, 247, 0.35); border-radius: var(--radius-md); padding: 18px; text-align: center; margin-bottom: 14px; background: rgba(168, 85, 247, 0.04); cursor: pointer; transition: 0.2s;">
+<div style="font-size: 24px; margin-bottom: 4px;">🖼️</div>
+<div style="font-size: 12px; font-weight: 600; color: #e9d5ff;">Drag &amp; drop images here, or click to browse</div>
+<div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">Supports PNG, JPG, WEBP, AVIF, GIF</div>
+</div>
+<!-- Gallery Grid Container -->
+<div id="gallery-grid" style="display: none; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px;"></div>
+<!-- Empty State -->
+<div id="gallery-empty-state" style="display: block; padding: 32px 16px; text-align: center; color: var(--text-dim);">
+<div style="font-size: 32px; margin-bottom: 8px;">🎨</div>
+<div style="font-weight: 600; font-size: 13px; color: var(--text-muted);">No Gallery Images Attached</div>
+<div style="font-size: 11px; margin-top: 4px; max-width: 360px; margin-left: auto; margin-right: auto;">
+              Upload scene art, add greeting illustrations, or queue image generations with ComfyUI. Attached images are automatically saved to this character's gallery.
+            </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Inspector & Live Metrics -->
+<div class="panel panel-right">
+<div class="panel-header">
+<span class="panel-title">Diagnostic &amp; Token Engine</span>
+</div>
+<div class="panel-body">
+<!-- Quality Health Gauge -->
+<div class="health-gauge">
+<div class="score-display">
+<span class="score-num" id="card-score-num">--</span>
+<span class="score-label">/ 100 HEALTH</span>
+</div>
+<div id="card-score-summary" style="font-size: 11px; color: var(--text-muted); line-height: 1.4;">
+            Import or generate a card to view diagnostic health analysis.
+          </div>
+</div>
+<!-- Detected Weaknesses & Strengths -->
+<div style="margin-bottom: 16px;">
+<div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px;">
+            Audit Findings
+          </div>
+<div id="audit-findings-list" style="font-size: 11px; max-height: 200px; overflow-y: auto;">
+<div style="color: var(--text-dim); font-style: italic;">No audit conducted yet.</div>
+</div>
+</div>
+<!-- Token Counter Breakdown -->
+<div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 14px; margin-bottom: 16px;">
+<div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px;">
+            Token Budget Estimate
+          </div>
+<div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom: 8px;">
+<span id="token-total-num" style="font-size: 22px; font-weight: 800; color: var(--accent-emerald);">0</span>
+<span style="font-size: 11px; color: var(--text-dim);">permanent + starter</span>
+</div>
+<ul class="token-breakdown-list">
+<li class="token-breakdown-item">
+<span style="color:var(--text-muted)">Description</span>
+<span id="tb-desc">0</span>
+</li>
+<li class="token-breakdown-item">
+<span style="color:var(--text-muted)">Personality</span>
+<span id="tb-pers">0</span>
+</li>
+<li class="token-breakdown-item">
+<span style="color:var(--text-muted)">Scenario</span>
+<span id="tb-scenario">0</span>
+</li>
+<li class="token-breakdown-item">
+<span style="color:var(--text-muted)">First Message</span>
+<span id="tb-first">0</span>
+</li>
+<li class="token-breakdown-item">
+<span style="color:var(--text-muted)">Example Messages</span>
+<span id="tb-examples">0</span>
+</li>
+<li class="token-breakdown-item">
+<span style="color:var(--text-muted)">System &amp; Directives</span>
+<span id="tb-system">0</span>
+</li>
+</ul>
+</div>
+<!-- Quick Copy Actions -->
+<div>
+<button class="btn btn-sm" id="btn-copy-prompt" style="width: 100%; justify-content: center; margin-bottom: 8px;">
+            📋 Copy Character Prompt to Clipboard
+          </button>
+<button class="btn btn-sm" id="btn-view-raw-json" style="width: 100%; justify-content: center;">
+            🔍 View Raw V2 JSON Spec
+          </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Settings & API Keys Modal -->
+<div class="modal-overlay hidden" id="modal-settings">
+<div class="modal">
+<div class="modal-header">
+<h3 style="font-size: 15px; font-weight: 700;">Settings &amp; Model Configuration</h3>
+<button class="btn btn-sm" id="btn-close-settings">✕</button>
+</div>
+<div class="modal-body">
+<div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 6px; padding: 10px; margin-bottom: 14px; font-size: 12px; color: #fca5a5; line-height: 1.4;">
+<strong>🛑 ZERO FREE AI POLICY:</strong> We are NOT a charity offering free AI or sponsored API tokens! You must bring your own API key or connect a local model (Ollama).
+        </div>
+<div class="form-group">
+<label class="form-label">Model Provider</label>
+<select class="form-select" id="setting-provider-type">
+<option value="none">❌ None Selected (Unconfigured - No Free Lunch!)</option>
+<option value="llamacpp">llama.cpp Server (OpenAI /v1/chat - Auto-Template)</option>
+<option value="ollama">Ollama (Local LLM &amp; Vision)</option>
+<option value="gemini">Google Gemini (Bring Your Own Key)</option>
+<option value="openrouter">OpenRouter (Bring Your Own Key)</option>
+<option value="openai">OpenAI / Custom Base URL (Bring Your Own Key)</option>
+<option value="anthropic">Anthropic (Bring Your Own Key)</option>
+</select>
+</div>
+<div class="form-group">
+<label class="form-label">API Key</label>
+<input class="form-input" id="setting-api-key" placeholder="Leave blank to use environment variable if set" type="password"/>
+<div id="setting-env-detected" style="font-size: 11px; color: var(--accent-emerald); margin-top: 4px; display:none;">
+            ✓ Pre-configured in .env
+          </div>
+</div>
+<div class="form-group" id="group-base-url" style="display:none;">
+<label class="form-label">Custom Base URL</label>
+<input class="form-input" id="setting-base-url" placeholder="e.g. http://localhost:11434/v1" type="text"/>
+</div>
+<div class="form-group">
+<label class="form-label">Model Name</label>
+<input class="form-input" id="setting-model-name" placeholder="e.g. llama-3.3-70b, gpt-4o, gemini-2.5-flash" type="text" value=""/>
+</div>
+<div class="form-group">
+<label class="form-label">Temperature: <span id="temp-val">0.85</span></label>
+<input id="setting-temperature" max="1.5" min="0.1" step="0.05" style="width:100%;" type="range" value="0.85"/>
+</div>
+<div style="margin: 18px 0 10px; border-top: 1px solid var(--border-color); padding-top: 14px;">
+<div style="font-size: 13px; font-weight: 700; color: var(--accent-cyan); margin-bottom: 4px;">
+            🌐 Web Search &amp; Lore Retrieval
+          </div>
+<div style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">
+            Used to query wikis, fandom databases, and canon lore before character synthesis.
+          </div>
+<div class="form-group">
+<label class="form-label">Search Provider</label>
+<select class="form-select" id="setting-search-provider">
+<option value="duckduckgo">DuckDuckGo (Free / No Key Required)</option>
+<option value="tavily">Tavily AI Search (Requires API Key)</option>
+<option value="brave">Brave Search API (Requires API Key)</option>
+<option value="searxng">SearXNG Self-Hosted Instance</option>
+</select>
+</div>
+<div class="form-group" id="group-search-key" style="display:none;">
+<label class="form-label" id="label-search-key">Search API Key</label>
+<input class="form-input" id="setting-search-key" placeholder="Enter API Key" type="password"/>
+</div>
+</div>
+<div style="margin: 18px 0 10px; border-top: 1px solid var(--border-color); padding-top: 14px;">
+<div style="font-size: 13px; font-weight: 700; color: var(--accent-purple); margin-bottom: 4px;">
+            🔌 MCP (Model Context Protocol) Server
+          </div>
+<div style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">
+            Connect an MCP server for external tools, knowledge bases, or web browsing.
+          </div>
+<div class="form-group">
+<label class="form-label">MCP Server Command / URL</label>
+<input class="form-input" id="setting-mcp-command" placeholder="e.g. npx -y @modelcontextprotocol/server-brave-search or http://localhost:8000/sse" type="text"/>
+</div>
+</div>
+<!-- Image Generation & Diffusion Model Defaults -->
+<div style="margin: 18px 0 10px; border-top: 1px solid var(--border-color); padding-top: 14px;">
+<div style="font-size: 13px; font-weight: 700; color: #a855f7; margin-bottom: 4px;">
+            🖼️ Default Image Model Architecture
+          </div>
+<div style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">
+            Target diffusion architecture used for quick Greeting Scenes, Chat Backgrounds, and default image prompt generation.
+          </div>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+<div class="form-group" style="margin-bottom: 0;">
+<label class="form-label">Default Target Prompt Style</label>
+<select class="form-select" id="setting-img-default-model">
+<option value="flux">FLUX.1 / SD 3.5 (Natural Language Prose)</option>
+<option value="pony">Pony Diffusion V6 / XL (Score Tags &amp; Danbooru)</option>
+<option value="illustrious">Illustrious-XL / Animagine (Booru Tags)</option>
+<option value="sdxl">SDXL Standard (Detailed Quality)</option>
+<option value="midjourney">Midjourney V6 (Cinematic Raw)</option>
+<option value="general">General Diffusion</option>
+</select>
+</div>
+<div class="form-group" style="margin-bottom: 0;">
+<label class="form-label">Default Art Style</label>
+<select class="form-select" id="setting-img-default-art-style">
+<option value="anime">Anime / Manga Illustration</option>
+<option value="semi_realistic">Semi-Realistic / 2.5D Digital Art</option>
+<option value="photorealistic">Photorealistic / Film Portrait</option>
+<option value="digital_painting">Digital Painting / Fantasy Concept Art</option>
+<option value="oil_painting">Classic Oil Painting</option>
+<option value="watercolor">Watercolor / Ink Sketch</option>
+<option value="dark_fantasy">Dark Fantasy / Eldritch Baroque</option>
+<option value="cyberpunk">Cyberpunk / Neon Sci-Fi</option>
+</select>
+</div>
+</div>
+</div>
+<!-- Prompt Engine & Architectures Section -->
+<div style="margin: 18px 0 10px; border-top: 1px solid var(--border-color); padding-top: 14px;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+<div style="font-size: 13px; font-weight: 700; color: #f59e0b;">
+              🧠 Prompt Architecture &amp; Engine
+            </div>
+<span id="badge-prompt-private" style="font-size: 10px; padding: 2px 6px; border-radius: 4px; background: rgba(16, 185, 129, 0.2); color: #10b981; font-weight: 600; display: inline-block;">
+              🔒 Private Config (Git-Ignored)
+            </span>
+</div>
+<div style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">
+            Select which prompt engine powers generation. Switch to <strong>⚡ Playable RP</strong> when using local models (llama.cpp, Ollama, Llama 3, Qwen) to strip abstract meta-essay bloat and guarantee clean, playable roleplay cards.
+          </div>
+<div class="form-group">
+<label class="form-label">Active Prompt Profile</label>
+<select class="form-select" id="setting-prompt-profile">
+<option value="local_maledom_bdsm">⛓️ Playable RP — Male Dom &amp; BDSM (Tuned for Local Models)</option>
+<option value="local_playable">⚡ Playable RP (Tuned for Local Models: llama.cpp, Ollama, Llama 3, Qwen)</option>
+<option value="weaver_evolved">🔒 Weaver Evolved (Tuned for Cloud Models: Claude, GPT-4, Gemini)</option>
+<option value="weaver">🔒 Weaver Classic (Private)</option>
+<option value="default">🌐 CharGen Default</option>
+</select>
+</div>
+<!-- Collapsible Template Customizer -->
+<details style="background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px; margin-top: 8px;">
+<summary style="font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text-secondary); user-select: none;">
+              ⚙️ Inspect &amp; Customize Raw Prompt Templates
+            </summary>
+<div style="margin-top: 10px; display: flex; flex-direction: column; gap: 10px;">
+<div>
+<label class="form-label" style="font-size: 11px;">System Operational Mandate</label>
+<textarea class="form-textarea" id="prompt-edit-system" style="min-height: 90px; font-size: 11px; font-family: monospace;"></textarea>
+</div>
+<div>
+<label class="form-label" style="font-size: 11px;">Spine Synthesis Instructions</label>
+<textarea class="form-textarea" id="prompt-edit-spine" style="min-height: 90px; font-size: 11px; font-family: monospace;"></textarea>
+</div>
+<div>
+<label class="form-label" style="font-size: 11px;">Description Guidance (Tagged Bundle / Prose)</label>
+<textarea class="form-textarea" id="prompt-edit-desc" style="min-height: 90px; font-size: 11px; font-family: monospace;"></textarea>
+</div>
+<div>
+<label class="form-label" style="font-size: 11px;">Personality Spec Guidance (Voice &amp; Language)</label>
+<textarea class="form-textarea" id="prompt-edit-pers" style="min-height: 70px; font-size: 11px; font-family: monospace;"></textarea>
+</div>
+<div>
+<label class="form-label" style="font-size: 11px;">Scenario Rule &amp; Scene-Objective</label>
+<textarea class="form-textarea" id="prompt-edit-scenario" style="min-height: 60px; font-size: 11px; font-family: monospace;"></textarea>
+</div>
+<div>
+<label class="form-label" style="font-size: 11px;">First Message Rule (Voiced Narration)</label>
+<textarea class="form-textarea" id="prompt-edit-firstmes" style="min-height: 60px; font-size: 11px; font-family: monospace;"></textarea>
+</div>
+<div>
+<label class="form-label" style="font-size: 11px;">Example Messages Rule</label>
+<textarea class="form-textarea" id="prompt-edit-alichat" style="min-height: 60px; font-size: 11px; font-family: monospace;"></textarea>
+</div>
+<div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 6px;">
+<button class="btn btn-sm btn-outline" id="btn-reset-prompts" type="button">Reset to Defaults</button>
+<button class="btn btn-sm btn-primary" id="btn-save-custom-prompts" type="button">Save Custom Overrides</button>
+</div>
+</div>
+</details>
+</div>
+</div>
+<div class="modal-footer">
+<button class="btn btn-primary" id="btn-save-settings">Save Settings</button>
+</div>
+</div>
+</div>
+<!-- Card Library & Multi-Deck Manager Modal -->
+<div class="modal-overlay hidden" id="modal-card-library">
+<div class="modal modal-lg">
+<div class="modal-header">
+<div style="display:flex; align-items:center; gap:8px;">
+<span style="font-size:18px;">📚</span>
+<div>
+<h3 style="font-size: 15px; font-weight: 700; margin:0;">Card Library &amp; Multi-Deck Manager</h3>
+<div style="font-size: 11px; color: var(--text-muted);">Manage your local saved characters and alternate roleplay variants</div>
+</div>
+</div>
+<button class="btn btn-sm" id="btn-close-library">✕</button>
+</div>
+<div class="modal-body">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+<input class="form-input" id="library-search-input" placeholder="🔍 Search saved cards by name or tags..." style="flex: 1;" type="text"/>
+<button class="btn btn-sm btn-primary" id="btn-lib-save-current" type="button">
+            💾 Save Active Card
+          </button>
+<button class="btn btn-sm" id="btn-lib-new-blank" type="button">
+            ➕ New Blank Card
+          </button>
+</div>
+<div class="deck-grid" id="library-cards-container">
+<div style="grid-column: 1/-1; text-align: center; padding: 30px; color: var(--text-dim);">
+            Loading saved cards...
+          </div>
+</div>
+</div>
+<div class="modal-footer" style="justify-content: space-between;">
+<span id="library-storage-info" style="font-size: 11px; color: var(--text-dim);">Stored locally in data/cards/</span>
+<button class="btn btn-sm" id="btn-close-library-footer">Close</button>
+</div>
+</div>
+</div>
+<!-- Custom Household & Court Binder Modal -->
+<div class="modal-overlay hidden" id="modal-households">
+<div class="modal modal-xl" style="max-width: 1100px;">
+<div class="modal-header">
+<div style="display:flex; align-items:center; gap:8px;">
+<span style="font-size:18px;">👑</span>
+<div>
+<h3 style="font-size: 15px; font-weight: 700; margin:0;">Households, Courts &amp; Group Encounter Binders</h3>
+<div style="font-size: 11px; color: var(--text-muted);">Organize multiple cards into arbitrary households/covens/courts with hierarchy &amp; forge multi-character group encounters</div>
+</div>
+</div>
+<button class="btn btn-sm" id="btn-close-households">✕</button>
+</div>
+<div class="modal-body" style="display: flex; gap: 16px; min-height: 480px;">
+<!-- Left: Household List & Selector -->
+<div style="width: 280px; display: flex; flex-direction: column; gap: 8px; border-right: 1px solid var(--border-color); padding-right: 12px;">
+<div style="display: flex; justify-content: space-between; align-items: center;">
+<span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted);">Your Binders</span>
+<button class="btn btn-xs btn-primary" id="btn-create-household">➕ New Binder</button>
+</div>
+<div id="household-list-container" style="display: flex; flex-direction: column; gap: 6px; overflow-y: auto; max-height: 440px;">
+<div style="text-align: center; color: var(--text-dim); padding: 20px 0; font-size: 11px;">Loading households...</div>
+</div>
+</div>
+<!-- Right: Active Household Details, Roster & Encounter Generator -->
+<div id="household-detail-container" style="flex: 1; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; max-height: 520px;">
+<div id="household-empty-state" style="text-align: center; padding: 60px 20px; color: var(--text-dim);">
+<div style="font-size: 36px; margin-bottom: 8px;">👑</div>
+<div style="font-size: 13px; font-weight: 600;">No Household Selected</div>
+<div style="font-size: 11px; margin-top: 4px;">Select an existing household binder from the left or click "➕ New Binder" to create one.</div>
+</div>
+<div class="hidden" id="household-editor-view" style="display: flex; flex-direction: column; gap: 12px;">
+<!-- Binder Metadata -->
+<div style="background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px; display: flex; flex-direction: column; gap: 8px;">
+<div style="display: flex; gap: 8px;">
+<div style="flex: 2;">
+<label class="form-label" style="font-size: 10px;">Household / Court Name</label>
+<input class="form-input" id="hh-input-name" placeholder="e.g. Sunstone Solar Citadel or Obsidian Guild" type="text"/>
+</div>
+<div style="flex: 1.5;">
+<label class="form-label" style="font-size: 10px;">Arbitrary Category Label</label>
+<input class="form-input" id="hh-input-category" placeholder="e.g. Imperial Harem, Rogue Coven, Mercenary Guild" type="text"/>
+</div>
+<div style="flex: 1.2;">
+<label class="form-label" style="font-size: 10px;">{{user}} Sovereign Title</label>
+<input class="form-input" id="hh-input-usertitle" placeholder="e.g. Master, Patriarch, Sovereign, Lord" type="text"/>
+</div>
+</div>
+<div>
+<label class="form-label" style="font-size: 10px;">Estate Setting &amp; Atmosphere</label>
+<textarea class="form-textarea" id="hh-input-lore" placeholder="Chamber layout, tactile environment, sensory specifics..." rows="2" style="font-size: 11px;"></textarea>
+</div>
+<div>
+<label class="form-label" style="font-size: 10px;">Household Codes &amp; Etiquette (one per line)</label>
+<textarea class="form-textarea" id="hh-input-rules" placeholder="e.g. Evening audience protocol; dispute resolution; seniority privileges..." rows="2" style="font-size: 11px;"></textarea>
+</div>
+<div style="display: flex; justify-content: flex-end; gap: 6px;">
+<button class="btn btn-xs btn-primary" id="btn-save-household-meta">💾 Save Binder Details</button>
+<button class="btn btn-xs" id="btn-delete-household" style="background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #f87171;">🗑️ Delete Binder</button>
+</div>
+</div>
+<!-- Member Roster Management -->
+<div style="background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+<div>
+<span style="font-size: 12px; font-weight: 700; color: #f472b6;">Companions Roster</span>
+<span id="hh-roster-count" style="font-size: 10px; color: var(--text-muted); margin-left: 6px;">(0 members)</span>
+</div>
+<div style="display: flex; gap: 6px; align-items: center;">
+<select class="form-select" id="hh-add-card-select" style="font-size: 11px; padding: 2px 6px; height: 26px; max-width: 220px;">
+<option value="">-- Add Character from Library --</option>
+</select>
+<button class="btn btn-xs btn-primary" id="btn-hh-add-member">➕ Add to Binder</button>
+</div>
+</div>
+<div id="hh-members-table-container">
+<div style="text-align: center; color: var(--text-dim); padding: 16px; font-size: 11px;">No characters assigned yet. Choose from your library above!</div>
+</div>
+</div>
+<!-- Group Encounter / Scene Generator -->
+<div style="background: var(--bg-primary); border: 1px solid #8b5cf6; border-radius: 6px; padding: 10px; display: flex; flex-direction: column; gap: 8px;">
+<div style="display: flex; justify-content: space-between; align-items: center;">
+<div>
+<span style="font-size: 12px; font-weight: 700; color: #c084fc;">⚡ Multi-Companion Group Encounter Generator</span>
+<div style="font-size: 10px; color: var(--text-muted);">Synthesize a live, multi-character scene starter where companions interact and react to {{user}} simultaneously</div>
+</div>
+<button class="btn btn-xs" id="btn-hh-gen-encounter" style="background: rgba(139, 92, 246, 0.25); border: 1px solid #8b5cf6; color: #d8b4fe; font-weight: 700;">
+                  ✨ Synthesize Group Scene
+                </button>
+</div>
+<div style="display: flex; gap: 8px;">
+<input class="form-input" id="hh-encounter-goal" placeholder="Inciting moment: e.g. An unexpected dispute over evening seating, or a quiet shared moment after training..." style="flex: 1; font-size: 11px;" type="text"/>
+<label style="font-size: 10px; display: flex; align-items: center; gap: 4px; color: var(--text-muted); cursor: pointer; user-select: none;">
+<input checked="" id="hh-encounter-save-alt" type="checkbox"/>
+                  Save as Alternate Greeting to cards
+                </label>
+</div>
+<!-- Output Box -->
+<div class="hidden" id="hh-encounter-output-box" style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 4px; padding: 8px; margin-top: 4px;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+<span id="hh-encounter-title" style="font-weight: 700; font-size: 11px; color: var(--accent-cyan);">Generated Scene</span>
+<button class="btn btn-xs" id="btn-hh-copy-encounter">📋 Copy Text</button>
+</div>
+<div id="hh-encounter-scenario" style="font-size: 10px; color: var(--text-muted); margin-bottom: 6px; font-style: italic;"></div>
+<div id="hh-encounter-text" style="font-size: 11px; line-height: 1.5; white-space: pre-wrap; max-height: 180px; overflow-y: auto;"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="modal-footer" style="justify-content: space-between;">
+<span style="font-size: 11px; color: var(--text-dim);">Arbitrary Household Binders stored in data/households.json</span>
+<button class="btn btn-sm" id="btn-close-households-footer">Close</button>
+</div>
+</div>
+</div>
+<!-- Revision History & Visual Diff Modal -->
+<div class="modal-overlay hidden" id="modal-history-diff">
+<div class="modal modal-xl">
+<div class="modal-header">
+<div style="display:flex; align-items:center; gap:8px;">
+<span style="font-size:18px;">🕒</span>
+<div>
+<h3 style="font-size: 15px; font-weight: 700; margin:0;">Revision History &amp; Visual Diff</h3>
+<div style="font-size: 11px; color: var(--text-muted);">Inspect before/after changes across generation and enhancement passes</div>
+</div>
+</div>
+<button class="btn btn-sm" id="btn-close-history">✕</button>
+</div>
+<div class="modal-body">
+<div class="diff-layout">
+<!-- Left: Snapshot List -->
+<div class="diff-sidebar" id="diff-snapshot-list">
+<!-- Populated dynamically -->
+</div>
+<!-- Right: Visual Diff Viewer -->
+<div class="diff-main">
+<div style="display: flex; justify-content: space-between; align-items: center;">
+<div>
+<span id="diff-compare-title" style="font-size: 13px; font-weight: 700; color: var(--accent-cyan);">Comparing Snapshot → Active Card</span>
+<span id="diff-delta-badge" style="font-size: 11px; margin-left: 8px; color: var(--text-muted);"></span>
+</div>
+<button class="btn btn-sm btn-primary" id="btn-diff-restore" type="button">
+                ⏪ Restore This Revision to Workspace
+              </button>
+</div>
+<!-- Field Selector Tabs -->
+<div class="diff-tabs" id="diff-field-tabs">
+<button class="diff-tab active" data-field="description">Description</button>
+<button class="diff-tab" data-field="personality">Personality</button>
+<button class="diff-tab" data-field="scenario">Scenario</button>
+<button class="diff-tab" data-field="first_mes">First Message</button>
+<button class="diff-tab" data-field="alternate_greetings">Alt Greetings</button>
+<button class="diff-tab" data-field="mes_example">Example Messages</button>
+</div>
+<!-- Visual Diff View Box -->
+<div class="diff-view-box" id="diff-view-content">
+              Select a revision from the left to view visual differences.
+            </div>
+</div>
+</div>
+</div>
+<div class="modal-footer">
+<button class="btn btn-sm" id="btn-close-history-footer">Close</button>
+</div>
+</div>
+</div>
+<!-- Scenario Matrix Modal -->
+<div class="modal-overlay hidden" id="modal-scenario-matrix">
+<div class="modal modal-xl">
+<div class="modal-header">
+<div style="display:flex; align-items:center; gap:8px;">
+<span style="font-size:18px;">🎭</span>
+<div>
+<h3 style="font-size: 15px; font-weight: 700; margin:0;">Scenario Matrix (4 Dynamic Branches)</h3>
+<div style="font-size: 11px; color: var(--text-muted);">Switch between 4 distinct roleplay setups for this character with one click</div>
+</div>
+</div>
+<button class="btn btn-sm" id="btn-close-matrix">✕</button>
+</div>
+<div class="modal-body">
+<div class="hidden" id="matrix-loading" style="text-align: center; padding: 40px;">
+<div class="spinner" style="margin: 0 auto 12px; width: 24px; height: 24px;"></div>
+<div style="font-size: 13px; font-weight: 600; color: var(--accent-cyan);">Synthesizing 4 dynamic scenario branches...</div>
+<div style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">Crafting Canon Encounter, Crisis (In Media Res), Late-Night Intimacy &amp; Hostile Friction</div>
+</div>
+<div class="matrix-grid" id="matrix-packages-container">
+<!-- Populated with 4 scenario cards -->
+</div>
+</div>
+<div class="modal-footer">
+<button class="btn btn-sm" id="btn-close-matrix-footer">Close</button>
+</div>
+</div>
+</div>
+<!-- Modal: Incorporate Legacy System Prompt -->
+<div class="modal-overlay hidden" id="modal-incorporate-system">
+<div class="modal" style="width: 620px;">
+<div class="modal-header">
+<div>
+<h3 style="font-size: 15px; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 6px;">
+<span>✨ Legacy System Prompt Detected</span>
+</h3>
+<div style="font-size: 11px; color: var(--text-muted);">Incorporate directives cleanly into your character card</div>
+</div>
+<button class="btn btn-sm" id="btn-close-inc-modal">✕</button>
+</div>
+<div class="modal-body">
+<p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
+          The imported card contains a legacy <strong>System Prompt</strong>. Because CharGen Harness protects your SillyTavern client presets by leaving <code>system_prompt</code> empty, choose how you'd like the AI to incorporate it:
+        </p>
+<div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 10px; margin-bottom: 14px; max-height: 120px; overflow-y: auto;">
+<div style="font-size: 10px; font-weight: 700; color: var(--accent-cyan); text-transform: uppercase; margin-bottom: 4px;">Detected System Prompt Content:</div>
+<pre id="modal-inc-preview" style="font-family: monospace; font-size: 11px; white-space: pre-wrap; color: var(--text-main); margin: 0;"></pre>
+</div>
+<div class="form-group" style="margin-bottom: 12px;">
+<label class="form-label">Incorporate Destination:</label>
+<div style="display: flex; flex-direction: column; gap: 8px;">
+<label class="radio-label" style="display: flex; gap: 8px; align-items: flex-start; cursor: pointer; padding: 8px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-card);">
+<input checked="" name="modal-inc-target" style="margin-top: 3px;" type="radio" value="both"/>
+<div>
+<strong style="color: var(--accent-cyan); font-size: 12px;">⚡ Incorporate into Both (Recommended)</strong>
+<div style="font-size: 11px; color: var(--text-muted);">AI splits narrative lore/appearance to <em>Description</em> and behavioral rules/jailbreaks to <em>Post-History Instructions</em>.</div>
+</div>
+</label>
+<label class="radio-label" style="display: flex; gap: 8px; align-items: flex-start; cursor: pointer; padding: 8px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-card);">
+<input name="modal-inc-target" style="margin-top: 3px;" type="radio" value="post_history"/>
+<div>
+<strong style="font-size: 12px;">📜 Incorporate into Post-History Instructions Only</strong>
+<div style="font-size: 11px; color: var(--text-muted);">AI refines all rules, voice cadence, and uncensored instructions into <em>Post-History Instructions</em>.</div>
+</div>
+</label>
+<label class="radio-label" style="display: flex; gap: 8px; align-items: flex-start; cursor: pointer; padding: 8px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-card);">
+<input name="modal-inc-target" style="margin-top: 3px;" type="radio" value="description"/>
+<div>
+<strong style="font-size: 12px;">📖 Incorporate into Description Only</strong>
+<div style="font-size: 11px; color: var(--text-muted);">AI weaves character traits, background facts, and lore directly into <em>Description</em>.</div>
+</div>
+</label>
+</div>
+</div>
+<div class="form-group" style="margin-bottom: 0;">
+<label class="form-label" style="font-size: 11px;">Optional AI Guidance / Steering:</label>
+<input class="form-input" id="modal-inc-guidance" placeholder="e.g. Keep voice cadence cold, emphasize combat style" type="text"/>
+</div>
+</div>
+<div class="modal-footer" style="justify-content: space-between;">
+<div style="display: flex; gap: 6px;">
+<button class="btn btn-sm" id="btn-modal-inc-fallback" title="Paste to Post-History Instructions if empty, without calling AI" type="button">
+            📋 Plain Move (No AI)
+          </button>
+<button class="btn btn-sm" id="btn-modal-inc-discard" title="Discard the system prompt" type="button">
+            🗑️ Discard
+          </button>
+</div>
+<button class="btn btn-sm btn-primary" id="btn-modal-inc-run" type="button">
+<span>✨ Run AI Incorporation</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Weaver Interactive Interview Workshop Modal -->
+<div class="modal-overlay hidden" id="modal-weaver-interview">
+<div class="modal modal-lg" style="max-width: 820px;">
+<div class="modal-header">
+<div style="display:flex; align-items:center; gap:8px;">
+<span style="font-size:20px;">🧠</span>
+<div>
+<h3 style="font-size: 16px; font-weight: 700; margin:0; color: #c084fc;">Weaver Character Workshop: Interactive Interview</h3>
+<div style="font-size: 11px; color: var(--text-muted);">Answer Weaver's strategic questions or click suggested options to sculpt the Character Bible before forging the final card.</div>
+</div>
+</div>
+<button class="btn btn-sm" id="btn-close-weaver-interview">✕</button>
+</div>
+<div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+<!-- Loading state -->
+<div class="hidden" id="weaver-interview-loading" style="text-align: center; padding: 40px;">
+<div class="spinner" style="margin: 0 auto 12px; width: 28px; height: 28px;"></div>
+<div style="font-size: 14px; font-weight: 600; color: #c084fc;">Weaver is analyzing your concept &amp; formulating design questions...</div>
+<div style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">Forensically exploring central contradictions, formative memories, and dynamic tensions.</div>
+</div>
+<div id="weaver-interview-content">
+<!-- Preliminary Vision banner -->
+<div id="weaver-vision-box" style="padding: 10px 14px; background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: var(--radius-sm); margin-bottom: 14px; font-size: 12px; line-height: 1.5; color: #e9d5ff;">
+<strong style="color: #c084fc;">✨ Weaver's Preliminary Vision:</strong>
+<span id="weaver-vision-text">...</span>
+</div>
+<!-- Dynamic Questions List -->
+<div id="weaver-questions-list" style="display: flex; flex-direction: column; gap: 14px;">
+<!-- Populated by app.js -->
+</div>
+</div>
+</div>
+<div class="modal-footer" style="justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+<div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+<button class="btn btn-sm" id="btn-weaver-autofill" title="Auto-fill with Weaver's recommended options" type="button">
+<span>✨ Auto-Fill Weaver's Intuition</span>
+</button>
+<button class="btn btn-sm" id="btn-weaver-ask-more" style="color: #34d399; border: 1px solid rgba(52, 211, 153, 0.4); background: rgba(52, 211, 153, 0.1);" title="Make the AI ask more deepening questions" type="button">
+<span>➕ Ask More Questions</span>
+</button>
+<button class="btn btn-sm" id="btn-weaver-reroll-all" title="Formulate fresh questions from concept" type="button">
+<span>🎲 Reroll All Questions</span>
+</button>
+<button class="btn btn-sm" id="btn-weaver-influence-all" style="color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); background: rgba(56, 189, 248, 0.1);" title="Reroll all questions with custom steering direction" type="button">
+<span>🎯 Influence All Questions</span>
+</button>
+<label style="display: inline-flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-muted); cursor: pointer; user-select: none; margin-left: 4px;">
+<input id="weaver-include-lorebook" style="cursor: pointer;" type="checkbox"/>
+<span>Generate Embedded Lorebook (Optional)</span>
+</label>
+</div>
+<div style="display: flex; gap: 8px;">
+<button class="btn btn-sm" id="btn-weaver-cancel" type="button">Cancel</button>
+<button class="btn btn-primary" id="btn-weaver-submit-forge" style="background: linear-gradient(135deg, #6366f1, #a855f7); border: none;" type="button">
+<span>⚡ Synthesize Bible &amp; Forge Final Card</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Modal: Image Prompt Generator & Offline Queue -->
+<div class="modal-overlay hidden" id="modal-image-prompts">
+<div class="modal" style="width: 820px; max-width: 95vw; max-height: 90vh; display: flex; flex-direction: column;">
+<div class="modal-header" style="flex-shrink: 0;">
+<div>
+<h3 style="font-size: 16px; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 8px;">
+<span>🖼️ Image Prompt Generator &amp; Offline Queue</span>
+</h3>
+<div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
+            Generate prompts for multiple characters → Turn off LLM to save VRAM → Run ComfyUI / SDXL / Flux
+          </div>
+</div>
+<button class="btn btn-sm" id="btn-close-image-prompts">✕</button>
+</div>
+<!-- Modal Tabs -->
+<div class="nav-tabs" style="flex-shrink: 0; padding: 0 16px; margin: 10px 0 0; border-bottom: 1px solid var(--border-color);">
+<button class="modal-tab active" data-img-tab="img-tab-gen" id="tab-btn-img-gen" type="button">🎨 Prompt Generator</button>
+<button class="modal-tab" data-img-tab="img-tab-queue" id="tab-btn-img-queue" type="button">📋 Offline Queue (<span id="img-queue-tab-count">0</span>)</button>
+<button class="modal-tab" data-img-tab="img-tab-comfy" id="tab-btn-img-comfy" type="button">⚡ ComfyUI Client</button>
+</div>
+<div class="modal-body" style="overflow-y: auto; flex: 1; padding: 16px;">
+<!-- TAB 1: Generator -->
+<div id="img-tab-gen">
+<div style="background: rgba(147, 51, 234, 0.08); border: 1px solid rgba(168, 85, 247, 0.25); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 14px;">
+<div style="display: flex; justify-content: space-between; align-items: center;">
+<span style="font-size: 12px; font-weight: 700; color: #c084fc;">Target Character:</span>
+<span id="img-target-char-name" style="font-size: 12px; font-weight: 600; color: #fff;">(Currently Active Character)</span>
+</div>
+</div>
+<div style="margin-bottom: 12px; display: flex; gap: 14px; align-items: center; background: rgba(255,255,255,0.03); padding: 8px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); flex-wrap: wrap;">
+<span style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Generation Purpose:</span>
+<label style="display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; cursor: pointer; color: #fff;">
+<input checked="" id="img-purpose-avatar" name="img-purpose-radio" type="radio" value="avatar"/>
+<span>👤 Character Profile Avatar</span>
+</label>
+<label style="display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; cursor: pointer; color: #c084fc;">
+<input id="img-purpose-greeting" name="img-purpose-radio" type="radio" value="greeting"/>
+<span>💬 Greeting / Opening Scene</span>
+</label>
+<label style="display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; cursor: pointer; color: #f43f5e;" title="Generate an unfiltered scenario scene to use as the character's card avatar profile picture">
+<input id="img-purpose-scenario" name="img-purpose-radio" type="radio" value="scenario_avatar"/>
+<span>🔥 Unfiltered Scenario Avatar (Scene as Profile Pic)</span>
+</label>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 12px;">
+<div class="form-group" style="margin-bottom: 0;">
+<label class="form-label">Target Model Architecture</label>
+<select class="form-select" id="img-target-model">
+<option value="anima">CircleStone Anima (Cosmos 2B / Qwen3 Hybrid)</option>
+<option value="flux">FLUX.1 / SD 3.5 (Natural Language)</option>
+<option value="pony">Pony Diffusion V6 / XL (Score Tags)</option>
+<option value="illustrious">Illustrious-XL / Animagine (Booru)</option>
+<option value="sdxl">SDXL Standard (Detailed Quality)</option>
+<option value="midjourney">Midjourney V6 (Cinematic Raw)</option>
+<option value="general">General Diffusion</option>
+</select>
+</div>
+<div class="form-group" style="margin-bottom: 0;">
+<label class="form-label">Portrait Type / Intent</label>
+<select class="form-select" id="img-portrait-intent">
+<option value="standard_avatar">👤 Normal Profile Avatar (Clean, Regular Clothes)</option>
+<option value="casual">👕 Casual / Daily Life</option>
+<option value="action">⚔️ Action / Combat Stance</option>
+<option value="sensual_kink">⛓️ Kink / Restraint Scene (Explicitly Requested)</option>
+</select>
+</div>
+<div class="form-group" style="margin-bottom: 0;">
+<label class="form-label">Art Style</label>
+<select class="form-select" id="img-art-style">
+<option value="anime">Anime / Manga Illustration</option>
+<option value="photorealistic">Photorealistic / 8k Cinema</option>
+<option value="semi_realistic">Semi-Realistic / Digital Concept Art</option>
+<option value="dark_fantasy">Dark Fantasy / Grim Gothic</option>
+<option value="cyberpunk">Cyberpunk / Neon Atmosphere</option>
+<option value="oil_painting">Painterly / Fine Art</option>
+<option value="custom">Custom Specified</option>
+</select>
+</div>
+<div class="form-group" style="margin-bottom: 0;">
+<label class="form-label">Framing &amp; Shot</label>
+<select class="form-select" id="img-shot-type">
+<option value="card_portrait">Card Portrait (Bust / 2:3)</option>
+<option value="full_body">Full Body Standing (9:16)</option>
+<option value="action_scene">Action / Scene (16:9)</option>
+<option value="square_avatar">Square Avatar (1:1)</option>
+<option value="intimate_close_up">Close-Up Face &amp; Eyes (4:5)</option>
+</select>
+</div>
+<div class="form-group" style="margin-bottom: 0;">
+<label class="form-label">Aspect Ratio / Resolution</label>
+<select class="form-select" id="img-aspect-ratio">
+<option value="2:3">2:3 (832 x 1216 - Card Portrait)</option>
+<option value="1:1">1:1 (1024 x 1024 - Square)</option>
+<option value="16:9">16:9 (1216 x 832 - Landscape)</option>
+<option value="9:16">9:16 (768 x 1344 - Full Height)</option>
+<option value="4:5">4:5 (896 x 1152 - Portrait)</option>
+</select>
+</div>
+</div>
+<div class="form-group">
+<label class="form-label">Custom Scene &amp; Outfit Steering (Optional)</label>
+<input class="form-input" id="img-custom-steering" placeholder="e.g. wearing a tattered trench coat in a rain-drenched alley, holding a smoking revolver" type="text"/>
+</div>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+<label class="checkbox-label" style="font-size: 12px;">
+<input checked="" id="img-nsfw-check" type="checkbox"/>
+<span>Enable Mature / Uncensored Visual Tags</span>
+</label>
+<div style="display: flex; gap: 8px; align-items: center;">
+<button class="btn btn-secondary" id="btn-open-visual-identity" title="Review or edit locked character visual identity &amp; Booru tags" type="button">
+<span>🎨 Visual Tags</span>
+</button>
+<button class="btn btn-primary" id="btn-do-gen-img-prompt" style="background: linear-gradient(135deg, #7c3aed, #a855f7); border: none;" type="button">
+<span>⚡ Generate Image Prompt</span>
+</button>
+</div>
+</div>
+<!-- Output Panel -->
+<div id="img-gen-output-container" style="display: none; border-top: 1px solid var(--border-color); padding-top: 14px; margin-top: 10px;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+<label class="form-label" style="margin: 0; font-weight: 700; color: var(--accent-cyan); font-size: 13px;">Generated Image Prompt</label>
+<button class="btn btn-sm btn-primary" id="btn-copy-pos-prompt" style="font-weight: 700;" type="button">📋 Copy Prompt</button>
+</div>
+<textarea class="form-textarea" id="img-out-positive" style="min-height: 100px; margin-bottom: 10px; font-family: monospace; font-size: 11px;"></textarea>
+<!-- Optional Negative Prompt (Collapsible) -->
+<div id="img-negative-wrapper" style="display: none; margin-bottom: 10px;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+<label class="form-label" style="margin: 0; font-size: 11px; color: var(--text-muted);">Negative Prompt (Optional)</label>
+<button class="btn btn-sm" id="btn-copy-neg-prompt" style="padding: 1px 6px; font-size: 10px;" type="button">📋 Copy Neg</button>
+</div>
+<textarea class="form-textarea" id="img-out-negative" style="min-height: 48px; font-family: monospace; font-size: 11px;"></textarea>
+</div>
+<div style="display: flex; gap: 8px; justify-content: flex-end; align-items: center; margin-top: 6px;">
+<button class="btn btn-sm" id="btn-toggle-show-negative" style="color: var(--text-dim); font-size: 11px;" type="button">
+                + Show Negative Prompt
+              </button>
+<button class="btn btn-success" id="btn-add-to-img-queue" style="background: linear-gradient(135deg, #059669, #10b981); border: none; font-weight: 700;" type="button">
+                ➕ Add to Queue
+              </button>
+<button class="btn btn-primary" id="btn-quick-dispatch-comfy" style="background: linear-gradient(135deg, #7c3aed, #6366f1); border: none; font-weight: 700;" title="Queue and immediately dispatch to ComfyClient" type="button">
+                ⚡ Queue &amp; Dispatch
+              </button>
+</div>
+</div>
+</div>
+<!-- TAB 2: Offline Queue -->
+<div id="img-tab-queue" style="display: none;">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color);">
+<div style="display: flex; align-items: center; gap: 8px;">
+<input class="form-input" id="img-queue-search" placeholder="🔍 Search queue..." style="width: 180px; height: 28px; font-size: 11px;" type="text"/>
+<select class="form-select" id="img-queue-filter-status" style="width: 120px; height: 28px; font-size: 11px; padding: 2px 6px;">
+<option value="all">All Items</option>
+<option value="queued">Queued Only</option>
+<option value="completed">Completed Only</option>
+</select>
+</div>
+<div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+<button class="btn btn-sm" id="btn-queue-copy-all" title="Copy all queued prompts to clipboard">
+                📋 Copy All
+              </button>
+<button class="btn btn-sm" id="btn-queue-export-json" title="Download JSON file for ComfyUI batch queue">
+                💾 Export JSON
+              </button>
+<button class="btn btn-sm" id="btn-queue-export-text" title="Download formatted prompt text sheet">
+                📄 Export .TXT
+              </button>
+<button class="btn btn-sm" id="btn-queue-clear-done" title="Remove completed items from queue">
+                🧹 Clear Done
+              </button>
+<button class="btn btn-sm btn-danger" id="btn-queue-clear-all" title="Clear entire queue">
+                🗑️ Clear All
+              </button>
+</div>
+</div>
+<!-- Queue List Container -->
+<div id="img-queue-list-container" style="display: flex; flex-direction: column; gap: 10px;">
+<!-- Populated dynamically by app.js -->
+</div>
+</div>
+<!-- TAB 3: ComfyUI Client -->
+<div id="img-tab-comfy" style="display: none;">
+<!-- Server Connection Bar -->
+<div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 14px; --darkreader-inline-bgcolor: var(--darkreader-background-10b98114, rgba(13, 148, 103, 0.08)); --darkreader-inline-bgimage: none; --darkreader-inline-border-top: var(--darkreader-border-10b98140, rgba(15, 179, 125, 0.25)); --darkreader-inline-border-right: var(--darkreader-border-10b98140, rgba(15, 179, 125, 0.25)); --darkreader-inline-border-bottom: var(--darkreader-border-10b98140, rgba(15, 179, 125, 0.25)); --darkreader-inline-border-left: var(--darkreader-border-10b98140, rgba(15, 179, 125, 0.25));">
+<div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+<div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 260px;">
+<label style="font-size: 11px; font-weight: 700; color: rgb(110, 231, 183); text-transform: uppercase; --darkreader-inline-color: var(--darkreader-text-6ee7b7, #6ee7b7);">ComfyClient Socket:</label>
+<input class="form-input" id="comfy-server-url" style="padding: 4px 8px; font-size: 12px; font-family: monospace; flex: 1;" type="text" value="/tmp/comfyclient.sock"/>
+<button class="btn btn-sm btn-primary" id="btn-test-comfy-conn" style="white-space: nowrap;" type="button">
+                  🔌 Check Socket
+                </button>
+</div>
+<div id="comfy-status-badge" style="font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 4px; background: rgba(255, 255, 255, 0.06); color: var(--text-muted); --darkreader-inline-bgcolor: var(--darkreader-background-ffffff0f, rgba(24, 26, 27, 0.06)); --darkreader-inline-bgimage: none; --darkreader-inline-color: var(--darkreader-text--text-muted, var(--darkreader-text-000000, #e8e6e3));">
+                ⚪ Not Tested
+              </div>
+</div>
+</div>
+<!-- Non-Destructive Invariant Guarantee Banner -->
+<div style="background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.25); border-radius: var(--radius-sm); padding: 10px 14px; margin-bottom: 14px; display: flex; gap: 10px; align-items: center; --darkreader-inline-bgcolor: var(--darkreader-background-3b82f614, rgba(8, 68, 166, 0.08)); --darkreader-inline-bgimage: none; --darkreader-inline-border-top: var(--darkreader-border-3b82f640, rgba(7, 64, 156, 0.25)); --darkreader-inline-border-right: var(--darkreader-border-3b82f640, rgba(7, 64, 156, 0.25)); --darkreader-inline-border-bottom: var(--darkreader-border-3b82f640, rgba(7, 64, 156, 0.25)); --darkreader-inline-border-left: var(--darkreader-border-3b82f640, rgba(7, 64, 156, 0.25));">
+<span style="font-size: 18px;">⚡</span>
+<div style="font-size: 11px; color: rgb(147, 197, 253); line-height: 1.4; --darkreader-inline-color: var(--darkreader-text-93c5fd, #81c4fd);">
+<strong>Dedicated ComfyClient IPC:</strong> Diffusion generations are managed by the standalone <code>comfyclient</code> service via its Unix Domain Socket (<code>/tmp/comfyclient.sock</code>). Long-running workflow generations are decoupled and execute independently.
+            </div>
+</div>
+<!-- Quick Dispatch Bar -->
+<div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 14px;">
+<div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+<button class="btn btn-primary" id="btn-comfy-run-all" style="background: linear-gradient(135deg, rgb(16, 185, 129), rgb(5, 150, 105)); border: medium; font-weight: 700; --darkreader-inline-bgcolor: var(--darkreader-background-00000000, rgba(0, 0, 0, 0)); --darkreader-inline-bgimage: linear-gradient(135deg, var(--darkreader-background-10b981, #0d9467), var(--darkreader-background-059669, #047854)); --darkreader-inline-border-top: medium; --darkreader-inline-border-right: medium; --darkreader-inline-border-bottom: medium; --darkreader-inline-border-left: medium;" type="button">
+<span>🚀 Dispatch All Queued Prompts</span>
+</button>
+</div>
+<span id="comfy-run-summary-text" style="font-size: 11px; color: var(--text-muted); --darkreader-inline-color: var(--darkreader-text--text-muted, var(--darkreader-text-000000, #e8e6e3));">Ready to queue in ComfyClient</span>
+</div>
+<!-- Live Progress Console -->
+<div id="comfy-progress-console" style="display: none; background: rgb(9, 9, 11); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 12px; font-family: monospace; font-size: 11px; max-height: 200px; overflow-y: auto; --darkreader-inline-border-short: 1px solid var(--darkreader-border--border-color); --darkreader-inline-bgcolor: var(--darkreader-background-09090b, #080808); --darkreader-inline-bgimage: none;">
+<div id="comfy-progress-lines" style="display: flex; flex-direction: column; gap: 4px; color: rgb(161, 161, 170); --darkreader-inline-color: var(--darkreader-text-a1a1aa, #afa99e);"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Modal: Historical & Fantasy Era Discovery Studio -->
+<div class="modal-overlay hidden" id="modal-era-picker">
+<div class="modal" style="width: 960px; max-width: 96vw; max-height: 92vh; display: flex; flex-direction: column;">
+<div class="modal-header" style="flex-shrink: 0;">
+<div>
+<h3 style="font-size: 16px; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 8px;">
+<span>🏛️ Historical &amp; Fantasy Era Discovery Studio</span>
+<span class="badge" id="era-catalog-count-badge" style="background: rgba(168, 85, 247, 0.2); color: #c084fc; font-size: 10px;">82+ Eras</span>
+</h3>
+<div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
+            Enforce authentic material limits, social hierarchies, and vocabulary — or select timeless high fantasy.
+          </div>
+</div>
+<button class="btn btn-sm" id="btn-close-era-modal">✕</button>
+</div>
+<!-- Top Search & Quick Control Bar -->
+<div style="padding: 12px 16px; background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--border-color); display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+<div style="flex: 2; min-width: 240px; position: relative;">
+<input class="form-input" id="era-search-input" placeholder="Search eras, countries, centuries ('14th', '1200s'), or concepts ('samurai', 'viking', 'crusade', 'gladiator')..." style="padding-left: 32px;" type="text"/>
+<span style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); pointer-events: none; opacity: 0.6;">🔎</span>
+</div>
+<div style="display: flex; gap: 6px; align-items: center;">
+<select class="form-select" id="era-region-filter" style="font-size: 11px; padding: 6px 10px;">
+<option value="All">🌐 All Regions</option>
+<option value="Western Europe">Western Europe</option>
+<option value="British Isles">British Isles</option>
+<option value="East Asia">East Asia (Japan/China/Korea)</option>
+<option value="Middle East">Middle East &amp; Caliphates</option>
+<option value="Eastern Europe">Eastern Europe &amp; Rus</option>
+<option value="Nordic">Nordic &amp; Scandinavia</option>
+<option value="Mediterranean">Mediterranean &amp; Classical</option>
+<option value="Americas">Americas (Mesoamerica/Andes/Frontier)</option>
+<option value="Africa">Africa</option>
+<option value="Global">Global / Other</option>
+</select>
+<button class="btn btn-sm" id="btn-era-create-custom" style="background: rgba(34, 197, 94, 0.2); border: 1px solid #22c55e; color: #86efac;" type="button">
+            ➕ Create Custom Era
+          </button>
+</div>
+</div>
+<!-- Era Category Nav Tabs (4 Main Selectors) -->
+<div class="nav-tabs" style="flex-shrink: 0; padding: 0 16px; margin: 8px 0 0; border-bottom: 1px solid var(--border-color); display: flex; gap: 4px; overflow-x: auto;">
+<button class="modal-tab active" data-era-tab="All" type="button">🌐 All Eras</button>
+<button class="modal-tab" data-era-tab="Medieval" type="button">🏰 Medieval (50+ Countries)</button>
+<button class="modal-tab" data-era-tab="Antiquity" type="button">🏛️ Antiquity &amp; Bronze</button>
+<button class="modal-tab" data-era-tab="Renaissance" type="button">🎨 Renaissance &amp; Sail</button>
+<button class="modal-tab" data-era-tab="Victorian &amp; Industrial" type="button">⚙️ Victorian &amp; Frontier</button>
+<button class="modal-tab" data-era-tab="20th Century" type="button">📻 20th Century</button>
+<button class="modal-tab" data-era-tab="Fantasy" type="button">🌌 Timeless Fantasy</button>
+<button class="modal-tab" data-era-tab="User Eras" type="button">📜 User Custom Eras (<span id="user-eras-count">0</span>)</button>
+</div>
+<!-- Modal Main Split Body: Era List (Left) + Detail Inspector (Right) -->
+<div class="modal-body" style="overflow: hidden; flex: 1; padding: 12px 16px; display: flex; gap: 14px; min-height: 400px;">
+<!-- Left: Era Grid / List -->
+<div id="era-cards-container" style="flex: 1.1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 6px;">
+<!-- Dynamic Era Cards populated by JS -->
+</div>
+<!-- Right: Era Deep Inspector & Apply Panel -->
+<div id="era-detail-panel" style="flex: 1.2; overflow-y: auto; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px; display: flex; flex-direction: column;">
+<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-dim); text-align: center;">
+<span style="font-size: 36px; margin-bottom: 10px;">🏛️</span>
+<span style="font-weight: 600;">Select an era from the list</span>
+<span style="font-size: 11px; margin-top: 4px;">Click any era to inspect historical material constraints, social codes, and sample naming archetypes.</span>
+</div>
+</div>
+</div>
+<!-- Modal Footer -->
+<div class="modal-footer" style="padding: 10px 16px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+<div style="display: flex; gap: 8px; align-items: center;">
+<button class="btn btn-sm" id="btn-modal-era-off" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5;" type="button">
+            🚫 Turn Era Off (Unconstrained)
+          </button>
+<button class="btn btn-sm" id="btn-modal-era-fantasy" style="background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.4); color: #d8b4fe;" type="button">
+            🌌 Timeless High Fantasy
+          </button>
+</div>
+<div style="display: flex; gap: 8px;">
+<button class="btn btn-secondary btn-sm" id="btn-close-era-modal-bottom" type="button">Close</button>
+<button class="btn btn-primary btn-sm" disabled="" id="btn-apply-selected-era" type="button">
+            ✨ Apply Era to Prompt
+          </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Sub-Modal: Create / Edit User Custom Era -->
+<div class="modal-overlay hidden" id="modal-user-era-editor" style="z-index: 1050;">
+<div class="modal" style="width: 580px; max-width: 95vw; max-height: 90vh;">
+<div class="modal-header">
+<h3 id="user-era-modal-title" style="font-size: 15px; font-weight: 700; margin: 0;">➕ Create Custom Era Template</h3>
+<button class="btn btn-sm" id="btn-close-user-era-editor">✕</button>
+</div>
+<div class="modal-body" style="padding: 16px; overflow-y: auto; max-height: calc(90vh - 120px); display: flex; flex-direction: column; gap: 10px;">
+<input id="user-era-id" type="hidden"/>
+<div class="form-group">
+<label class="form-label">Era Display Name *</label>
+<input class="form-input" id="user-era-name" placeholder="e.g. ⚔️ Kingdom of Jerusalem / Crusader Levant" type="text"/>
+</div>
+<div style="display: flex; gap: 10px;">
+<div class="form-group" style="flex: 1;">
+<label class="form-label">Time Span / Century *</label>
+<input class="form-input" id="user-era-span" placeholder="e.g. c. 1099 – 1291 CE" type="text"/>
+</div>
+<div class="form-group" style="flex: 1;">
+<label class="form-label">Geographic Region</label>
+<input class="form-input" id="user-era-region" placeholder="e.g. Levant / Middle East" type="text"/>
+</div>
+</div>
+<div class="form-group">
+<label class="form-label">Aesthetic &amp; Material Setting</label>
+<textarea class="form-textarea" id="user-era-aesthetic" placeholder="Architecture, clothing fabrics, lighting, environment, sensory details..." rows="2"></textarea>
+</div>
+<div class="form-group">
+<label class="form-label">Technology &amp; Material Limitations</label>
+<textarea class="form-textarea" id="user-era-tech" placeholder="What materials and tools exist? Explicitly state what is NOT yet invented..." rows="2"></textarea>
+</div>
+<div class="form-group">
+<label class="form-label">Social Hierarchy, Codes &amp; Propriety</label>
+<textarea class="form-textarea" id="user-era-social" placeholder="Honor codes, class divisions, religious authority, interpersonal etiquette..." rows="2"></textarea>
+</div>
+<div style="display: flex; gap: 10px;">
+<div class="form-group" style="flex: 1;">
+<label class="form-label">Sample Names (comma-separated)</label>
+<input class="form-input" id="user-era-names" placeholder="e.g. Baldwin, Sibylla, Raymond" type="text"/>
+</div>
+<div class="form-group" style="flex: 1;">
+<label class="form-label">Sample Titles (comma-separated)</label>
+<input class="form-input" id="user-era-titles" placeholder="e.g. The Outremer Knight, The Templar Castellan" type="text"/>
+</div>
+</div>
+</div>
+<div class="modal-footer" style="padding: 12px 16px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 8px;">
+<button class="btn btn-secondary btn-sm" id="btn-cancel-user-era" type="button">Cancel</button>
+<button class="btn btn-primary btn-sm" id="btn-save-user-era" type="button">💾 Save Custom Era</button>
+</div>
+</div>
+</div>
+<!-- Raw JSON Spec Modal -->
+<div class="modal-overlay hidden" id="modal-json">
+<div class="modal" style="width: 720px;">
+<div class="modal-header">
+<h3 style="font-size: 15px; font-weight: 700;">SillyTavern V2 Spec (Raw JSON)</h3>
+<button class="btn btn-sm" id="btn-close-json">✕</button>
+</div>
+<div class="modal-body">
+<textarea class="form-textarea" id="raw-json-textarea" readonly="" style="min-height: 400px; font-family: monospace; font-size: 12px;"></textarea>
+</div>
+<div class="modal-footer">
+<button class="btn btn-primary" id="btn-copy-raw-json">Copy JSON</button>
+</div>
+</div>
+</div>
+<!-- Creator Notes Formatted HTML Preview Modal -->
+<div class="modal-overlay hidden" id="modal-creator-notes">
+<div class="modal" style="width: 760px; max-width: 90vw;">
+<div class="modal-header">
+<h3 style="font-size: 15px; font-weight: 700;">👁️ Creator Notes (Rich Preview)</h3>
+<button class="btn btn-sm" id="btn-close-creator-notes-modal">✕</button>
+</div>
+<div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+<div id="creator-notes-preview-container" style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 8px; padding: 16px; color: var(--text-main); font-size: 13px; line-height: 1.6; word-break: break-word;">
+</div>
+</div>
+<div class="modal-footer" style="padding: 10px 16px; display: flex; justify-content: flex-end;">
+<button class="btn btn-secondary btn-sm" id="btn-close-creator-notes-modal-2">Close</button>
+</div>
+</div>
+</div>
+<!-- Agent Studio Full-Screen Modal (Full chat view with collapsable card sidebar) -->
+<div class="modal-overlay hidden" id="modal-agent-studio" style="z-index: 10002; padding: 0;">
+<div class="modal" style="width: 98vw; max-width: 1700px; height: 96vh; max-height: 96vh; display: flex; flex-direction: column; background: var(--bg-main); border: 1px solid var(--accent-cyan); border-radius: var(--radius-lg); overflow: hidden; box-shadow: 0 16px 50px rgba(0, 0, 0, 0.9);">
+<!-- Studio Header -->
+<div style="padding: 10px 18px; border-bottom: 1px solid var(--border-color); background: var(--bg-secondary); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
+<div style="display: flex; align-items: center; gap: 10px;">
+<span style="font-size: 20px;">🤖</span>
+<div>
+<div style="display: flex; align-items: center; gap: 8px;">
+<span style="font-size: 15px; font-weight: 700; color: var(--accent-cyan);">Agent Co-Pilot Studio</span>
+<span style="font-size: 10px; background: rgba(6, 182, 212, 0.18); border: 1px solid rgba(6, 182, 212, 0.4); color: #22d3ee; padding: 1px 7px; border-radius: 10px; font-weight: 600;">FULLSCREEN WORKSPACE</span>
+<span id="agent-studio-card-badge" style="font-size: 11px; color: var(--text-muted); font-weight: 600;"></span>
+</div>
+<div style="font-size: 11px; color: var(--text-muted);">Multi-turn surgical character engineering with live collapsible card inspector</div>
+</div>
+</div>
+<div style="display: flex; align-items: center; gap: 8px;">
+<button class="btn btn-sm" id="btn-agent-studio-toggle-sidebar" style="background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main);" title="Toggle Card Inspector Sidebar" type="button">
+            📋 <span id="agent-studio-sidebar-btn-text">Hide Card Sidebar</span>
+</button>
+<button class="btn btn-sm" id="btn-agent-studio-clear" title="Clear chat history" type="button">
+            🧹 Clear Chat
+          </button>
+<button class="btn btn-sm btn-success" id="btn-agent-studio-save-card" title="Save current character state" type="button">
+            💾 Save Card
+          </button>
+<button class="btn btn-sm" id="btn-close-agent-studio" style="font-size: 14px; padding: 4px 10px;" title="Exit Full Screen" type="button">
+            ✕
+          </button>
+</div>
+</div>
+<!-- Studio Body: Split View (Chat on Left/Center, Collapsable Card Sidebar on Right) -->
+<div style="flex: 1; display: flex; min-height: 0; overflow: hidden; position: relative;">
+<!-- Left: Main Large Agent Chat Area -->
+<div id="agent-studio-chat-container" style="flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0; background: var(--bg-card); padding: 14px 18px; gap: 10px;">
+<!-- Chips / Suggestions Bar -->
+<div style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center; flex-shrink: 0;">
+<span class="steering-chip agent-prescription-chip" id="btn-agent-studio-prescription" style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #34d399; font-weight: 700; cursor: pointer;">🩺 Prescription Checkup</span>
+<span class="steering-chip agent-preset-chip" data-wish="Purge all robotic, academic, or thesaurus tropes. Rewrite dialogue examples and personality to sound completely natural and grounded in realistic spoken English with contractions and dry sarcasm, while keeping her core character.">🗣️ Naturalize Dialogue</span>
+<span class="steering-chip agent-preset-chip" data-wish="Trim wordiness and purple prose across description and personality by ~25% to optimize token efficiency without losing sensory depth.">✂️ Token Optimize</span>
+<span class="steering-chip agent-preset-chip" data-wish="Amplify the central contradiction and interpersonal friction between {{char}} and {{user}}, making interactions more charged and slow-burn.">🔥 Heighten Friction</span>
+<span class="steering-chip agent-preset-chip" data-wish="Add vivid sensory details, physical tells, and involuntary reactions (posture shifts, eye tells, trembling hands) when defensive or emotional.">👁️ Sensory Tells</span>
+<span class="steering-chip agent-preset-chip" data-wish="Make the first message start in media res during an active operational crisis, raising immediate tension.">⚡ Crisis Starter</span>
+<span class="steering-chip agent-preset-chip" data-wish="Review this card: what are its top 3 strengths and top 3 weaknesses or plot holes? Give me concrete recommendations.">📋 Critique Card</span>
+</div>
+<!-- Pinned Directives / Working Memory Banner -->
+<div id="agent-studio-pinned-bar" style="background: rgba(147, 51, 234, 0.08); border: 1px dashed rgba(168, 85, 247, 0.4); border-radius: var(--radius-sm); padding: 6px 12px; font-size: 11px; flex-shrink: 0;">
+<div style="display: flex; justify-content: space-between; align-items: center;">
+<span style="font-weight: 600; color: #c084fc; display: flex; align-items: center; gap: 6px;">
+<span>📌 Working Memory &amp; Pinned Rules</span>
+<span id="agent-studio-pinned-count" style="background: rgba(168, 85, 247, 0.35); color: #fff; font-size: 10px; padding: 1px 6px; border-radius: 8px;">0</span>
+</span>
+<div style="display: flex; gap: 6px; align-items: center;">
+<input class="form-input" id="agent-studio-pinned-input" placeholder="Add persistent rule and press Enter..." style="font-size: 11px; padding: 2px 8px; height: 24px; width: 280px;" type="text"/>
+<button class="btn btn-xs btn-primary" id="btn-agent-studio-add-pinned" type="button">Pin 📌</button>
+</div>
+</div>
+<div id="agent-studio-pinned-chips" style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px;">
+<!-- Dynamic pinned chips -->
+</div>
+</div>
+<!-- Studio Chat Stream Messages -->
+<div id="agent-studio-stream" style="flex: 1; overflow-y: auto; padding: 12px 14px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); display: flex; flex-direction: column; gap: 12px; min-height: 0;">
+<!-- Rendered chat messages -->
+</div>
+<!-- Controls Bar -->
+<div style="display: flex; gap: 12px; align-items: center; justify-content: space-between; font-size: 11px; flex-shrink: 0; background: var(--bg-secondary); padding: 8px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+<div style="display: flex; gap: 8px; align-items: center;">
+<label style="color: var(--text-dim); white-space: nowrap; font-weight: 600;">Scope:</label>
+<select class="form-select" id="agent-studio-scope" style="font-size: 11px; padding: 3px 8px; height: 26px; width: 220px;">
+<option value="auto">✨ Auto-Detect (Agent chooses fields)</option>
+<option value="dialogue">💬 Voice &amp; Dialogue (mes_example + personality)</option>
+<option value="description">📖 Description Only</option>
+<option value="personality">🧠 Personality &amp; Triggers Only</option>
+<option value="first_mes">🎬 Starter &amp; Greetings</option>
+<option value="scenario">🎭 Scenario / Scene Frame</option>
+<option value="post_history">📜 Post-History Directives</option>
+<option value="advice_only">💡 Chat / Advice Only (No Card Edits)</option>
+</select>
+</div>
+<div style="display: flex; gap: 12px; align-items: center;">
+<label class="checkbox-label" style="font-size: 11px; margin: 0; white-space: nowrap;" title="Provides Take A vs Take B creative alternatives">
+<input id="agent-studio-two-takes" type="checkbox"/>
+<span>🎲 2 Takes (A vs B)</span>
+</label>
+<label class="checkbox-label" style="font-size: 11px; margin: 0; white-space: nowrap;" title="Granular review: inspect side-by-side diff before applying">
+<input checked="" id="agent-studio-review-diffs" type="checkbox"/>
+<span>🎛️ Review Diffs</span>
+</label>
+<label class="checkbox-label" style="font-size: 11px; margin: 0; white-space: nowrap;" title="Enforces natural spoken English contractions">
+<input checked="" id="agent-studio-enforce-natural-voice" type="checkbox"/>
+<span>Natural Voice</span>
+</label>
+</div>
+</div>
+<!-- Studio Input & Send -->
+<div style="display: flex; gap: 8px; flex-shrink: 0;">
+<textarea class="form-textarea" id="agent-studio-input" placeholder="Message Agent: e.g. 'Make her dialogue sharper and more teasing', 'Critique the opening starter', 'Trim purple prose' (Enter to send, Shift+Enter for newline)" rows="2" style="flex: 1; resize: none; font-size: 13px; padding: 8px 12px; height: 54px; line-height: 1.4;"></textarea>
+<button class="btn btn-primary" id="btn-agent-studio-send" style="padding: 0 20px; height: 54px; font-weight: 700; font-size: 13px; display: flex; align-items: center; gap: 6px;" type="button">
+<span>Send 🚀</span>
+</button>
+<button class="btn btn-danger hidden" id="btn-agent-studio-cancel" style="padding: 0 16px; height: 54px; font-weight: 700; font-size: 13px; display: flex; align-items: center; gap: 6px;" type="button" title="Cancel generation">
+<span>Stop ⏹️</span>
+</button>
+</div>
+</div>
+<!-- Right: Collapsible Card Inspector Sidebar -->
+<div id="agent-studio-sidebar" style="width: 440px; min-width: 320px; max-width: 50vw; border-left: 1px solid var(--border-color); background: var(--bg-secondary); display: flex; flex-direction: column; min-height: 0; transition: width 0.2s ease, margin-right 0.2s ease; overflow: hidden;">
+<!-- Sidebar Header -->
+<div style="padding: 10px 14px; border-bottom: 1px solid var(--border-color); background: var(--bg-card); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
+<div style="display: flex; align-items: center; gap: 6px;">
+<span style="font-size: 13px;">📋</span>
+<span style="font-weight: 700; font-size: 12px; color: var(--text-main);">Live Card Inspector</span>
+</div>
+<span id="agent-studio-sidebar-tokens" style="font-size: 11px; color: var(--accent-cyan); font-weight: 600;">0 tok</span>
+</div>
+<!-- Sidebar Tabs for Fields -->
+<div class="nav-tabs" style="padding: 6px 10px 0; margin-bottom: 0; background: var(--bg-card); border-bottom: 1px solid var(--border-color); flex-shrink: 0; display: flex; gap: 2px; overflow-x: auto;">
+<button class="nav-tab active agent-studio-tab" data-field="description" style="padding: 4px 8px; font-size: 11px;">Desc</button>
+<button class="nav-tab agent-studio-tab" data-field="personality" style="padding: 4px 8px; font-size: 11px;">Personality</button>
+<button class="nav-tab agent-studio-tab" data-field="scenario" style="padding: 4px 8px; font-size: 11px;">Scenario</button>
+<button class="nav-tab agent-studio-tab" data-field="first_mes" style="padding: 4px 8px; font-size: 11px;">First Mes</button>
+<button class="nav-tab agent-studio-tab" data-field="alternate_greetings" style="padding: 4px 8px; font-size: 11px;">Alts (<span id="agent-studio-alts-count">0</span>)</button>
+<button class="nav-tab agent-studio-tab" data-field="mes_example" style="padding: 4px 8px; font-size: 11px;">Example Messages</button>
+<button class="nav-tab agent-studio-tab" data-field="post_history_instructions" style="padding: 4px 8px; font-size: 11px;">Directives</button>
+</div>
+<!-- Sidebar Field Content Display / Editor -->
+<div style="flex: 1; display: flex; flex-direction: column; min-height: 0; padding: 10px; background: var(--bg-main); overflow-y: auto;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+<span id="agent-studio-active-field-label" style="font-size: 11px; font-weight: 700; color: var(--accent-purple); text-transform: uppercase;">DESCRIPTION</span>
+<button class="btn btn-ghost btn-xs" id="btn-agent-studio-doctor-field" style="font-size: 10px; color: var(--accent-cyan);" title="Send this field directly to the agent input" type="button">
+                ✂️ Ask Agent to Doctor This
+              </button>
+</div>
+<textarea class="form-textarea" id="agent-studio-field-editor" placeholder="Field content..." style="flex: 1; width: 100%; min-height: 250px; font-family: monospace; font-size: 11px; line-height: 1.45; resize: none; padding: 8px 10px; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main);"></textarea>
+<div class="hidden" id="agent-studio-alts-container" style="flex: 1; display: flex; flex-direction: column; gap: 8px; overflow-y: auto;">
+<!-- Alts list rendered here if alternate_greetings tab active -->
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- IPC Toast Notification Container -->
+<div id="ipc-toast-container" style="position: fixed; top: 60px; right: 20px; z-index: 99999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; max-width: 380px;"></div>
+<!-- Floating Doctor Selection Pill -->
+<button class="floating-doctor-pill hidden" id="floating-doctor-pill" title="Send selected snippet to Agent to doctor/polish" type="button">
+    ✂️ Doctor Selection with Agent
+  </button>
+<div class="modal-overlay hidden" id="modal-agent-field-diff" style="z-index: 10010;">
+<div class="modal modal-xl" style="max-width: 1100px; width: 92vw; height: 86vh; display: flex; flex-direction: column;">
+<div class="modal-header">
+<div style="display:flex; align-items:center; gap:8px;">
+<span style="font-size:18px;">🔍</span>
+<div>
+<h3 id="agent-diff-modal-title" style="font-size: 15px; font-weight: 700; margin: 0px; color: var(--accent-cyan); --darkreader-inline-color: var(--darkreader-text--accent-cyan, var(--darkreader-text-000000, #e8e6e3));">🔍 Diff Inspector: FIRST MES</h3>
+<div id="agent-diff-modal-subtitle" style="font-size: 11px; color: var(--text-muted); --darkreader-inline-color: var(--darkreader-text--text-muted, var(--darkreader-text-000000, #e8e6e3));">Comparing current FIRST MES with proposed revision (-47 tokens)</div>
+</div>
+</div>
+<button class="btn btn-sm" id="btn-close-agent-diff-modal" type="button">✕</button>
+</div>
+<div class="modal-body" style="flex: 1; display: flex; flex-direction: column; gap: 10px; overflow: hidden; padding: 14px;">
+<div id="agent-diff-modal-explanation" style="padding: 8px 12px; background: rgba(168, 85, 247, 0.12); border: 1px solid rgba(168, 85, 247, 0.35); border-radius: 6px; font-size: 12px; color: rgb(233, 213, 255); font-style: italic; --darkreader-inline-bgcolor: var(--darkreader-background-a855f71f, rgba(81, 7, 151, 0.12)); --darkreader-inline-bgimage: none; --darkreader-inline-border-top: var(--darkreader-border-a855f759, rgba(79, 7, 148, 0.35)); --darkreader-inline-border-right: var(--darkreader-border-a855f759, rgba(79, 7, 148, 0.35)); --darkreader-inline-border-bottom: var(--darkreader-border-a855f759, rgba(79, 7, 148, 0.35)); --darkreader-inline-border-left: var(--darkreader-border-a855f759, rgba(79, 7, 148, 0.35)); --darkreader-inline-color: var(--darkreader-text-e9d5ff, #d5afff); display: block;">💡 Refined the first message to remove the 'graceful' and 'aristocratic' descriptions. Replaced them with more raw, impulsive, and breathless energy. Adjusted the relationship context to emphasize her status as a forced spouse to a merchant.</div>
+<div style="flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; min-height: 0;">
+<!-- Left: Before -->
+<div style="display: flex; flex-direction: column; background: var(--bg-card); border: 1px solid rgb(239, 68, 68); border-radius: 6px; overflow: hidden; --darkreader-inline-border-top: var(--darkreader-border-ef4444, #960d0d); --darkreader-inline-border-right: var(--darkreader-border-ef4444, #960d0d); --darkreader-inline-border-bottom: var(--darkreader-border-ef4444, #960d0d); --darkreader-inline-border-left: var(--darkreader-border-ef4444, #960d0d); --darkreader-inline-bg: var(--darkreader-bg--bg-card);">
+<div style="padding: 8px 12px; background: rgba(239, 68, 68, 0.12); border-bottom: 1px solid rgb(239, 68, 68); display: flex; justify-content: space-between; align-items: center; --darkreader-inline-bgcolor: var(--darkreader-background-ef44441f, rgba(159, 14, 14, 0.12)); --darkreader-inline-bgimage: none; --darkreader-inline-border-bottom: var(--darkreader-border-ef4444, #960d0d);">
+<span style="color: rgb(248, 113, 113); font-weight: 700; font-size: 11px; --darkreader-inline-color: var(--darkreader-text-f87171, #f86b6b);">🔴 BEFORE (<span id="agent-diff-before-tokens">644</span> tok)</span>
+<button class="btn btn-ghost btn-xs" id="btn-agent-diff-copy-before" style="font-size: 10px; color: rgb(203, 213, 225); --darkreader-inline-color: var(--darkreader-text-cbd5e1, #bacad7);" type="button">📋 Copy</button>
+</div>
+<textarea id="agent-diff-modal-before" readonly="readonly" style="flex: 1 1 0%; width: 100%; resize: none; background: transparent; border: medium; padding: 12px; color: rgb(203, 213, 225); font-family: monospace; font-size: 11px; line-height: 1.45; outline: none; --darkreader-inline-bgcolor: transparent; --darkreader-inline-bgimage: none; --darkreader-inline-border-top: medium; --darkreader-inline-border-right: medium; --darkreader-inline-border-bottom: medium; --darkreader-inline-border-left: medium; --darkreader-inline-color: var(--darkreader-text-cbd5e1, #bacad7); --darkreader-inline-outline: currentcolor;">Cistilla stood amidst the wreckage of the shattered porcelain, her chest heaving beneath the silk of her bodice. Every breath felt tight, her lungs burning with a mixture of adrenaline and the sheer, stubborn heat of her own anger. She didn't look up immediately when the heavy doors opened, though she felt the sudden shift in the room's pressure, the arrival of the one person who could actually make her skin prickle with anticipation. Her fingers curled into her palms, the friction of her nails against her skin providing a small, grounding sting amidst the chaos she had created.
+
+She forced herself to remain still, even as a fine tremor began to run through her thighs. The sight of him was enough to make her heart hammer against her ribs, a frantic rhythm that contradicted the cold, haughty mask she tried to maintain. She bit her lower lip hard, tasting the faint salt of her own skin, refusing to give him the satisfaction of seeing her crumble just yet. She knew the rules of the house, knew the weight of the authority he carried, and yet the urge to push, to snap, to see exactly where his patience ended, was an itch she couldn't stop scratching.
+
+Finally, she lifted her chin, tossing her tangled hair back with a sharp, practiced grace. She met his gaze with a look of calculated indifference, though the heat rising in her cheeks betrayed her. Her eyes flickered briefly to the broken pieces at her feet before returning to him, her expression hardening into a pout that was more of a challenge than a plea. She looked every bit the spoiled heiress, a woman who had never been told no and was determined to prove that his rules were merely suggestions.
+
+"So, you've finally decided to grace me with your presence," she spat, the words dripping with a sarcasm that masked the desperate, thudding pulse in her throat. She took a daring step forward, her silk skirt rustling loudly in the silence, placing herself dangerously close to his space. She tilted her head back, her eyes searching his for the first sign of the storm she knew was coming. "Are you going to stand there staring at the floor, or are you actually going to do something about this mess?"
+</textarea>
+</div>
+<!-- Right: After -->
+<div style="display: flex; flex-direction: column; background: var(--bg-card); border: 1px solid rgb(16, 185, 129); border-radius: 6px; overflow: hidden; --darkreader-inline-border-top: var(--darkreader-border-10b981, #0fb37d); --darkreader-inline-border-right: var(--darkreader-border-10b981, #0fb37d); --darkreader-inline-border-bottom: var(--darkreader-border-10b981, #0fb37d); --darkreader-inline-border-left: var(--darkreader-border-10b981, #0fb37d); --darkreader-inline-bg: var(--darkreader-bg--bg-card);">
+<div style="padding: 8px 12px; background: rgba(16, 185, 129, 0.12); border-bottom: 1px solid rgb(16, 185, 129); display: flex; justify-content: space-between; align-items: center; --darkreader-inline-bgcolor: var(--darkreader-background-10b9811f, rgba(13, 148, 103, 0.12)); --darkreader-inline-bgimage: none; --darkreader-inline-border-bottom: var(--darkreader-border-10b981, #0fb37d);">
+<span style="color: rgb(52, 211, 153); font-weight: 700; font-size: 11px; --darkreader-inline-color: var(--darkreader-text-34d399, #47d7a3);">🟢 AFTER (<span id="agent-diff-after-tokens">597</span> tok)</span>
+<button class="btn btn-ghost btn-xs" id="btn-agent-diff-copy-after" style="font-size: 10px; color: rgb(255, 255, 255); --darkreader-inline-color: var(--darkreader-text-ffffff, #e8e6e3);" type="button">📋 Copy</button>
+</div>
+<textarea id="agent-diff-modal-after" readonly="readonly" style="flex: 1 1 0%; width: 100%; resize: none; background: transparent; border: medium; padding: 12px; color: rgb(255, 255, 255); font-family: monospace; font-size: 11px; line-height: 1.45; outline: none; --darkreader-inline-bgcolor: transparent; --darkreader-inline-bgimage: none; --darkreader-inline-border-top: medium; --darkreader-inline-border-right: medium; --darkreader-inline-border-bottom: medium; --darkreader-inline-border-left: medium; --darkreader-inline-color: var(--darkreader-text-ffffff, #e8e6e3); --darkreader-inline-outline: currentcolor;">Cistilla stood amidst the wreckage of the shattered porcelain, her chest heaving beneath the silk of her bodice. Every breath felt tight, her lungs burning with a mixture of adrenaline and the sheer, stubborn heat of her own anger. She didn't look up immediately when the heavy doors opened, though she felt the sudden shift in the room's pressure, the arrival of the merchant who now owned her life. Her fingers curled into her palms, the friction of her nails against her skin providing a small, grounding sting amidst the chaos she had created.
+
+She forced herself to remain still, even as a fine tremor began to run through her thighs. The sight of him was enough to make her heart hammer against her ribs, a frantic rhythm that contradicted the cold, haughty mask she tried to maintain. She bit her lower lip hard, tasting the faint salt of her own skin, refusing to give him the satisfaction of seeing her crumble just yet. She knew the rules of his house, knew the weight of the authority he held over her as her husband, and yet the urge to push, to snap, to see exactly how far his patience went was an itch she could not stop scratching.
+
+Finally, she lifted her chin, tossing her tangled hair back with a sharp, defiant jerk. She met his gaze with a glare that was more of a desperate challenge than a poised dismissal. Her eyes flickered briefly to the broken pieces at her feet before returning to him, her expression hardening into a pout that screamed of her refusal to be tamed. She looked like a child playing at being a woman, a girl fighting against the shackles of a marriage she never asked for.
+
+"Are you just going to stand there?" she snapped, the words tripping over each other in her haste to be loud. She took a daring step forward, her silk skirt rustling loudly in the silence, placing herself dangerously close to his space. She tilted her head back, her eyes searching his for the first sign of the storm she knew was coming. "Or are you actually going to do something about the mess I made?"</textarea>
+</div>
+</div>
+</div>
+<div class="modal-footer" style="padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); background: var(--bg-card); --darkreader-inline-border-top-short: 1px solid var(--darkreader-border--border-color); --darkreader-inline-bg: var(--darkreader-bg--bg-card);">
+<div id="agent-diff-modal-status-text" style="font-size: 11px; font-weight: 600; color: var(--text-muted); --darkreader-inline-color: var(--darkreader-text--text-muted, var(--darkreader-text-000000, #e8e6e3));">Pending author review.</div>
+<div style="display: flex; gap: 8px;">
+<button class="btn btn-danger btn-sm" id="btn-agent-diff-modal-discard" style="padding: 6px 16px; font-weight: 700; display: inline-block;" type="button">✕ Discard</button>
+<button class="btn btn-success btn-sm" id="btn-agent-diff-modal-accept" style="padding: 6px 20px; font-weight: 700; display: inline-block;" type="button">✓ Accept &amp; Apply to Card</button>
+</div>
+</div>
+</div>
+</div><div class="modal-overlay hidden" id="modal-visual-identity" style="z-index: 10000;">
+<div class="modal" style="width: 720px; max-width: 95vw; max-height: 90vh; display: flex; flex-direction: column;">
+<div class="modal-header" style="flex-shrink: 0;">
+<div>
+<h3 style="font-size: 16px; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 8px;">
+<span>🎨 Character Visual Identity &amp; Danbooru Tags</span>
+</h3>
+<div style="font-size: 11px; color: var(--text-muted); margin-top: 2px; --darkreader-inline-color: var(--darkreader-text--text-muted, var(--darkreader-text-000000, #e8e6e3));">
+            Lock appearance consistency across all image generations (avatars, greetings, scenario art). Stored in card extensions.
+          </div>
+</div>
+<button class="btn btn-sm" id="btn-close-visual-identity" type="button">✕</button>
+</div>
+<div class="modal-body" style="overflow-y: auto; flex: 1; padding: 16px;">
+<!-- Loading Indicator -->
+<div id="vi-loading" style="display: none; padding: 24px; text-align: center;">
+<div style="font-size: 24px; margin-bottom: 8px;">⏳</div>
+<div style="font-weight: 600; color: rgb(192, 132, 252); --darkreader-inline-color: var(--darkreader-text-c084fc, #b977fc);">Analyzing character profile with AI...</div>
+<div style="font-size: 11px; color: var(--text-muted); margin-top: 4px; --darkreader-inline-color: var(--darkreader-text--text-muted, var(--darkreader-text-000000, #e8e6e3));">
+            Extracting gender, life stage/age, hair, eyes, features, and Danbooru tags (skipping greetings &amp; example messages)...
+          </div>
+</div>
+<!-- Form Content -->
+<div id="vi-content">
+<div style="background: rgba(147, 51, 234, 0.08); border: 1px solid rgba(168, 85, 247, 0.25); border-radius: var(--radius-sm); padding: 10px 14px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; --darkreader-inline-bgcolor: var(--darkreader-background-9333ea14, rgba(97, 17, 169, 0.08)); --darkreader-inline-bgimage: none; --darkreader-inline-border-top: var(--darkreader-border-a855f740, rgba(79, 7, 148, 0.25)); --darkreader-inline-border-right: var(--darkreader-border-a855f740, rgba(79, 7, 148, 0.25)); --darkreader-inline-border-bottom: var(--darkreader-border-a855f740, rgba(79, 7, 148, 0.25)); --darkreader-inline-border-left: var(--darkreader-border-a855f740, rgba(79, 7, 148, 0.25));">
+<div>
+<span style="font-size: 11px; font-weight: 700; color: rgb(192, 132, 252); text-transform: uppercase; --darkreader-inline-color: var(--darkreader-text-c084fc, #b977fc);">Character:</span>
+<span id="vi-char-name" style="font-size: 13px; font-weight: 700; color: rgb(255, 255, 255); margin-left: 6px; --darkreader-inline-color: var(--darkreader-text-ffffff, #e8e6e3);">Character Name</span>
+</div>
+<button class="btn btn-sm" id="btn-vi-reextract" style="background: rgba(168, 85, 247, 0.2); border: 1px solid rgba(168, 85, 247, 0.4); color: rgb(233, 213, 255); --darkreader-inline-bgcolor: var(--darkreader-background-a855f733, rgba(81, 7, 151, 0.2)); --darkreader-inline-bgimage: none; --darkreader-inline-border-top: var(--darkreader-border-a855f766, rgba(79, 7, 148, 0.4)); --darkreader-inline-border-right: var(--darkreader-border-a855f766, rgba(79, 7, 148, 0.4)); --darkreader-inline-border-bottom: var(--darkreader-border-a855f766, rgba(79, 7, 148, 0.4)); --darkreader-inline-border-left: var(--darkreader-border-a855f766, rgba(79, 7, 148, 0.4)); --darkreader-inline-color: var(--darkreader-text-e9d5ff, #d5afff);" title="Re-analyze card profile with AI to suggest new visual tags" type="button">
+<span>🔄 Re-extract with AI</span>
+</button>
+</div>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+<div class="form-group" style="margin-bottom: 0;">
+<label class="form-label" style="font-size: 11px; font-weight: 700;">Subject / Gender Tag</label>
+<input class="form-input" id="vi-gender" placeholder="e.g. 1girl or 1boy" type="text"/>
+<span style="font-size: 10px; color: var(--text-muted); --darkreader-inline-color: var(--darkreader-text--text-muted, var(--darkreader-text-000000, #e8e6e3));">Primary subject tag (1girl, 1boy, 1other)</span>
+</div>
+<div class="form-group" style="margin-bottom: 0;">
+<label class="form-label" style="font-size: 11px; font-weight: 700;">Apparent Age &amp; Life Stage</label>
+<input class="form-input" id="vi-age" placeholder="e.g. Elderly woman (72 years old), authentic facial wrinkles" type="text"/>
+<span style="font-size: 10px; color: var(--text-muted); --darkreader-inline-color: var(--darkreader-text--text-muted, var(--darkreader-text-000000, #e8e6e3));">Prevents elderly characters from de-aging into 20-somethings</span>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+<div class="form-group" style="margin-bottom: 0;">
+<label class="form-label" style="font-size: 11px; font-weight: 700;">Hair (Color, Length, Style)</label>
+<input class="form-input" id="vi-hair" placeholder="e.g. silver_hair, long_hair, twin_braids, bangs" type="text"/>
+</div>
+<div class="form-group" style="margin-bottom: 0;">
+<label class="form-label" style="font-size: 11px; font-weight: 700;">Eyes (Color &amp; Shape)</label>
+<input class="form-input" id="vi-eyes" placeholder="e.g. crimson_eyes, sharp_eyes" type="text"/>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+<div class="form-group" style="margin-bottom: 0;">
+<label class="form-label" style="font-size: 11px; font-weight: 700;">Distinctive Traits &amp; Features</label>
+<input class="form-input" id="vi-features" placeholder="e.g. wrinkles, pale_skin, fangs, glasses, pointy_ears" type="text"/>
+</div>
+<div class="form-group" style="margin-bottom: 0;">
+<label class="form-label" style="font-size: 11px; font-weight: 700;">Body Build &amp; Silhouette</label>
+<input class="form-input" id="vi-build" placeholder="e.g. slender, petite or muscular, broad_shoulders" type="text"/>
+</div>
+</div>
+<div class="form-group" style="margin-bottom: 12px;">
+<label class="form-label" style="font-size: 11px; font-weight: 700;">Signature Wardrobe / Aesthetic Palette</label>
+<input class="form-input" id="vi-clothing" placeholder="e.g. gothic_dress, choker, black_attire, dark_palette" type="text"/>
+</div>
+<div class="form-group" style="margin-bottom: 8px;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+<label class="form-label" style="margin: 0px; font-size: 11px; font-weight: 700; color: rgb(167, 139, 250); --darkreader-inline-color: var(--darkreader-text-a78bfa, #9c7df9);">
+                Combined Booru / Diffusion Tags (Editable)
+              </label>
+<button class="btn btn-sm" id="btn-vi-sync-tags" style="padding: 1px 8px; font-size: 10px;" type="button">
+                🔄 Sync from Fields
+              </button>
+</div>
+<textarea class="form-textarea" id="vi-tags" placeholder="1girl, elderly_woman, wrinkles, silver_hair, long_hair, crimson_eyes, fangs, pale_skin, gothic_dress" style="min-height: 70px; font-family: monospace; font-size: 11px;"></textarea>
+<span style="font-size: 10px; color: var(--text-muted); --darkreader-inline-color: var(--darkreader-text--text-muted, var(--darkreader-text-000000, #e8e6e3));">
+              Comma-separated Danbooru tags automatically injected into all diffusion prompts for consistency.
+            </span>
+</div>
+</div>
+</div>
+<div class="modal-footer" style="flex-shrink: 0; display: flex; justify-content: flex-end; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--border-color); --darkreader-inline-border-top-short: 1px solid var(--darkreader-border--border-color);">
+<button class="btn btn-sm" id="btn-vi-cancel" type="button">Cancel</button>
+<button class="btn btn-primary" id="btn-vi-save" style="background: linear-gradient(135deg, rgb(124, 58, 237), rgb(168, 85, 247)); border: medium; --darkreader-inline-bgcolor: var(--darkreader-background-00000000, rgba(0, 0, 0, 0)); --darkreader-inline-bgimage: linear-gradient(135deg, var(--darkreader-background-7c3aed, #460fa5), var(--darkreader-background-a855f7, #510797)); --darkreader-inline-border-top: medium; --darkreader-inline-border-right: medium; --darkreader-inline-border-bottom: medium; --darkreader-inline-border-left: medium;" type="button">
+<span id="btn-vi-save-text">💾 Save Visual Identity &amp; Proceed</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Modal: Synthesize Spine for Existing Character -->
+<div class="modal-overlay hidden" id="modal-synthesize-spine" style="z-index: 10005;">
+  <div class="modal" style="width: 640px; max-width: 95vw; max-height: 90vh; display: flex; flex-direction: column;">
+    <div class="modal-header" style="flex-shrink: 0;">
+      <div>
+        <h3 style="font-size: 16px; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 8px;">
+          <span>🧬</span> Synthesize Authoring Spine for Existing Character
+        </h3>
+        <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
+          Reverse-engineer internal psychometric scaffolding (archetype, contradiction, reaction gradient, voice, scene frame) from an existing card using your original prompt & story arc. Enables arc-aware regeneration later.
+        </div>
+      </div>
+      <button class="btn btn-sm" id="btn-close-synthesize-spine" type="button">✕</button>
+    </div>
+    <div class="modal-body" style="overflow-y: auto; flex: 1; padding: 16px;">
+      <div style="background: rgba(147, 51, 234, 0.08); border: 1px solid rgba(168, 85, 247, 0.25); border-radius: var(--radius-sm); padding: 10px 14px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <span style="font-size: 11px; font-weight: 700; color: rgb(192, 132, 252); text-transform: uppercase;">Target Character:</span>
+          <span id="spine-target-char-name" style="font-size: 13px; font-weight: 700; color: #fff; margin-left: 6px;">(Currently Active Character)</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Original Concept / Prompt (Optional but Recommended)</label>
+        <textarea class="form-textarea" id="spine-original-concept" placeholder="Paste the original concept/seed/trope you used to create this character. Helps the AI reconstruct the correct archetype, contradiction, and voice." rows="4" style="min-height: 90px; font-family: monospace; font-size: 11px;"></textarea>
+        <span style="font-size: 10px; color: var(--text-muted);">If you have the original prompt, paste it here. If not, the AI will infer from the card fields.</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Original Story Arc (Optional)</label>
+        <textarea class="form-textarea" id="spine-original-story-arc" placeholder="Paste the story arc you used (e.g. 'The War of Attrition (Provocative Destruction -> Discovery of Shared Loneliness -> Breaking the Contract through Passionate Truth)'). This will be embedded for future arc-aware greetings regeneration." rows="3" style="min-height: 70px; font-family: monospace; font-size: 11px;"></textarea>
+        <span style="font-size: 10px; color: var(--text-muted);">If you used a story arc during creation, paste it here. It will be stored and used for future 'Regenerate with Spine' enhancer mode.</span>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label" style="font-size: 11px; font-weight: 700;">Genre / Setting</label>
+          <input class="form-input" id="spine-genre" placeholder="e.g. Fantasy, Cyberpunk, Victorian Gothic" type="text"/>
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label" style="font-size: 11px; font-weight: 700;">Era (Optional)</label>
+          <input class="form-input" id="spine-era" placeholder="e.g. Victorian Gothic, Sengoku Japan" type="text"/>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 8px;">
+        <label class="form-label" style="font-size: 11px; font-weight: 700;">Themes / Tropes (Comma-separated)</label>
+        <input class="form-input" id="spine-themes" placeholder="e.g. Dark Romance, Power Exchange, Slow Burn, Tsundere" type="text"/>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label" style="font-size: 11px; font-weight: 700;">Tone</label>
+          <input class="form-input" id="spine-tone" placeholder="e.g. Gritty psychological, flirty teasing" type="text"/>
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label" style="font-size: 11px; font-weight: 700;">Intensity</label>
+          <select class="form-select" id="spine-intensity">
+            <option value="balanced">Balanced</option>
+            <option value="subtle">Subtle</option>
+            <option value="extreme">Extreme</option>
+            <option value="unhinged">Unhinged</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 8px;">
+        <label class="form-label" style="font-size: 11px; font-weight: 700;">Bot Mode</label>
+        <select class="form-select" id="spine-bot-mode">
+          <option value="single">👤 Solo Character</option>
+          <option value="multi_character">👥 Multi-Character Cast</option>
+          <option value="rpg_world">🎮 RPG World / GM</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="checkbox-label" style="font-size: 11px;">
+          <input checked="" id="spine-nsfw" type="checkbox"/>
+          <span>NSFW / Mature Elements Enabled</span>
+        </label>
+      </div>
+
+      <div id="spine-loading" style="display: none; padding: 24px; text-align: center;">
+        <div style="font-size: 24px; margin-bottom: 8px;">⏳</div>
+        <div style="font-weight: 600; color: rgb(192, 132, 252);">Synthesizing Authoring Spine with AI...</div>
+        <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Analyzing card profile + original inputs to reconstruct archetype, contradiction, reaction gradient, voice, and scene frame.</div>
+      </div>
+    </div>
+    <div class="modal-footer" style="flex-shrink: 0; display: flex; justify-content: flex-end; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--border-color);">
+      <button class="btn btn-sm" id="btn-spine-cancel" type="button">Cancel</button>
+      <button class="btn btn-primary" id="btn-spine-synthesize" style="background: linear-gradient(135deg, rgb(124, 58, 237), rgb(168, 85, 247)); border: medium;" type="button">
+        <span>🧬 Synthesize & Attach Spine</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Regenerate Greetings with Spine (Arc-Aware) -->
+<div class="modal-overlay hidden" id="modal-regenerate-greetings-spine" style="z-index: 10005;">
+  <div class="modal" style="width: 640px; max-width: 95vw; max-height: 90vh; display: flex; flex-direction: column;">
+    <div class="modal-header" style="flex-shrink: 0;">
+      <div>
+        <h3 style="font-size: 16px; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 8px;">
+          <span>🧬</span> Regenerate Greetings with Spine (Arc-Aware)
+        </h3>
+        <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
+          Uses stored Authoring Spine + your story arc to generate arc-aware alternate greetings. Each greeting = exactly 2 paragraphs, richly sensory.
+        </div>
+      </div>
+      <button class="btn btn-sm" id="btn-close-regen-greetings-spine" type="button">✕</button>
+    </div>
+    <div class="modal-body" style="overflow-y: auto; flex: 1; padding: 16px;">
+      <div style="background: rgba(147, 51, 234, 0.08); border: 1px solid rgba(168, 85, 247, 0.25); border-radius: var(--radius-sm); padding: 10px 14px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <span style="font-size: 11px; font-weight: 700; color: rgb(192, 132, 252); text-transform: uppercase;">Target Character:</span>
+          <span id="regen-target-char-name" style="font-size: 13px; font-weight: 700; color: #fff; margin-left: 6px;">(Currently Active Character)</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Story Arc for This Regeneration (Optional Override)</label>
+        <textarea class="form-textarea" id="regen-story-arc" placeholder="Paste or override the story arc (e.g. 'The War of Attrition...'). Uses stored arc if left blank." rows="3" style="min-height: 70px; font-family: monospace; font-size: 11px;"></textarea>
+        <span style="font-size: 10px; color: var(--text-muted);">Overrides the stored story arc for this specific regeneration. Leave blank to use the arc from Spine Synthesis.</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Minimum Alternate Greetings to Generate</label>
+        <input class="form-input" id="regen-min-alts" type="number" value="6" min="1" style="width: 100px;" />
+        <span style="font-size: 10px; color: var(--text-muted);">Each greeting = exactly 2 paragraphs, richly sensory. No maximum.</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Additional Steering / Guidance (Optional)</label>
+        <textarea class="form-textarea" id="regen-steering" placeholder="Guide the regeneration (e.g. 'Focus on her fear of abandonment', 'Make greeting 3 a confrontation scene', 'Follow the War of Attrition arc strictly')..." rows="3" style="min-height: 70px;"></textarea>
+        <span style="font-size: 10px; color: var(--text-muted);">Use this to guide the regeneration. Overrides stored themes. Each greeting will follow the story arc.</span>
+      </div>
+
+      <div id="regen-loading" style="display: none; padding: 24px; text-align: center;">
+        <div style="font-size: 24px; margin-bottom: 8px;">⏳</div>
+        <div style="font-weight: 600; color: rgb(192, 132, 252);">Regenerating greetings with stored Spine...</div>
+        <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Using arc-aware generation with 2-paragraph greetings.</div>
+      </div>
+    </div>
+    <div class="modal-footer" style="flex-shrink: 0; display: flex; justify-content: flex-end; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--border-color);">
+      <button class="btn btn-sm" id="btn-regen-cancel" type="button">Cancel</button>
+      <button class="btn btn-primary" id="btn-regen-execute" style="background: linear-gradient(135deg, rgb(124, 58, 237), rgb(168, 85, 247)); border: medium;" type="button">
+        <span>🧬 Regenerate Greetings with Spine</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="modal-gallery-lightbox" style="z-index: 10005;">
+<div class="modal" style="width: auto; max-width: 90vw; max-height: 90vh; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(168, 85, 247, 0.4); padding: 12px; display: flex; flex-direction: column; align-items: center; --darkreader-inline-bgcolor: var(--darkreader-background-0f172af2, rgba(12, 18, 34, 0.95)); --darkreader-inline-bgimage: none; --darkreader-inline-border-top: var(--darkreader-border-a855f766, rgba(79, 7, 148, 0.4)); --darkreader-inline-border-right: var(--darkreader-border-a855f766, rgba(79, 7, 148, 0.4)); --darkreader-inline-border-bottom: var(--darkreader-border-a855f766, rgba(79, 7, 148, 0.4)); --darkreader-inline-border-left: var(--darkreader-border-a855f766, rgba(79, 7, 148, 0.4));">
+<div style="width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+<span id="lightbox-title" style="font-size: 13px; font-weight: 700; color: rgb(255, 255, 255); --darkreader-inline-color: var(--darkreader-text-ffffff, #e8e6e3);">Image Preview</span>
+<button class="btn btn-sm" id="btn-close-lightbox" type="button">✕</button>
+</div>
+<div style="max-height: 75vh; max-width: 85vw; overflow: auto; display: flex; justify-content: center; align-items: center;">
+<img alt="Preview" id="lightbox-img" src="" style="max-height: 75vh; max-width: 85vw; object-fit: contain; border-radius: 6px;"/>
+</div>
+</div>
+</div>
+<!-- Scripts (loaded after all modals so DOM elements exist) -->
+<script src="app.js"></script>
+</body>
+</html>
