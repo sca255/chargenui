@@ -79,6 +79,49 @@ export interface TavernCardV3 {
   data: TavernCardV3Data;
 }
 
+export interface TimelineEvent {
+  id: string;
+  title: string;
+  timestamp?: string; // in-universe timestamp or chronological order e.g. "Year 845", "Day 1"
+  summary: string;
+  significance?: "critical" | "major" | "minor" | "flavor";
+  charactersInvolved?: string[];
+  location?: string;
+  source?: "scenario" | "first_mes" | "chat" | "manual" | "continuation";
+}
+
+export interface CharacterBranchCommit {
+  commitId: string;
+  parentCommitId?: string;
+  message: string;
+  timestamp: string;
+  author?: string;
+  snapshot: Partial<RoleplayCharacter>; // Fields snapshotted in this commit
+}
+
+export interface CharacterBranch {
+  name: string;
+  createdAt: string;
+  headCommitId: string;
+  description?: string;
+}
+
+export interface CharacterBranchesData {
+  currentBranch: string;
+  branches: Record<string, CharacterBranch>;
+  commits: Record<string, CharacterBranchCommit>;
+}
+
+export interface CharGenExtensionMeta {
+  schemaVersion: number;
+  migratedAt?: string;
+  migrationHistory?: string[];
+  embedding?: number[];
+  timeline?: TimelineEvent[];
+  branches?: CharacterBranchesData;
+  [key: string]: unknown;
+}
+
 export interface RoleplayCharacter {
   id: string;
   name: string;
@@ -97,5 +140,8 @@ export interface RoleplayCharacter {
   tags: string[];
   character_book?: CharacterBook;
   assets?: CardAsset[];
-  extensions?: Record<string, any>;
+  extensions?: {
+    chargenui?: CharGenExtensionMeta;
+    [key: string]: any;
+  };
 }

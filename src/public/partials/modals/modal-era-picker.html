@@ -1,0 +1,85 @@
+<div class="modal-overlay hidden" id="modal-era-picker">
+<div class="modal" style="width: 960px; max-width: 96vw; max-height: 92vh; display: flex; flex-direction: column;">
+<div class="modal-header" style="flex-shrink: 0;">
+<div>
+<h3 style="font-size: 16px; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 8px;">
+<span>🏛️ Historical &amp; Fantasy Era Discovery Studio</span>
+<span class="badge" id="era-catalog-count-badge" style="background: rgba(168, 85, 247, 0.2); color: #c084fc; font-size: 10px;">82+ Eras</span>
+</h3>
+<div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
+            Enforce authentic material limits, social hierarchies, and vocabulary — or select timeless high fantasy.
+          </div>
+</div>
+<button class="btn btn-sm" id="btn-close-era-modal">✕</button>
+</div>
+<!-- Top Search & Quick Control Bar -->
+<div style="padding: 12px 16px; background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--border-color); display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+<div style="flex: 2; min-width: 240px; position: relative;">
+<input class="form-input" id="era-search-input" placeholder="Search eras, countries, centuries ('14th', '1200s'), or concepts ('samurai', 'viking', 'crusade', 'gladiator')..." style="padding-left: 32px;" type="text"/>
+<span style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); pointer-events: none; opacity: 0.6;">🔎</span>
+</div>
+<div style="display: flex; gap: 6px; align-items: center;">
+<select class="form-select" id="era-region-filter" style="font-size: 11px; padding: 6px 10px;">
+<option value="All">🌐 All Regions</option>
+<option value="Western Europe">Western Europe</option>
+<option value="British Isles">British Isles</option>
+<option value="East Asia">East Asia (Japan/China/Korea)</option>
+<option value="Middle East">Middle East &amp; Caliphates</option>
+<option value="Eastern Europe">Eastern Europe &amp; Rus</option>
+<option value="Nordic">Nordic &amp; Scandinavia</option>
+<option value="Mediterranean">Mediterranean &amp; Classical</option>
+<option value="Americas">Americas (Mesoamerica/Andes/Frontier)</option>
+<option value="Africa">Africa</option>
+<option value="Global">Global / Other</option>
+</select>
+<button class="btn btn-sm" id="btn-era-create-custom" style="background: rgba(34, 197, 94, 0.2); border: 1px solid #22c55e; color: #86efac;" type="button">
+            ➕ Create Custom Era
+          </button>
+</div>
+</div>
+<!-- Era Category Nav Tabs (4 Main Selectors) -->
+<div class="nav-tabs" style="flex-shrink: 0; padding: 0 16px; margin: 8px 0 0; border-bottom: 1px solid var(--border-color); display: flex; gap: 4px; overflow-x: auto;">
+<button class="modal-tab active" data-era-tab="All" type="button">🌐 All Eras</button>
+<button class="modal-tab" data-era-tab="Medieval" type="button">🏰 Medieval (50+ Countries)</button>
+<button class="modal-tab" data-era-tab="Antiquity" type="button">🏛️ Antiquity &amp; Bronze</button>
+<button class="modal-tab" data-era-tab="Renaissance" type="button">🎨 Renaissance &amp; Sail</button>
+<button class="modal-tab" data-era-tab="Victorian &amp; Industrial" type="button">⚙️ Victorian &amp; Frontier</button>
+<button class="modal-tab" data-era-tab="20th Century" type="button">📻 20th Century</button>
+<button class="modal-tab" data-era-tab="Fantasy" type="button">🌌 Timeless Fantasy</button>
+<button class="modal-tab" data-era-tab="User Eras" type="button">📜 User Custom Eras (<span id="user-eras-count">0</span>)</button>
+</div>
+<!-- Modal Main Split Body: Era List (Left) + Detail Inspector (Right) -->
+<div class="modal-body" style="overflow: hidden; flex: 1; padding: 12px 16px; display: flex; gap: 14px; min-height: 400px;">
+<!-- Left: Era Grid / List -->
+<div id="era-cards-container" style="flex: 1.1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 6px;">
+<!-- Dynamic Era Cards populated by JS -->
+</div>
+<!-- Right: Era Deep Inspector & Apply Panel -->
+<div id="era-detail-panel" style="flex: 1.2; overflow-y: auto; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px; display: flex; flex-direction: column;">
+<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-dim); text-align: center;">
+<span style="font-size: 36px; margin-bottom: 10px;">🏛️</span>
+<span style="font-weight: 600;">Select an era from the list</span>
+<span style="font-size: 11px; margin-top: 4px;">Click any era to inspect historical material constraints, social codes, and sample naming archetypes.</span>
+</div>
+</div>
+</div>
+<!-- Modal Footer -->
+<div class="modal-footer" style="padding: 10px 16px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+<div style="display: flex; gap: 8px; align-items: center;">
+<button class="btn btn-sm" id="btn-modal-era-off" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5;" type="button">
+            🚫 Turn Era Off (Unconstrained)
+          </button>
+<button class="btn btn-sm" id="btn-modal-era-fantasy" style="background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.4); color: #d8b4fe;" type="button">
+            🌌 Timeless High Fantasy
+          </button>
+</div>
+<div style="display: flex; gap: 8px;">
+<button class="btn btn-secondary btn-sm" id="btn-close-era-modal-bottom" type="button">Close</button>
+<button class="btn btn-primary btn-sm" disabled="" id="btn-apply-selected-era" type="button">
+            ✨ Apply Era to Prompt
+          </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Sub-Modal: Create / Edit User Custom Era -->

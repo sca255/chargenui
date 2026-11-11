@@ -1,0 +1,94 @@
+<div class="modal-overlay hidden" id="modal-visual-identity" style="z-index: 10000;">
+<div class="modal" style="width: 720px; max-width: 95vw; max-height: 90vh; display: flex; flex-direction: column;">
+<div class="modal-header" style="flex-shrink: 0;">
+<div>
+<h3 style="font-size: 16px; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 8px;">
+<span>🎨 Character Visual Identity &amp; Danbooru Tags</span>
+</h3>
+<div style="font-size: 11px; color: var(--text-muted); margin-top: 2px; --darkreader-inline-color: var(--darkreader-text--text-muted, var(--darkreader-text-000000, #e8e6e3));">
+            Lock appearance consistency across all image generations (avatars, greetings, scenario art). Stored in card extensions.
+          </div>
+</div>
+<button class="btn btn-sm" id="btn-close-visual-identity" type="button">✕</button>
+</div>
+<div class="modal-body" style="overflow-y: auto; flex: 1; padding: 16px;">
+<!-- Loading Indicator -->
+<div id="vi-loading" style="display: none; padding: 24px; text-align: center;">
+<div style="font-size: 24px; margin-bottom: 8px;">⏳</div>
+<div style="font-weight: 600; color: rgb(192, 132, 252); --darkreader-inline-color: var(--darkreader-text-c084fc, #b977fc);">Analyzing character profile with AI...</div>
+<div style="font-size: 11px; color: var(--text-muted); margin-top: 4px; --darkreader-inline-color: var(--darkreader-text--text-muted, var(--darkreader-text-000000, #e8e6e3));">
+            Extracting gender, life stage/age, hair, eyes, features, and Danbooru tags (skipping greetings &amp; example messages)...
+          </div>
+</div>
+<!-- Form Content -->
+<div id="vi-content">
+<div style="background: rgba(147, 51, 234, 0.08); border: 1px solid rgba(168, 85, 247, 0.25); border-radius: var(--radius-sm); padding: 10px 14px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; --darkreader-inline-bgcolor: var(--darkreader-background-9333ea14, rgba(97, 17, 169, 0.08)); --darkreader-inline-bgimage: none; --darkreader-inline-border-top: var(--darkreader-border-a855f740, rgba(79, 7, 148, 0.25)); --darkreader-inline-border-right: var(--darkreader-border-a855f740, rgba(79, 7, 148, 0.25)); --darkreader-inline-border-bottom: var(--darkreader-border-a855f740, rgba(79, 7, 148, 0.25)); --darkreader-inline-border-left: var(--darkreader-border-a855f740, rgba(79, 7, 148, 0.25));">
+<div>
+<span style="font-size: 11px; font-weight: 700; color: rgb(192, 132, 252); text-transform: uppercase; --darkreader-inline-color: var(--darkreader-text-c084fc, #b977fc);">Character:</span>
+<span id="vi-char-name" style="font-size: 13px; font-weight: 700; color: rgb(255, 255, 255); margin-left: 6px; --darkreader-inline-color: var(--darkreader-text-ffffff, #e8e6e3);">Character Name</span>
+</div>
+<button class="btn btn-sm" id="btn-vi-reextract" style="background: rgba(168, 85, 247, 0.2); border: 1px solid rgba(168, 85, 247, 0.4); color: rgb(233, 213, 255); --darkreader-inline-bgcolor: var(--darkreader-background-a855f733, rgba(81, 7, 151, 0.2)); --darkreader-inline-bgimage: none; --darkreader-inline-border-top: var(--darkreader-border-a855f766, rgba(79, 7, 148, 0.4)); --darkreader-inline-border-right: var(--darkreader-border-a855f766, rgba(79, 7, 148, 0.4)); --darkreader-inline-border-bottom: var(--darkreader-border-a855f766, rgba(79, 7, 148, 0.4)); --darkreader-inline-border-left: var(--darkreader-border-a855f766, rgba(79, 7, 148, 0.4)); --darkreader-inline-color: var(--darkreader-text-e9d5ff, #d5afff);" title="Re-analyze card profile with AI to suggest new visual tags" type="button">
+<span>🔄 Re-extract with AI</span>
+</button>
+</div>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+<div class="form-group" style="margin-bottom: 0;">
+<label class="form-label" style="font-size: 11px; font-weight: 700;">Subject / Gender Tag</label>
+<input class="form-input" id="vi-gender" placeholder="e.g. 1girl or 1boy" type="text"/>
+<span style="font-size: 10px; color: var(--text-muted); --darkreader-inline-color: var(--darkreader-text--text-muted, var(--darkreader-text-000000, #e8e6e3));">Primary subject tag (1girl, 1boy, 1other)</span>
+</div>
+<div class="form-group" style="margin-bottom: 0;">
+<label class="form-label" style="font-size: 11px; font-weight: 700;">Apparent Age &amp; Life Stage</label>
+<input class="form-input" id="vi-age" placeholder="e.g. Elderly woman (72 years old), authentic facial wrinkles" type="text"/>
+<span style="font-size: 10px; color: var(--text-muted); --darkreader-inline-color: var(--darkreader-text--text-muted, var(--darkreader-text-000000, #e8e6e3));">Prevents elderly characters from de-aging into 20-somethings</span>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+<div class="form-group" style="margin-bottom: 0;">
+<label class="form-label" style="font-size: 11px; font-weight: 700;">Hair (Color, Length, Style)</label>
+<input class="form-input" id="vi-hair" placeholder="e.g. silver_hair, long_hair, twin_braids, bangs" type="text"/>
+</div>
+<div class="form-group" style="margin-bottom: 0;">
+<label class="form-label" style="font-size: 11px; font-weight: 700;">Eyes (Color &amp; Shape)</label>
+<input class="form-input" id="vi-eyes" placeholder="e.g. crimson_eyes, sharp_eyes" type="text"/>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+<div class="form-group" style="margin-bottom: 0;">
+<label class="form-label" style="font-size: 11px; font-weight: 700;">Distinctive Traits &amp; Features</label>
+<input class="form-input" id="vi-features" placeholder="e.g. wrinkles, pale_skin, fangs, glasses, pointy_ears" type="text"/>
+</div>
+<div class="form-group" style="margin-bottom: 0;">
+<label class="form-label" style="font-size: 11px; font-weight: 700;">Body Build &amp; Silhouette</label>
+<input class="form-input" id="vi-build" placeholder="e.g. slender, petite or muscular, broad_shoulders" type="text"/>
+</div>
+</div>
+<div class="form-group" style="margin-bottom: 12px;">
+<label class="form-label" style="font-size: 11px; font-weight: 700;">Signature Wardrobe / Aesthetic Palette</label>
+<input class="form-input" id="vi-clothing" placeholder="e.g. gothic_dress, choker, black_attire, dark_palette" type="text"/>
+</div>
+<div class="form-group" style="margin-bottom: 8px;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+<label class="form-label" style="margin: 0px; font-size: 11px; font-weight: 700; color: rgb(167, 139, 250); --darkreader-inline-color: var(--darkreader-text-a78bfa, #9c7df9);">
+                Combined Booru / Diffusion Tags (Editable)
+              </label>
+<button class="btn btn-sm" id="btn-vi-sync-tags" style="padding: 1px 8px; font-size: 10px;" type="button">
+                🔄 Sync from Fields
+              </button>
+</div>
+<textarea class="form-textarea" id="vi-tags" placeholder="1girl, elderly_woman, wrinkles, silver_hair, long_hair, crimson_eyes, fangs, pale_skin, gothic_dress" style="min-height: 70px; font-family: monospace; font-size: 11px;"></textarea>
+<span style="font-size: 10px; color: var(--text-muted); --darkreader-inline-color: var(--darkreader-text--text-muted, var(--darkreader-text-000000, #e8e6e3));">
+              Comma-separated Danbooru tags automatically injected into all diffusion prompts for consistency.
+            </span>
+</div>
+</div>
+</div>
+<div class="modal-footer" style="flex-shrink: 0; display: flex; justify-content: flex-end; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--border-color); --darkreader-inline-border-top-short: 1px solid var(--darkreader-border--border-color);">
+<button class="btn btn-sm" id="btn-vi-cancel" type="button">Cancel</button>
+<button class="btn btn-primary" id="btn-vi-save" style="background: linear-gradient(135deg, rgb(124, 58, 237), rgb(168, 85, 247)); border: medium; --darkreader-inline-bgcolor: var(--darkreader-background-00000000, rgba(0, 0, 0, 0)); --darkreader-inline-bgimage: linear-gradient(135deg, var(--darkreader-background-7c3aed, #460fa5), var(--darkreader-background-a855f7, #510797)); --darkreader-inline-border-top: medium; --darkreader-inline-border-right: medium; --darkreader-inline-border-bottom: medium; --darkreader-inline-border-left: medium;" type="button">
+<span id="btn-vi-save-text">💾 Save Visual Identity &amp; Proceed</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Modal: Synthesize Spine for Existing Character -->

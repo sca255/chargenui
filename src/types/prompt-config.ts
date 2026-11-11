@@ -36,6 +36,10 @@ export interface PromptTemplateConfig {
   id: string;
   name: string;
   description: string;
+  version?: number;
+  parentId?: string;
+  changelog?: string[];
+  tags?: string[];
   isPrivate?: boolean;
   
   systemPrompt: string;
@@ -75,4 +79,7 @@ export interface PromptProfileSummary {
   description: string;
   isPrivate: boolean;
   isCurrent: boolean;
+  version?: number;
+  parentId?: string;
+  tags?: string[];
 }

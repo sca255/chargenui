@@ -55,6 +55,7 @@ export interface ImagePromptQueueItem {
   id: string;
   characterId?: string;
   characterName: string;
+  name?: string;
   imagePurpose?: ImagePromptPurpose;
   createdAt: string;
   targetModel: ImageTargetModel;

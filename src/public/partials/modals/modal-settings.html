@@ -1,0 +1,180 @@
+<div class="modal-overlay hidden" id="modal-settings">
+<div class="modal">
+<div class="modal-header">
+<h3 style="font-size: 15px; font-weight: 700;">Settings &amp; Model Configuration</h3>
+<button class="btn btn-sm" id="btn-close-settings">✕</button>
+</div>
+<div class="modal-body">
+<div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 6px; padding: 10px; margin-bottom: 14px; font-size: 12px; color: #fca5a5; line-height: 1.4;">
+<strong>🛑 ZERO FREE AI POLICY:</strong> We are NOT a charity offering free AI or sponsored API tokens! You must bring your own API key or connect a local model (Ollama).
+        </div>
+<div class="form-group">
+<label class="form-label">Model Provider</label>
+<select class="form-select" id="setting-provider-type">
+<option value="none">❌ None Selected (Unconfigured - No Free Lunch!)</option>
+<option value="llamacpp">llama.cpp Server (OpenAI /v1/chat - Auto-Template)</option>
+<option value="ollama">Ollama (Local LLM &amp; Vision)</option>
+<option value="gemini">Google Gemini (Bring Your Own Key)</option>
+<option value="openrouter">OpenRouter (Bring Your Own Key)</option>
+<option value="openai">OpenAI / Custom Base URL (Bring Your Own Key)</option>
+<option value="anthropic">Anthropic (Bring Your Own Key)</option>
+</select>
+</div>
+<div class="form-group">
+<label class="form-label">API Key</label>
+<input class="form-input" id="setting-api-key" placeholder="Leave blank to use environment variable if set" type="password"/>
+<div id="setting-env-detected" style="font-size: 11px; color: var(--accent-emerald); margin-top: 4px; display:none;">
+            ✓ Pre-configured in .env
+          </div>
+</div>
+<div class="form-group" id="group-base-url" style="display:none;">
+<label class="form-label">Custom Base URL</label>
+<input class="form-input" id="setting-base-url" placeholder="e.g. http://localhost:11434/v1" type="text"/>
+</div>
+<div class="form-group">
+<label class="form-label">Model Name</label>
+<input class="form-input" id="setting-model-name" placeholder="e.g. llama-3.3-70b, gpt-4o, gemini-2.5-flash" type="text" value=""/>
+</div>
+<div class="form-group">
+<label class="form-label">Temperature: <span id="temp-val">0.85</span></label>
+<input id="setting-temperature" max="1.5" min="0.1" step="0.05" style="width:100%;" type="range" value="0.85"/>
+</div>
+<div style="margin: 18px 0 10px; border-top: 1px solid var(--border-color); padding-top: 14px;">
+<div style="font-size: 13px; font-weight: 700; color: var(--accent-cyan); margin-bottom: 4px;">
+            🌐 Web Search &amp; Lore Retrieval
+          </div>
+<div style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">
+            Used to query wikis, fandom databases, and canon lore before character synthesis.
+          </div>
+<div class="form-group">
+<label class="form-label">Search Provider</label>
+<select class="form-select" id="setting-search-provider">
+<option value="duckduckgo">DuckDuckGo (Free / No Key Required)</option>
+<option value="tavily">Tavily AI Search (Requires API Key)</option>
+<option value="brave">Brave Search API (Requires API Key)</option>
+<option value="searxng">SearXNG Self-Hosted Instance</option>
+</select>
+</div>
+<div class="form-group" id="group-search-key" style="display:none;">
+<label class="form-label" id="label-search-key">Search API Key</label>
+<input class="form-input" id="setting-search-key" placeholder="Enter API Key" type="password"/>
+</div>
+</div>
+<div style="margin: 18px 0 10px; border-top: 1px solid var(--border-color); padding-top: 14px;">
+<div style="font-size: 13px; font-weight: 700; color: var(--accent-purple); margin-bottom: 4px;">
+            🔌 MCP (Model Context Protocol) Server
+          </div>
+<div style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">
+            Connect an MCP server for external tools, knowledge bases, or web browsing.
+          </div>
+<div class="form-group">
+<label class="form-label">MCP Server Command / URL</label>
+<input class="form-input" id="setting-mcp-command" placeholder="e.g. npx -y @modelcontextprotocol/server-brave-search or http://localhost:8000/sse" type="text"/>
+</div>
+</div>
+<!-- Image Generation & Diffusion Model Defaults -->
+<div style="margin: 18px 0 10px; border-top: 1px solid var(--border-color); padding-top: 14px;">
+<div style="font-size: 13px; font-weight: 700; color: #a855f7; margin-bottom: 4px;">
+            🖼️ Default Image Model Architecture
+          </div>
+<div style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">
+            Target diffusion architecture used for quick Greeting Scenes, Chat Backgrounds, and default image prompt generation.
+          </div>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+<div class="form-group" style="margin-bottom: 0;">
+<label class="form-label">Default Target Prompt Style</label>
+<select class="form-select" id="setting-img-default-model">
+<option value="flux">FLUX.1 / SD 3.5 (Natural Language Prose)</option>
+<option value="pony">Pony Diffusion V6 / XL (Score Tags &amp; Danbooru)</option>
+<option value="illustrious">Illustrious-XL / Animagine (Booru Tags)</option>
+<option value="sdxl">SDXL Standard (Detailed Quality)</option>
+<option value="midjourney">Midjourney V6 (Cinematic Raw)</option>
+<option value="general">General Diffusion</option>
+</select>
+</div>
+<div class="form-group" style="margin-bottom: 0;">
+<label class="form-label">Default Art Style</label>
+<select class="form-select" id="setting-img-default-art-style">
+<option value="anime">Anime / Manga Illustration</option>
+<option value="semi_realistic">Semi-Realistic / 2.5D Digital Art</option>
+<option value="photorealistic">Photorealistic / Film Portrait</option>
+<option value="digital_painting">Digital Painting / Fantasy Concept Art</option>
+<option value="oil_painting">Classic Oil Painting</option>
+<option value="watercolor">Watercolor / Ink Sketch</option>
+<option value="dark_fantasy">Dark Fantasy / Eldritch Baroque</option>
+<option value="cyberpunk">Cyberpunk / Neon Sci-Fi</option>
+</select>
+</div>
+</div>
+</div>
+<!-- Prompt Engine & Architectures Section -->
+<div style="margin: 18px 0 10px; border-top: 1px solid var(--border-color); padding-top: 14px;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+<div style="font-size: 13px; font-weight: 700; color: #f59e0b;">
+              🧠 Prompt Architecture &amp; Engine
+            </div>
+<span id="badge-prompt-private" style="font-size: 10px; padding: 2px 6px; border-radius: 4px; background: rgba(16, 185, 129, 0.2); color: #10b981; font-weight: 600; display: inline-block;">
+              🔒 Private Config (Git-Ignored)
+            </span>
+</div>
+<div style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">
+            Select which prompt engine powers generation. Switch to <strong>⚡ Playable RP</strong> when using local models (llama.cpp, Ollama, Llama 3, Qwen) to strip abstract meta-essay bloat and guarantee clean, playable roleplay cards.
+          </div>
+<div class="form-group">
+<label class="form-label">Active Prompt Profile</label>
+<select class="form-select" id="setting-prompt-profile">
+<option value="local_maledom_bdsm">⛓️ Playable RP — Male Dom &amp; BDSM (Tuned for Local Models)</option>
+<option value="local_playable">⚡ Playable RP (Tuned for Local Models: llama.cpp, Ollama, Llama 3, Qwen)</option>
+<option value="weaver_evolved">🔒 Weaver Evolved (Tuned for Cloud Models: Claude, GPT-4, Gemini)</option>
+<option value="weaver">🔒 Weaver Classic (Private)</option>
+<option value="default">🌐 CharGen Default</option>
+</select>
+</div>
+<!-- Collapsible Template Customizer -->
+<details style="background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px; margin-top: 8px;">
+<summary style="font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text-secondary); user-select: none;">
+              ⚙️ Inspect &amp; Customize Raw Prompt Templates
+            </summary>
+<div style="margin-top: 10px; display: flex; flex-direction: column; gap: 10px;">
+<div>
+<label class="form-label" style="font-size: 11px;">System Operational Mandate</label>
+<textarea class="form-textarea" id="prompt-edit-system" style="min-height: 90px; font-size: 11px; font-family: monospace;"></textarea>
+</div>
+<div>
+<label class="form-label" style="font-size: 11px;">Spine Synthesis Instructions</label>
+<textarea class="form-textarea" id="prompt-edit-spine" style="min-height: 90px; font-size: 11px; font-family: monospace;"></textarea>
+</div>
+<div>
+<label class="form-label" style="font-size: 11px;">Description Guidance (Tagged Bundle / Prose)</label>
+<textarea class="form-textarea" id="prompt-edit-desc" style="min-height: 90px; font-size: 11px; font-family: monospace;"></textarea>
+</div>
+<div>
+<label class="form-label" style="font-size: 11px;">Personality Spec Guidance (Voice &amp; Language)</label>
+<textarea class="form-textarea" id="prompt-edit-pers" style="min-height: 70px; font-size: 11px; font-family: monospace;"></textarea>
+</div>
+<div>
+<label class="form-label" style="font-size: 11px;">Scenario Rule &amp; Scene-Objective</label>
+<textarea class="form-textarea" id="prompt-edit-scenario" style="min-height: 60px; font-size: 11px; font-family: monospace;"></textarea>
+</div>
+<div>
+<label class="form-label" style="font-size: 11px;">First Message Rule (Voiced Narration)</label>
+<textarea class="form-textarea" id="prompt-edit-firstmes" style="min-height: 60px; font-size: 11px; font-family: monospace;"></textarea>
+</div>
+<div>
+<label class="form-label" style="font-size: 11px;">Example Messages Rule</label>
+<textarea class="form-textarea" id="prompt-edit-alichat" style="min-height: 60px; font-size: 11px; font-family: monospace;"></textarea>
+</div>
+<div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 6px;">
+<button class="btn btn-sm btn-outline" id="btn-reset-prompts" type="button">Reset to Defaults</button>
+<button class="btn btn-sm btn-primary" id="btn-save-custom-prompts" type="button">Save Custom Overrides</button>
+</div>
+</div>
+</details>
+</div>
+</div>
+<div class="modal-footer">
+<button class="btn btn-primary" id="btn-save-settings">Save Settings</button>
+</div>
+</div>
+</div>
+<!-- Card Library & Multi-Deck Manager Modal -->

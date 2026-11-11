@@ -10,6 +10,7 @@ import type {
 import { extractCardFromPngBuffer, extractPngChunks } from "./png-card";
 import { normalizeRpMacros } from "./macro-engine";
 import { parseCharxArchive } from "./charx-container";
+import { migrateCharacter } from "./migrations";
 
 /**
  * Cleans character book of internal authoring scaffolding (e.g. reaction gradient dumps, Weaver blueprints)
@@ -197,132 +198,139 @@ export function parseCharacterFromInput(
   raw: Uint8Array | string,
   filename?: string
 ): { character: RoleplayCharacter; avatarDataUrl?: string; format: string; raw_system_prompt?: string } {
-  // If Uint8Array, check if CharX (ZIP) or PNG or UTF-8 string
-  if (raw instanceof Uint8Array) {
-    // 1. Check for ZIP / .charx archive signature (PK\x03\x04)
-    const isZip = raw.length > 4 && raw[0] === 0x50 && raw[1] === 0x4b && raw[2] === 0x03 && raw[3] === 0x04;
-    if (isZip || (filename && filename.toLowerCase().endsWith(".charx"))) {
-      try {
-        return parseCharxArchive(raw);
-      } catch (err: any) {
-        console.warn("Failed parsing as .charx bundle, trying fallback:", err.message);
+  const parsedResult = (() => {
+    // If Uint8Array, check if CharX (ZIP) or PNG or UTF-8 string
+    if (raw instanceof Uint8Array) {
+      // 1. Check for ZIP / .charx archive signature (PK\x03\x04)
+      const isZip = raw.length > 4 && raw[0] === 0x50 && raw[1] === 0x4b && raw[2] === 0x03 && raw[3] === 0x04;
+      if (isZip || (filename && filename.toLowerCase().endsWith(".charx"))) {
+        try {
+          return parseCharxArchive(raw);
+        } catch (err: any) {
+          console.warn("Failed parsing as .charx bundle, trying fallback:", err.message);
+        }
       }
+
+      // 2. Check for PNG signature
+      const isPng = raw.length > 8 && raw[0] === 0x89 && raw[1] === 0x50 && raw[2] === 0x4e && raw[3] === 0x47;
+      if (isPng) {
+        const card = extractCardFromPngBuffer(raw);
+        const avatarDataUrl = `data:image/png;base64,${Buffer.from(raw).toString("base64")}`;
+        if (card) {
+          const rawSysPrompt = (card.data.system_prompt || "").trim();
+          if (card.spec === "chara_card_v3") {
+            return {
+              character: cardV3ToCharacter(card as TavernCardV3, avatarDataUrl),
+              avatarDataUrl,
+              format: "png_tavern_v3",
+              raw_system_prompt: rawSysPrompt || undefined,
+            };
+          }
+          return {
+            character: cardV2ToCharacter(card as TavernCardV2, avatarDataUrl),
+            avatarDataUrl,
+            format: "png_tavern_v2",
+            raw_system_prompt: rawSysPrompt || undefined,
+          };
+        } else {
+          // Image without metadata - ready for vision scan!
+          return {
+            character: {
+              id: "char_" + Math.random().toString(36).substring(2, 10),
+              name: filename ? filename.replace(/\.[^/.]+$/, "") : "Unscanned Character",
+              avatar: avatarDataUrl,
+              description: "",
+              personality: "",
+              scenario: "",
+              first_mes: "",
+              mes_example: "",
+              alternate_greetings: [],
+              system_prompt: "",
+              post_history_instructions: "",
+              creator_notes: "",
+              tags: [],
+            },
+            avatarDataUrl,
+            format: "png_image_only",
+          };
+        }
+      }
+      // Try decoding as text
+      raw = new TextDecoder().decode(raw);
     }
 
-    // 2. Check for PNG signature
-    const isPng = raw.length > 8 && raw[0] === 0x89 && raw[1] === 0x50 && raw[2] === 0x4e && raw[3] === 0x47;
-    if (isPng) {
-      const card = extractCardFromPngBuffer(raw);
-      const avatarDataUrl = `data:image/png;base64,${Buffer.from(raw).toString("base64")}`;
-      if (card) {
-        const rawSysPrompt = (card.data.system_prompt || "").trim();
-        if (card.spec === "chara_card_v3") {
+    // Raw is string
+    const trimmed = raw.trim();
+    if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
+      try {
+        const parsed = JSON.parse(trimmed);
+        if (parsed.spec === "chara_card_v3" && parsed.data) {
+          const rawSysPrompt = (parsed.data.system_prompt || "").trim();
           return {
-            character: cardV3ToCharacter(card as TavernCardV3, avatarDataUrl),
-            avatarDataUrl,
-            format: "png_tavern_v3",
+            character: cardV3ToCharacter(parsed as TavernCardV3),
+            format: "json_v3",
             raw_system_prompt: rawSysPrompt || undefined,
           };
         }
-        return {
-          character: cardV2ToCharacter(card as TavernCardV2, avatarDataUrl),
-          avatarDataUrl,
-          format: "png_tavern_v2",
-          raw_system_prompt: rawSysPrompt || undefined,
-        };
-      } else {
-        // Image without metadata - ready for vision scan!
-        return {
-          character: {
-            id: "char_" + Math.random().toString(36).substring(2, 10),
-            name: filename ? filename.replace(/\.[^/.]+$/, "") : "Unscanned Character",
-            avatar: avatarDataUrl,
-            description: "",
-            personality: "",
-            scenario: "",
-            first_mes: "",
-            mes_example: "",
-            alternate_greetings: [],
-            system_prompt: "",
-            post_history_instructions: "",
-            creator_notes: "",
-            tags: [],
-          },
-          avatarDataUrl,
-          format: "png_image_only",
-        };
-      }
+        if (parsed.spec === "chara_card_v2" && parsed.data) {
+          const rawSysPrompt = (parsed.data.system_prompt || "").trim();
+          return {
+            character: cardV2ToCharacter(parsed as TavernCardV2),
+            format: "json_v2",
+            raw_system_prompt: rawSysPrompt || undefined,
+          };
+        }
+        // V1 JSON or Agnai
+        if (parsed.name || parsed.description || parsed.first_mes) {
+          const rawSysPrompt = (parsed.system_prompt || "").trim();
+          const v2Card: TavernCardV2 = {
+            spec: "chara_card_v2",
+            spec_version: "2.0",
+            data: {
+              name: parsed.name || "Unnamed",
+              description: parsed.description || "",
+              personality: parsed.personality || "",
+              scenario: parsed.scenario || "",
+              first_mes: parsed.first_mes || "",
+              mes_example: parsed.mes_example || "",
+              creator_notes: parsed.creator_notes || "",
+              system_prompt: parsed.system_prompt || "",
+              post_history_instructions: parsed.post_history_instructions || "",
+              alternate_greetings: Array.isArray(parsed.alternate_greetings) ? parsed.alternate_greetings : [],
+              tags: Array.isArray(parsed.tags) ? parsed.tags : [],
+            },
+          };
+          return {
+            character: cardV2ToCharacter(v2Card),
+            format: "json_v1",
+            raw_system_prompt: rawSysPrompt || undefined,
+          };
+        }
+      } catch {}
     }
-    // Try decoding as text
-    raw = new TextDecoder().decode(raw);
-  }
 
-  // Raw is string
-  const trimmed = raw.trim();
-  if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
-    try {
-      const parsed = JSON.parse(trimmed);
-      if (parsed.spec === "chara_card_v3" && parsed.data) {
-        const rawSysPrompt = (parsed.data.system_prompt || "").trim();
-        return {
-          character: cardV3ToCharacter(parsed as TavernCardV3),
-          format: "json_v3",
-          raw_system_prompt: rawSysPrompt || undefined,
-        };
-      }
-      if (parsed.spec === "chara_card_v2" && parsed.data) {
-        const rawSysPrompt = (parsed.data.system_prompt || "").trim();
-        return {
-          character: cardV2ToCharacter(parsed as TavernCardV2),
-          format: "json_v2",
-          raw_system_prompt: rawSysPrompt || undefined,
-        };
-      }
-      // V1 JSON or Agnai
-      if (parsed.name || parsed.description || parsed.first_mes) {
-        const rawSysPrompt = (parsed.system_prompt || "").trim();
-        const v2Card: TavernCardV2 = {
-          spec: "chara_card_v2",
-          spec_version: "2.0",
-          data: {
-            name: parsed.name || "Unnamed",
-            description: parsed.description || "",
-            personality: parsed.personality || "",
-            scenario: parsed.scenario || "",
-            first_mes: parsed.first_mes || "",
-            mes_example: parsed.mes_example || "",
-            creator_notes: parsed.creator_notes || "",
-            system_prompt: parsed.system_prompt || "",
-            post_history_instructions: parsed.post_history_instructions || "",
-            alternate_greetings: Array.isArray(parsed.alternate_greetings) ? parsed.alternate_greetings : [],
-            tags: Array.isArray(parsed.tags) ? parsed.tags : [],
-          },
-        };
-        return {
-          character: cardV2ToCharacter(v2Card),
-          format: "json_v1",
-          raw_system_prompt: rawSysPrompt || undefined,
-        };
-      }
-    } catch {}
-  }
+    // Fallback: Raw text description
+    return {
+      character: {
+        id: "char_" + Math.random().toString(36).substring(2, 10),
+        name: filename ? filename.replace(/\.[^/.]+$/, "") : "Custom Character",
+        description: trimmed,
+        personality: "",
+        scenario: "",
+        first_mes: "",
+        mes_example: "",
+        alternate_greetings: [],
+        system_prompt: "",
+        post_history_instructions: "",
+        creator_notes: "",
+        tags: [],
+      },
+      format: "raw_text",
+    };
+  })();
 
-  // Fallback: Raw text description
   return {
-    character: {
-      id: "char_" + Math.random().toString(36).substring(2, 10),
-      name: filename ? filename.replace(/\.[^/.]+$/, "") : "Custom Character",
-      description: trimmed,
-      personality: "",
-      scenario: "",
-      first_mes: "",
-      mes_example: "",
-      alternate_greetings: [],
-      system_prompt: "",
-      post_history_instructions: "",
-      creator_notes: "",
-      tags: [],
-    },
-    format: "raw_text",
+    ...parsedResult,
+    character: migrateCharacter(parsedResult.character),
   };
 }

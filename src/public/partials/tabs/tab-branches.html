@@ -1,0 +1,43 @@
+<div class="tab-content hidden" id="tab-branches" style="display: flex; flex-direction: column; gap: 10px;">
+  <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(239, 68, 68, 0.12)); border: 1px solid #f59e0b; border-radius: var(--radius-sm); padding: 10px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+      <span style="font-size: 13px; font-weight: 700; color: #fde68a;">🌿 Git-Like Character Branching</span>
+      <span style="font-size: 10px; background: rgba(245, 158, 11, 0.25); color: #fbbf24; padding: 2px 6px; border-radius: 4px; font-weight: 600;">CANON & FORKS</span>
+    </div>
+    <div style="font-size: 11px; color: var(--text-muted); line-height: 1.4;">
+      Create branch storylines (AU, villain turn, romance route), commit snapshot changes, checkout history, and merge branches.
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Active Branch</label>
+    <div style="display: flex; gap: 6px;">
+      <select class="form-select" id="branch-select" style="flex: 1;">
+        <option value="main">main</option>
+      </select>
+      <button class="btn btn-secondary" id="btn-branch-checkout" style="font-size: 11px; padding: 6px 10px;" type="button">Checkout</button>
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 6px;">
+    <input class="form-input" id="branch-new-name" placeholder="New branch name (e.g. dark-au, modern)" style="flex: 1;" type="text" />
+    <button class="btn btn-secondary" id="btn-branch-create" style="font-size: 11px; padding: 6px 10px;" type="button">+ Fork</button>
+  </div>
+
+  <div class="form-group" style="margin-top: 4px;">
+    <label class="form-label">Commit Current State</label>
+    <div style="display: flex; gap: 6px;">
+      <input class="form-input" id="branch-commit-msg" placeholder="Commit message (e.g. Added combat gear & darker tone)" style="flex: 1;" type="text" />
+      <button class="btn btn-primary" id="btn-branch-commit" style="font-size: 11px; padding: 6px 10px;" type="button">Commit</button>
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 6px; border-top: 1px solid var(--border-subtle); padding-top: 8px;">
+    <button class="btn btn-secondary" id="btn-branch-diff" style="flex: 1; font-size: 11px; padding: 6px;" type="button">Diff View</button>
+    <button class="btn btn-secondary" id="btn-branch-merge" style="flex: 1; font-size: 11px; padding: 6px;" type="button">Merge Into Active</button>
+  </div>
+
+  <div id="branch-history-container" style="display: flex; flex-direction: column; gap: 4px; max-height: 180px; overflow-y: auto;"></div>
+</div>
+
+<!-- TAB: Asset Pipeline Plugins -->

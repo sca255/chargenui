@@ -48,6 +48,27 @@ function persistCache(): void {
   }
 }
 
+function normalizeMessageContent(content: string | any[] | undefined): any {
+  if (typeof content === "string") {
+    return content.trim();
+  }
+  if (Array.isArray(content)) {
+    return content.map((part) => {
+      if (!part) return "";
+      if (typeof part === "string") return part.trim();
+      if (part.type === "text") return { type: "text", text: (part.text || "").trim() };
+      if (part.type === "image_url") {
+        return {
+          type: "image_url",
+          urlHash: createHash("sha256").update(part.image_url?.url || "").digest("hex"),
+        };
+      }
+      return part;
+    });
+  }
+  return "";
+}
+
 /**
  * Computes a deterministic SHA256 key for provider, messages, and options.
  */
@@ -58,7 +79,7 @@ export function computeCacheKey(
 ): string {
   const normMessages = messages.map((m) => ({
     role: m.role,
-    content: (m.content || "").trim(),
+    content: normalizeMessageContent(m.content),
   }));
 
   const keyPayload = {
@@ -106,9 +127,17 @@ export function setCachedResponse(
   const key = computeCacheKey(config, messages, options);
 
   const lastUserMsg = [...messages].reverse().find((m) => m.role === "user");
-  const promptPreview = lastUserMsg?.content
-    ? (lastUserMsg.content.slice(0, 100) + (lastUserMsg.content.length > 100 ? "..." : ""))
-    : "Prompt";
+  let promptPreview = "Prompt";
+  if (typeof lastUserMsg?.content === "string") {
+    promptPreview = lastUserMsg.content.slice(0, 100) + (lastUserMsg.content.length > 100 ? "..." : "");
+  } else if (Array.isArray(lastUserMsg?.content)) {
+    const textPart = lastUserMsg.content.find((p: any) => p && p.type === "text");
+    if (textPart && typeof textPart.text === "string") {
+      promptPreview = textPart.text.slice(0, 100) + (textPart.text.length > 100 ? "..." : "");
+    } else {
+      promptPreview = "[Multimodal Prompt]";
+    }
+  }
 
   cache[key] = {
     response,

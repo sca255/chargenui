@@ -57,6 +57,7 @@ export interface SuggestedIdea {
     promptSnippet?: string;
   };
   suggestedBy?: string;
+  avatar?: string;
   timestamp: string;
   autoGenerate?: boolean;
   characterId?: string;
@@ -567,9 +568,11 @@ class ServerIpcManager {
       story_arc?: string;
       archetype?: string;
       themes?: string[];
+      tags?: string[];
       era?: string;
       botMode?: "single" | "multi_character" | "rpg_world";
       suggestedBy?: string;
+      avatar?: string;
       autoGenerate?: boolean;
       provider?: ProviderConfig;
     }
@@ -607,16 +610,22 @@ class ServerIpcManager {
 
     const storyArcVal = input.storyArc?.trim() || input.story_arc?.trim() || undefined;
 
+    // Merge themes and tags
+    const incomingThemes = Array.isArray(input.themes) ? input.themes : [];
+    const incomingTags = Array.isArray(input.tags) ? input.tags : [];
+    const mergedThemes = Array.from(new Set([...incomingThemes, ...incomingTags])).filter(Boolean);
+
     const idea: SuggestedIdea = {
       id: `idea_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
       concept: input.concept.trim(),
       genre: input.genre?.trim() || undefined,
       storyArc: storyArcVal,
       archetype: input.archetype?.trim(),
-      themes: Array.isArray(input.themes) ? input.themes : [],
+      themes: mergedThemes,
       era: input.era?.trim() || undefined,
       eraData: resolvedEraData,
       suggestedBy: input.suggestedBy || "Idea Suggester QML App",
+      avatar: input.avatar,
       timestamp: new Date().toISOString(),
       autoGenerate: !!input.autoGenerate,
     };
@@ -647,6 +656,10 @@ class ServerIpcManager {
           format: "prose",
           provider: providerToUse,
         });
+
+        if (idea.avatar) {
+          character.avatar = idea.avatar;
+        }
 
         idea.characterId = character.id;
         idea.characterName = character.name;

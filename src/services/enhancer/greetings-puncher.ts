@@ -102,9 +102,9 @@ export async function regenerateGreetingsWithSpine(
   const sceneData = await renderScenarioAndFirstMessage(spine, provider, "single", storyArc);
   
   // Retry up to 2 times if LLM doesn't return enough greetings
-  let dialogueData;
+  let dialogueData: { mes_example: string; alternate_greetings: string[] } = { mes_example: "", alternate_greetings: [] };
   for (let attempt = 1; attempt <= 2; attempt++) {
-    const dialogueData = await renderExampleMsgsAndAlts(spine, provider, "single", storyArc, minAltGreetings);
+    dialogueData = await renderExampleMsgsAndAlts(spine, provider, "single", storyArc, minAltGreetings);
     if (dialogueData.alternate_greetings?.length >= minAltGreetings) {
       break;
     }
@@ -201,14 +201,6 @@ ${Array.from({ length: targetAltCount }, (_, i) =>
   const name = char.name;
 
   const rawAlts = res.alternate_greetings || [];
-  const normalizedAlts = Array.isArray(rawAlts)
-    ? rawAlts.map((item: any) => {
-        if (typeof item === "string") return normalizeDialogueQuotes(normalizeRpMacros(item, charName));
-        if (item && typeof item.greeting === "string") return normalizeDialogueQuotes(normalizeRpMacros(item.greeting, charName));
-        return "";
-      }).filter(Boolean)
-    : [];
-  
   const normalizedAlts = Array.isArray(rawAlts)
     ? rawAlts.map((item: any) => {
         if (typeof item === "string") return normalizeDialogueQuotes(normalizeRpMacros(item, charName));

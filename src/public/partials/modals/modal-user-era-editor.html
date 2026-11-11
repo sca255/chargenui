@@ -1,0 +1,52 @@
+<div class="modal-overlay hidden" id="modal-user-era-editor" style="z-index: 1050;">
+<div class="modal" style="width: 580px; max-width: 95vw; max-height: 90vh;">
+<div class="modal-header">
+<h3 id="user-era-modal-title" style="font-size: 15px; font-weight: 700; margin: 0;">➕ Create Custom Era Template</h3>
+<button class="btn btn-sm" id="btn-close-user-era-editor">✕</button>
+</div>
+<div class="modal-body" style="padding: 16px; overflow-y: auto; max-height: calc(90vh - 120px); display: flex; flex-direction: column; gap: 10px;">
+<input id="user-era-id" type="hidden"/>
+<div class="form-group">
+<label class="form-label">Era Display Name *</label>
+<input class="form-input" id="user-era-name" placeholder="e.g. ⚔️ Kingdom of Jerusalem / Crusader Levant" type="text"/>
+</div>
+<div style="display: flex; gap: 10px;">
+<div class="form-group" style="flex: 1;">
+<label class="form-label">Time Span / Century *</label>
+<input class="form-input" id="user-era-span" placeholder="e.g. c. 1099 – 1291 CE" type="text"/>
+</div>
+<div class="form-group" style="flex: 1;">
+<label class="form-label">Geographic Region</label>
+<input class="form-input" id="user-era-region" placeholder="e.g. Levant / Middle East" type="text"/>
+</div>
+</div>
+<div class="form-group">
+<label class="form-label">Aesthetic &amp; Material Setting</label>
+<textarea class="form-textarea" id="user-era-aesthetic" placeholder="Architecture, clothing fabrics, lighting, environment, sensory details..." rows="2"></textarea>
+</div>
+<div class="form-group">
+<label class="form-label">Technology &amp; Material Limitations</label>
+<textarea class="form-textarea" id="user-era-tech" placeholder="What materials and tools exist? Explicitly state what is NOT yet invented..." rows="2"></textarea>
+</div>
+<div class="form-group">
+<label class="form-label">Social Hierarchy, Codes &amp; Propriety</label>
+<textarea class="form-textarea" id="user-era-social" placeholder="Honor codes, class divisions, religious authority, interpersonal etiquette..." rows="2"></textarea>
+</div>
+<div style="display: flex; gap: 10px;">
+<div class="form-group" style="flex: 1;">
+<label class="form-label">Sample Names (comma-separated)</label>
+<input class="form-input" id="user-era-names" placeholder="e.g. Baldwin, Sibylla, Raymond" type="text"/>
+</div>
+<div class="form-group" style="flex: 1;">
+<label class="form-label">Sample Titles (comma-separated)</label>
+<input class="form-input" id="user-era-titles" placeholder="e.g. The Outremer Knight, The Templar Castellan" type="text"/>
+</div>
+</div>
+</div>
+<div class="modal-footer" style="padding: 12px 16px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 8px;">
+<button class="btn btn-secondary btn-sm" id="btn-cancel-user-era" type="button">Cancel</button>
+<button class="btn btn-primary btn-sm" id="btn-save-user-era" type="button">💾 Save Custom Era</button>
+</div>
+</div>
+</div>
+<!-- Raw JSON Spec Modal -->

@@ -43,10 +43,20 @@ export async function generateGroupEncounter(
 
   const rosterDescriptions = cardDataList.map(({ member, card }) => {
     const c = card || ({} as any);
+    const rels = member.relationships?.length
+      ? "\n• Pairwise Relational Dynamics:\n" +
+        member.relationships
+          .map(
+            (r) =>
+              `  - Target: ${r.targetName || r.targetId} | Type: ${r.typeId} ("${r.label}") [Tension: ${r.tension}/10, Trust: ${r.trust}/10, Volatility: ${r.volatility}/10]${r.historyNotes ? ` | Incident: ${r.historyNotes}` : ""}`
+          )
+          .join("\n")
+      : "";
+
     return `### COMPANION: ${member.card_name}
 • Household Standing / Role: ${member.household_role || "Companion"} (${member.standing || "Standard"})
 • Attitude & Dynamic with {{user}}: ${member.attitude_to_user || "Devoted yet bounded"}
-• Attitude toward Co-Members/Peers: ${member.attitude_to_peers || "Respectful, nuanced dynamic"}
+• Attitude toward Co-Members/Peers: ${member.attitude_to_peers || "Respectful, nuanced dynamic"}${rels}
 • Voice, Idiolect & Mannerisms: ${c.personality ? String(c.personality).slice(0, 450) : "Natural, distinct cadence"}
 • Core Traits & Appearance: ${c.description ? String(c.description).slice(0, 450) : "Distinctive presence"}`;
   }).join("\n\n");

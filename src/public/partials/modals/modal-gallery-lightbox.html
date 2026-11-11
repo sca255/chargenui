@@ -1,0 +1,12 @@
+<div class="modal-overlay hidden" id="modal-gallery-lightbox" style="z-index: 10005;">
+<div class="modal" style="width: auto; max-width: 90vw; max-height: 90vh; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(168, 85, 247, 0.4); padding: 12px; display: flex; flex-direction: column; align-items: center; --darkreader-inline-bgcolor: var(--darkreader-background-0f172af2, rgba(12, 18, 34, 0.95)); --darkreader-inline-bgimage: none; --darkreader-inline-border-top: var(--darkreader-border-a855f766, rgba(79, 7, 148, 0.4)); --darkreader-inline-border-right: var(--darkreader-border-a855f766, rgba(79, 7, 148, 0.4)); --darkreader-inline-border-bottom: var(--darkreader-border-a855f766, rgba(79, 7, 148, 0.4)); --darkreader-inline-border-left: var(--darkreader-border-a855f766, rgba(79, 7, 148, 0.4));">
+<div style="width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+<span id="lightbox-title" style="font-size: 13px; font-weight: 700; color: rgb(255, 255, 255); --darkreader-inline-color: var(--darkreader-text-ffffff, #e8e6e3);">Image Preview</span>
+<button class="btn btn-sm" id="btn-close-lightbox" type="button">✕</button>
+</div>
+<div style="max-height: 75vh; max-width: 85vw; overflow: auto; display: flex; justify-content: center; align-items: center;">
+<img alt="Preview" id="lightbox-img" src="" style="max-height: 75vh; max-width: 85vw; object-fit: contain; border-radius: 6px;"/>
+</div>
+</div>
+</div>
+<!-- Scripts (loaded after all modals so DOM elements exist) -->

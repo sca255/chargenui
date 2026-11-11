@@ -66,3 +66,31 @@ export async function routeLLMJson<T = any>(
   const raw = await routeLLMCompletion(config, messages, { ...options, jsonMode: true });
   return extractCleanJson(raw) as T;
 }
+
+export interface CallProviderWithJsonRepairParams {
+  provider: ProviderConfig;
+  systemPrompt?: string;
+  userPrompt: string;
+  temperature?: number;
+  maxTokens?: number;
+}
+
+/**
+ * Convenience helper wrapping routeLLMJson with system/user prompt formatting and standard options.
+ */
+export async function callProviderWithJsonRepair<T = any>(
+  params: CallProviderWithJsonRepairParams
+): Promise<{ data: T; raw?: string }> {
+  const messages: ChatMessage[] = [];
+  if (params.systemPrompt) {
+    messages.push({ role: "system", content: params.systemPrompt });
+  }
+  messages.push({ role: "user", content: params.userPrompt });
+
+  const data = await routeLLMJson<T>(params.provider, messages, {
+    temperature: params.temperature,
+    maxTokens: params.maxTokens,
+  });
+
+  return { data };
+}

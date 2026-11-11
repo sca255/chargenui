@@ -4,6 +4,7 @@ import type { RoleplayCharacter } from "../../types/character";
 import { auditCharacterCard } from "../enhancer/diagnostic";
 import { calculateCharacterCardTokens } from "./token-counter";
 import { sanitizeCharacterBook } from "./card-parser";
+import { migrateCharacter } from "./migrations";
 
 export interface SavedCardRecord {
   id: string;
@@ -34,22 +35,39 @@ async function ensureDir(): Promise<void> {
   try {
     await fs.mkdir(CARDS_DIR, { recursive: true });
   } catch (err: any) {
-    if (err.code !== "EEXIST") throw err;
+    if (err.code !== "EEXIST" && err.code !== "EROFS") throw err;
   }
 }
 
+// In-memory cache for fast metadata retrieval on library listing
+const memoryCardMetaCache = new Map<string, { mtimeMs: number; meta: SavedCardMeta }>();
+
 /**
  * Lists all saved cards with metadata, health score, and token count.
+ * Uses mtime-based memory cache to avoid expensive disk reads and token re-auditing on reload.
  */
 export async function listSavedCards(): Promise<SavedCardMeta[]> {
   await ensureDir();
-  const entries = await fs.readdir(CARDS_DIR);
+  let entries: string[] = [];
+  try {
+    entries = await fs.readdir(CARDS_DIR);
+  } catch (err: any) {
+    if (err.code === "ENOENT") return [];
+    throw err;
+  }
   const jsonFiles = entries.filter((f) => f.endsWith(".json"));
 
   const results = await Promise.all(
     jsonFiles.map(async (file) => {
       try {
         const filePath = path.join(CARDS_DIR, file);
+        const stat = await fs.stat(filePath);
+        const cached = memoryCardMetaCache.get(file);
+
+        if (cached && cached.mtimeMs === stat.mtimeMs) {
+          return cached.meta;
+        }
+
         const raw = await fs.readFile(filePath, "utf-8");
         const record = JSON.parse(raw) as SavedCardRecord;
         if (!record.character) return null;
@@ -57,7 +75,7 @@ export async function listSavedCards(): Promise<SavedCardMeta[]> {
         const score = record.metaCache?.score ?? auditCharacterCard(record.character).score;
         const tokenCount = record.metaCache?.tokenCount ?? calculateCharacterCardTokens(record.character).total;
 
-        return {
+        const meta: SavedCardMeta = {
           id: record.id || file.replace(/\.json$/, ""),
           name: record.character.name || "Unnamed Character",
           tags: Array.isArray(record.character.tags) ? record.character.tags : [],
@@ -66,7 +84,10 @@ export async function listSavedCards(): Promise<SavedCardMeta[]> {
           tokenCount,
           hasAvatar: !!record.avatarBase64,
           avatarBase64: record.avatarBase64,
-        } as SavedCardMeta;
+        };
+
+        memoryCardMetaCache.set(file, { mtimeMs: stat.mtimeMs, meta });
+        return meta;
       } catch (err) {
         console.warn(`Failed reading saved card ${file}:`, err);
         return null;
@@ -89,12 +110,7 @@ export async function getSavedCard(id: string): Promise<SavedCardRecord | null> 
     const raw = await fs.readFile(filePath, "utf-8");
     const record = JSON.parse(raw) as SavedCardRecord;
     if (record.character) {
-      if (record.character.system_prompt) {
-        if (!record.character.post_history_instructions) {
-          record.character.post_history_instructions = record.character.system_prompt;
-        }
-        record.character.system_prompt = "";
-      }
+      record.character = migrateCharacter(record.character);
       if (record.character.character_book) {
         record.character.character_book = sanitizeCharacterBook(record.character.character_book) || { name: "", entries: [] };
       }
@@ -154,7 +170,7 @@ export async function saveCardRecord(
   const filePath = path.join(CARDS_DIR, `${id}.json`);
   await fs.writeFile(filePath, JSON.stringify(record, null, 2), "utf-8");
 
-  return {
+  const metaResult: SavedCardMeta = {
     id,
     name: record.character.name || "Unnamed Character",
     tags: Array.isArray(record.character.tags) ? record.character.tags : [],
@@ -164,6 +180,13 @@ export async function saveCardRecord(
     hasAvatar: !!record.avatarBase64,
     avatarBase64: record.avatarBase64,
   };
+
+  try {
+    const stat = await fs.stat(filePath);
+    memoryCardMetaCache.set(`${id}.json`, { mtimeMs: stat.mtimeMs, meta: metaResult });
+  } catch {}
+
+  return metaResult;
 }
 
 /**
@@ -174,6 +197,7 @@ export async function deleteSavedCard(id: string): Promise<boolean> {
   const filePath = path.join(CARDS_DIR, `${id}.json`);
   try {
     await fs.unlink(filePath);
+    memoryCardMetaCache.delete(`${id}.json`);
     return true;
   } catch {
     return false;

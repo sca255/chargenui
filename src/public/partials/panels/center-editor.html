@@ -1,0 +1,246 @@
+<!-- Center Column: Character Deck & Live Editor -->
+<div class="panel" style="background-color: var(--bg-primary);">
+<!-- Character Header Card -->
+<div class="editor-top">
+<div class="char-avatar-slot" id="avatar-container" title="Click or drag &amp; drop custom avatar (PNG / JPG / WEBP)">
+<img alt="Avatar" id="char-avatar-img" src="" style="display:none;"/>
+<span id="char-avatar-placeholder" style="font-size: 24px; color: var(--text-dim);">👤</span>
+<div class="avatar-hover-overlay">
+<span class="avatar-hover-icon">📷</span>
+<span class="avatar-hover-text">Avatar</span>
+</div>
+<button class="btn-avatar-remove hidden" id="btn-remove-avatar" title="Remove custom avatar" type="button">×</button>
+</div>
+<input accept="image/png,image/jpeg,image/webp,image/gif" id="avatar-file-input" style="display:none;" type="file"/>
+<div class="editor-info">
+<input class="char-name-input" id="char-name" placeholder="Character Name" type="text" value=""/>
+<div id="active-card-pill" style="display:none; font-size: 10px; align-items: center; gap: 6px; margin: 2px 0 4px;">
+<span style="background: rgba(99, 102, 241, 0.15); color: var(--accent-cyan); padding: 1px 6px; border-radius: 4px; font-weight: 600;">🔗 Linked: <span id="active-card-name-label"></span></span>
+<button id="btn-unlink-card" style="border: none; background: none; color: var(--text-dim); text-decoration: underline; font-size: 10px; cursor: pointer; padding: 0;" type="button">Unlink (Save as New Card)</button>
+</div>
+<input class="char-tags-input" id="char-tags" placeholder="Tags (comma-separated, e.g. dark fantasy, scarred, stoic)" type="text" value=""/>
+</div>
+<div style="display:flex; flex-direction:column; gap:6px; align-items:flex-end;">
+<div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;">
+<button class="btn btn-sm" id="btn-upload-avatar" title="Upload custom PNG/JPG avatar for card export">
+              🖼️ Upload Avatar
+            </button>
+<button class="btn btn-sm" id="btn-gen-img-prompt" style="background: rgba(168, 85, 247, 0.15); border: 1px solid #a855f7; color: #d8b4fe;" title="Generate ComfyUI / SDXL / Flux / Pony image generation prompt and add to offline queue">
+              🎨 Gen Image Prompt
+            </button>
+<button class="btn btn-sm btn-primary" id="btn-save-to-library" title="Save / Update this character in your local library">
+              💾 Save Card
+            </button>
+<button class="btn btn-sm" id="btn-save-as-new-card" title="Save as a separate new card in your library (fork / create copy)">
+              📋 Save as New
+            </button>
+<button class="btn btn-sm" id="btn-new-card" title="Clear workspace and start a fresh character card">
+              ➕ New Card
+            </button>
+<button class="btn btn-sm" id="btn-reroll-card-header" style="background: rgba(168, 85, 247, 0.15); border: 1px solid var(--accent-purple); color: #c084fc;" title="Reroll character card with current concept, themes &amp; era">
+              🎲 Reroll Card
+            </button>
+<button class="btn btn-sm" id="btn-fix-macros" title="Standardize {{user}} &amp; {{char}} macros and convert spoken dialogue to standard double quotes for Lumiverse &amp; SillyTavern">
+              🪄 Fix Macros &amp; Quotes
+            </button>
+</div>
+<div style="display:flex; align-items:center; gap:6px; font-size:11px;">
+<label class="checkbox-label" style="font-size:11px;">
+<input id="chk-macro-preview" type="checkbox"/>
+<span>Preview as:</span>
+</label>
+<input class="form-input" id="macro-preview-user" style="width:70px; padding:2px 6px; font-size:11px; height:24px;" type="text" value="Anon"/>
+</div>
+</div>
+</div>
+<!-- Section Tabs for Editor -->
+<div style="background-color: var(--bg-card); border-bottom: 1px solid var(--border-color); padding: 0 16px; display: flex; gap: 4px; overflow-x: auto;">
+<button class="nav-tab active ed-tab" data-edtab="ed-desc">Description</button>
+<button class="nav-tab ed-tab" data-edtab="ed-personality">Personality</button>
+<button class="nav-tab ed-tab" data-edtab="ed-scenario">Scenario &amp; Starter</button>
+<button class="nav-tab ed-tab" data-edtab="ed-alts">Alt Greetings</button>
+<button class="nav-tab ed-tab" data-edtab="ed-examples">Example Messages</button>
+<button class="nav-tab ed-tab" data-edtab="ed-lorebook">Lorebook</button>
+<button class="nav-tab ed-tab" data-edtab="ed-system">System Directives</button>
+<button class="nav-tab ed-tab" data-edtab="ed-gallery" id="tab-btn-gallery">🖼️ Gallery (<span id="gallery-tab-count">0</span>)</button>
+</div>
+<!-- Editor Content Body -->
+<div class="panel-body" style="background-color: var(--bg-primary);">
+<!-- Tab: Description -->
+<div class="ed-tab-content" id="ed-desc">
+<div class="form-group">
+<div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+<label class="form-label" style="margin:0;">Description (Persona, Physical Form, History, Nuances)</label>
+<span id="token-badge-desc" style="font-size:11px; color:var(--accent-cyan);">0 tokens</span>
+</div>
+<textarea class="form-textarea" id="field-description" style="min-height: 380px; font-family: monospace; font-size: 13px;"></textarea>
+</div>
+</div>
+<!-- Tab: Personality -->
+<div class="ed-tab-content hidden" id="ed-personality">
+<div class="form-group">
+<div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+<label class="form-label" style="margin:0;">Personality (Behavioral Signatures, Demeanor, Quirks)</label>
+<span id="token-badge-pers" style="font-size:11px; color:var(--accent-cyan);">0 tokens</span>
+</div>
+<textarea class="form-textarea" id="field-personality" style="min-height: 380px; font-family: monospace; font-size: 13px;"></textarea>
+</div>
+</div>
+<!-- Tab: Scenario & Starter -->
+<div class="ed-tab-content hidden" id="ed-scenario">
+<div class="form-group">
+<div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+<label class="form-label" style="margin:0;">Scenario (Atmospheric Stage Setting &amp; Scene Objective)</label>
+<span id="token-badge-scenario" style="font-size:11px; color:var(--accent-cyan);">0 tokens</span>
+</div>
+<textarea class="form-textarea" id="field-scenario" style="min-height: 120px; font-family: monospace; font-size: 13px;"></textarea>
+</div>
+<div class="form-group">
+<div style="display:flex; justify-content:space-between; margin-bottom:6px; align-items:center;">
+<label class="form-label" style="margin:0;">First Message (Primary Scene Opener)</label>
+<div style="display:flex; align-items:center; gap:8px;">
+<button class="btn btn-xs" id="btn-queue-first-greeting-img" style="background: rgba(168, 85, 247, 0.2); border: 1px solid rgba(168, 85, 247, 0.4); color: rgb(216, 180, 254);" title="Generate &amp; queue an active scene illustration for this opening greeting" type="button">🖼️ Queue Greeting Scene</button>
+<button class="btn btn-xs" id="btn-queue-first-greeting-bg" style="background: rgba(56, 189, 248, 0.2); border: 1px solid rgba(56, 189, 248, 0.4); color: rgb(125, 211, 252);" title="Generate &amp; queue an environmental chat background wallpaper for this greeting" type="button">🌄 Queue Chat BG</button>
+<span id="token-badge-first" style="font-size: 11px; color: var(--accent-cyan);">0 tokens</span>
+</div>
+</div>
+<textarea class="form-textarea" id="field-first-mes" style="min-height: 240px; font-family: monospace; font-size: 13px;"></textarea>
+</div>
+</div>
+<!-- Tab: Alternate Greetings -->
+<div class="ed-tab-content hidden" id="ed-alts">
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap: 8px; flex-wrap: wrap;">
+<div style="font-size: 12px; color: var(--text-muted);">Alternative Opening Greetings for different roleplay scenarios</div>
+<div style="display:flex; gap: 8px;">
+<button class="btn btn-sm" id="btn-regen-alts-direct" style="background: linear-gradient(135deg, #7c3aed, #a855f7); border: none; color: #fff; font-weight: 700;" title="Regenerate all alternate greetings completely (arc-aware)">🔄 Regenerate All Alts</button>
+<button class="btn btn-sm" id="btn-add-alt-greeting">➕ Add Alternate Greeting</button>
+</div>
+</div>
+<div id="alt-greetings-list"></div>
+</div>
+<!-- Tab: Example Messages -->
+<div class="ed-tab-content hidden" id="ed-examples">
+<div class="form-group">
+<div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+<label class="form-label" style="margin:0;">Example Dialogues (&lt;START&gt; tags)</label>
+<span id="token-badge-examples" style="font-size:11px; color:var(--accent-cyan);">0 tokens</span>
+</div>
+<textarea class="form-textarea" id="field-mes-example" placeholder="&lt;START&gt;
+{{user}}: Turn
+{{char}}: Turn" style="min-height: 380px; font-family: monospace; font-size: 13px;"></textarea>
+</div>
+</div>
+<!-- Tab: Lorebook -->
+<div class="ed-tab-content hidden" id="ed-lorebook">
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+<div style="font-size: 12px; color: var(--text-muted);">Embedded SillyTavern Character Book (World Info)</div>
+<div style="display:flex; gap:8px;">
+<button class="btn btn-sm" id="btn-add-lorebook-entry">➕ Add Entry</button>
+<button class="btn btn-sm btn-danger" id="btn-clear-lorebook" title="Clear all lorebook entries from this card">🗑️ Clear Lorebook</button>
+</div>
+</div>
+<div id="lorebook-entries-list"></div>
+</div>
+<!-- Tab: System Directives & AI Incorporator -->
+<div class="ed-tab-content hidden" id="ed-system">
+<!-- AI Incorporator Box -->
+<div class="incorporator-card" style="background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.35); border-radius: var(--radius-md); padding: 14px; margin-bottom: 16px;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+<span style="font-weight: 700; font-size: 13px; color: var(--accent-cyan); display: flex; align-items: center; gap: 6px;">
+<span>✨ AI Directive &amp; System Prompt Incorporator</span>
+</span>
+<span style="font-size: 10px; color: #10b981; font-weight: 600;">🔒 ST Client Preset Safe</span>
+</div>
+<div style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px; line-height: 1.4;">
+              Have a legacy system prompt or raw roleplay directives? Use the LLM to intelligently incorporate the content into <strong>Post-History Instructions</strong>, <strong>Description</strong>, or <strong>Both</strong>.
+            </div>
+<div class="form-group" style="margin-bottom: 10px;">
+<label class="form-label" style="font-size: 11px;">System Prompt / Directives to Incorporate:</label>
+<textarea class="form-textarea" id="field-system-prompt" placeholder="Paste legacy system prompt or directives here (or loaded from imported card)..." style="min-height: 80px; font-family: monospace; font-size: 12px;"></textarea>
+</div>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+<div>
+<label class="form-label" style="font-size: 11px;">Incorporate Destination:</label>
+<select class="form-select" id="incorporate-target" style="font-size: 12px; height: 34px;">
+<option value="both">⚡ Both: Split Lore to Description &amp; Rules to Post-History (Recommended)</option>
+<option value="post_history">📜 Post-History Instructions Only</option>
+<option value="description">📖 Description Only</option>
+</select>
+</div>
+<div>
+<label class="form-label" style="font-size: 11px;">Optional AI Guidance / Steering:</label>
+<input class="form-input" id="incorporate-guidance" placeholder="e.g. Keep voice sharp, emphasize sensory tells" style="font-size: 12px; height: 34px;" type="text"/>
+</div>
+</div>
+<div style="display: flex; gap: 8px; justify-content: flex-end; align-items: center;">
+<button class="btn btn-sm" id="btn-plain-move-post-history" title="Move directly to Post-History Instructions without calling AI" type="button">
+                📋 Plain Move to Post-History
+              </button>
+<button class="btn btn-sm btn-primary" id="btn-run-incorporate" title="Use AI to intelligently weave into selected target" type="button">
+<span>✨ Incorporate with AI</span>
+</button>
+</div>
+<div class="hidden" id="incorporate-status-box" style="margin-top: 10px; padding: 8px 12px; border-radius: var(--radius-sm); font-size: 11px; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main);"></div>
+</div>
+<div class="form-group">
+<div style="display: flex; justify-content: space-between; align-items: center;">
+<label class="form-label">Post-History Instructions (Uncensored Persona Directives &amp; Agency)</label>
+<span style="font-size: 11px; color: var(--text-dim);">Placed at context end in SillyTavern</span>
+</div>
+<textarea class="form-textarea" id="field-post-history" style="min-height: 160px; font-family: monospace; font-size: 13px;"></textarea>
+<div style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">Placed at context end in SillyTavern / frontends without wiping out your global system prompt.</div>
+</div>
+<div class="form-group">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+<label class="form-label" style="margin: 0;">Creator Notes</label>
+<button class="btn btn-xs" id="btn-preview-creator-notes" style="background: rgba(16, 185, 129, 0.15); border: 1px solid var(--accent-emerald); color: #6ee7b7; font-weight: 600; padding: 2px 8px;" type="button">
+                👁️ View Formatted Notes
+              </button>
+</div>
+<textarea class="form-textarea" id="field-creator-notes" placeholder="Author notes, concept overview, lore references, or custom HTML styling..." style="min-height: 80px;"></textarea>
+</div>
+</div>
+<!-- Tab: Image Gallery Browser -->
+<div class="ed-tab-content hidden" id="ed-gallery">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+<div>
+<div style="font-size: 13px; font-weight: 700; color: #ffffff; display: flex; align-items: center; gap: 6px;">
+<span>🖼️ Character Image Gallery &amp; Assets</span>
+<span class="badge" id="gallery-count-pill" style="background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.4); color: #c084fc; font-size: 10px;">0 images</span>
+</div>
+<div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
+                Scene illustrations, chat backgrounds, and alternate expressions bundled into your character card (CharX assets).
+              </div>
+</div>
+<div style="display: flex; gap: 8px; align-items: center;">
+<button class="btn btn-sm btn-primary" id="btn-gallery-upload" style="background: linear-gradient(135deg, #7c3aed, #a855f7); border: none;" type="button">
+<span>➕ Upload Images</span>
+</button>
+<button class="btn btn-sm" id="btn-gallery-gen-prompt" style="background: rgba(168, 85, 247, 0.15); border: 1px solid #a855f7; color: #d8b4fe;" title="Generate a new image generation prompt" type="button">
+<span>🎨 Gen Prompt</span>
+</button>
+<button class="btn btn-sm btn-danger" id="btn-gallery-clear-all" title="Remove all gallery images from this card" type="button">
+<span>🗑️ Clear All</span>
+</button>
+<input accept="image/png,image/jpeg,image/webp,image/gif,image/avif" id="gallery-file-input" multiple="" style="display:none;" type="file"/>
+</div>
+</div>
+<!-- Drag and Drop Zone -->
+<div id="gallery-dropzone" style="border: 2px dashed rgba(168, 85, 247, 0.35); border-radius: var(--radius-md); padding: 18px; text-align: center; margin-bottom: 14px; background: rgba(168, 85, 247, 0.04); cursor: pointer; transition: 0.2s;">
+<div style="font-size: 24px; margin-bottom: 4px;">🖼️</div>
+<div style="font-size: 12px; font-weight: 600; color: #e9d5ff;">Drag &amp; drop images here, or click to browse</div>
+<div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">Supports PNG, JPG, WEBP, AVIF, GIF</div>
+</div>
+<!-- Gallery Grid Container -->
+<div id="gallery-grid" style="display: none; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px;"></div>
+<!-- Empty State -->
+<div id="gallery-empty-state" style="display: block; padding: 32px 16px; text-align: center; color: var(--text-dim);">
+<div style="font-size: 32px; margin-bottom: 8px;">🎨</div>
+<div style="font-weight: 600; font-size: 13px; color: var(--text-muted);">No Gallery Images Attached</div>
+<div style="font-size: 11px; margin-top: 4px; max-width: 360px; margin-left: auto; margin-right: auto;">
+              Upload scene art, add greeting illustrations, or queue image generations with ComfyUI. Attached images are automatically saved to this character's gallery.
+            </div>
+</div>
+</div>
+</div>
+</div>

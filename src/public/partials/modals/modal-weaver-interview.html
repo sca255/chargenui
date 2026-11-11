@@ -1,0 +1,60 @@
+<div class="modal-overlay hidden" id="modal-weaver-interview">
+<div class="modal modal-lg" style="max-width: 820px;">
+<div class="modal-header">
+<div style="display:flex; align-items:center; gap:8px;">
+<span style="font-size:20px;">🧠</span>
+<div>
+<h3 style="font-size: 16px; font-weight: 700; margin:0; color: #c084fc;">Weaver Character Workshop: Interactive Interview</h3>
+<div style="font-size: 11px; color: var(--text-muted);">Answer Weaver's strategic questions or click suggested options to sculpt the Character Bible before forging the final card.</div>
+</div>
+</div>
+<button class="btn btn-sm" id="btn-close-weaver-interview">✕</button>
+</div>
+<div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+<!-- Loading state -->
+<div class="hidden" id="weaver-interview-loading" style="text-align: center; padding: 40px;">
+<div class="spinner" style="margin: 0 auto 12px; width: 28px; height: 28px;"></div>
+<div style="font-size: 14px; font-weight: 600; color: #c084fc;">Weaver is analyzing your concept &amp; formulating design questions...</div>
+<div style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">Forensically exploring central contradictions, formative memories, and dynamic tensions.</div>
+</div>
+<div id="weaver-interview-content">
+<!-- Preliminary Vision banner -->
+<div id="weaver-vision-box" style="padding: 10px 14px; background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: var(--radius-sm); margin-bottom: 14px; font-size: 12px; line-height: 1.5; color: #e9d5ff;">
+<strong style="color: #c084fc;">✨ Weaver's Preliminary Vision:</strong>
+<span id="weaver-vision-text">...</span>
+</div>
+<!-- Dynamic Questions List -->
+<div id="weaver-questions-list" style="display: flex; flex-direction: column; gap: 14px;">
+<!-- Populated by app.js -->
+</div>
+</div>
+</div>
+<div class="modal-footer" style="justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+<div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+<button class="btn btn-sm" id="btn-weaver-autofill" title="Auto-fill with Weaver's recommended options" type="button">
+<span>✨ Auto-Fill Weaver's Intuition</span>
+</button>
+<button class="btn btn-sm" id="btn-weaver-ask-more" style="color: #34d399; border: 1px solid rgba(52, 211, 153, 0.4); background: rgba(52, 211, 153, 0.1);" title="Make the AI ask more deepening questions" type="button">
+<span>➕ Ask More Questions</span>
+</button>
+<button class="btn btn-sm" id="btn-weaver-reroll-all" title="Formulate fresh questions from concept" type="button">
+<span>🎲 Reroll All Questions</span>
+</button>
+<button class="btn btn-sm" id="btn-weaver-influence-all" style="color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); background: rgba(56, 189, 248, 0.1);" title="Reroll all questions with custom steering direction" type="button">
+<span>🎯 Influence All Questions</span>
+</button>
+<label style="display: inline-flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-muted); cursor: pointer; user-select: none; margin-left: 4px;">
+<input id="weaver-include-lorebook" style="cursor: pointer;" type="checkbox"/>
+<span>Generate Embedded Lorebook (Optional)</span>
+</label>
+</div>
+<div style="display: flex; gap: 8px;">
+<button class="btn btn-sm" id="btn-weaver-cancel" type="button">Cancel</button>
+<button class="btn btn-primary" id="btn-weaver-submit-forge" style="background: linear-gradient(135deg, #6366f1, #a855f7); border: none;" type="button">
+<span>⚡ Synthesize Bible &amp; Forge Final Card</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Modal: Image Prompt Generator & Offline Queue -->

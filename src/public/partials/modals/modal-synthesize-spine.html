@@ -1,0 +1,97 @@
+<div class="modal-overlay hidden" id="modal-synthesize-spine" style="z-index: 10005;">
+  <div class="modal" style="width: 640px; max-width: 95vw; max-height: 90vh; display: flex; flex-direction: column;">
+    <div class="modal-header" style="flex-shrink: 0;">
+      <div>
+        <h3 style="font-size: 16px; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 8px;">
+          <span>🧬</span> Synthesize Authoring Spine for Existing Character
+        </h3>
+        <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
+          Reverse-engineer internal psychometric scaffolding (archetype, contradiction, reaction gradient, voice, scene frame) from an existing card using your original prompt & story arc. Enables arc-aware regeneration later.
+        </div>
+      </div>
+      <button class="btn btn-sm" id="btn-close-synthesize-spine" type="button">✕</button>
+    </div>
+    <div class="modal-body" style="overflow-y: auto; flex: 1; padding: 16px;">
+      <div style="background: rgba(147, 51, 234, 0.08); border: 1px solid rgba(168, 85, 247, 0.25); border-radius: var(--radius-sm); padding: 10px 14px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <span style="font-size: 11px; font-weight: 700; color: rgb(192, 132, 252); text-transform: uppercase;">Target Character:</span>
+          <span id="spine-target-char-name" style="font-size: 13px; font-weight: 700; color: #fff; margin-left: 6px;">(Currently Active Character)</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Original Concept / Prompt (Optional but Recommended)</label>
+        <textarea class="form-textarea" id="spine-original-concept" placeholder="Paste the original concept/seed/trope you used to create this character. Helps the AI reconstruct the correct archetype, contradiction, and voice." rows="4" style="min-height: 90px; font-family: monospace; font-size: 11px;"></textarea>
+        <span style="font-size: 10px; color: var(--text-muted);">If you have the original prompt, paste it here. If not, the AI will infer from the card fields.</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Original Story Arc (Optional)</label>
+        <textarea class="form-textarea" id="spine-original-story-arc" placeholder="Paste the story arc you used (e.g. 'The War of Attrition (Provocative Destruction -> Discovery of Shared Loneliness -> Breaking the Contract through Passionate Truth)'). This will be embedded for future arc-aware greetings regeneration." rows="3" style="min-height: 70px; font-family: monospace; font-size: 11px;"></textarea>
+        <span style="font-size: 10px; color: var(--text-muted);">If you used a story arc during creation, paste it here. It will be stored and used for future 'Regenerate with Spine' enhancer mode.</span>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label" style="font-size: 11px; font-weight: 700;">Genre / Setting</label>
+          <input class="form-input" id="spine-genre" placeholder="e.g. Fantasy, Cyberpunk, Victorian Gothic" type="text"/>
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label" style="font-size: 11px; font-weight: 700;">Era (Optional)</label>
+          <input class="form-input" id="spine-era" placeholder="e.g. Victorian Gothic, Sengoku Japan" type="text"/>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 8px;">
+        <label class="form-label" style="font-size: 11px; font-weight: 700;">Themes / Tropes (Comma-separated)</label>
+        <input class="form-input" id="spine-themes" placeholder="e.g. Dark Romance, Power Exchange, Slow Burn, Tsundere" type="text"/>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label" style="font-size: 11px; font-weight: 700;">Tone</label>
+          <input class="form-input" id="spine-tone" placeholder="e.g. Gritty psychological, flirty teasing" type="text"/>
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label" style="font-size: 11px; font-weight: 700;">Intensity</label>
+          <select class="form-select" id="spine-intensity">
+            <option value="balanced">Balanced</option>
+            <option value="subtle">Subtle</option>
+            <option value="extreme">Extreme</option>
+            <option value="unhinged">Unhinged</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 8px;">
+        <label class="form-label" style="font-size: 11px; font-weight: 700;">Bot Mode</label>
+        <select class="form-select" id="spine-bot-mode">
+          <option value="single">👤 Solo Character</option>
+          <option value="multi_character">👥 Multi-Character Cast</option>
+          <option value="rpg_world">🎮 RPG World / GM</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="checkbox-label" style="font-size: 11px;">
+          <input checked="" id="spine-nsfw" type="checkbox"/>
+          <span>NSFW / Mature Elements Enabled</span>
+        </label>
+      </div>
+
+      <div id="spine-loading" style="display: none; padding: 24px; text-align: center;">
+        <div style="font-size: 24px; margin-bottom: 8px;">⏳</div>
+        <div style="font-weight: 600; color: rgb(192, 132, 252);">Synthesizing Authoring Spine with AI...</div>
+        <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Analyzing card profile + original inputs to reconstruct archetype, contradiction, reaction gradient, voice, and scene frame.</div>
+      </div>
+    </div>
+    <div class="modal-footer" style="flex-shrink: 0; display: flex; justify-content: flex-end; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--border-color);">
+      <button class="btn btn-sm" id="btn-spine-cancel" type="button">Cancel</button>
+      <button class="btn btn-primary" id="btn-spine-synthesize" style="background: linear-gradient(135deg, rgb(124, 58, 237), rgb(168, 85, 247)); border: medium;" type="button">
+        <span>🧬 Synthesize & Attach Spine</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Regenerate Greetings with Spine (Arc-Aware) -->

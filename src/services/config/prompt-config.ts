@@ -445,12 +445,53 @@ export function listPromptProfiles(): PromptProfileSummary[] {
           description: parsed.description || `Custom preset from ${f}`,
           isPrivate: !!parsed.isPrivate,
           isCurrent: currentProfileId === pId,
+          version: parsed.version || 1,
+          parentId: parsed.parentId,
+          tags: parsed.tags || [],
         });
       }
     }
   }
 
   return profiles;
+}
+
+/**
+ * Fork an existing prompt profile to create a new versioned template.
+ */
+export function forkPromptProfile(
+  sourceProfileId: string,
+  overrides?: { name?: string; description?: string; changelogEntry?: string; tags?: string[] }
+): PromptTemplateConfig {
+  ensureConfigDir();
+  const source = getActivePromptConfig();
+  const currentVer = source.version || 1;
+  const newVer = currentVer + 1;
+  const safeBaseName = (overrides?.name || source.name || "Custom").toLowerCase().replace(/[^a-z0-9_-]/g, "_");
+  const newId = `profile_${safeBaseName}_v${newVer}_${Date.now().toString(36)}`;
+  
+  const existingChangelog = Array.isArray(source.changelog) ? [...source.changelog] : [];
+  if (overrides?.changelogEntry) {
+    existingChangelog.push(`v${newVer}: ${overrides.changelogEntry} (${new Date().toISOString().split("T")[0]})`);
+  } else {
+    existingChangelog.push(`v${newVer}: Forked from ${source.id || sourceProfileId} at ${new Date().toISOString().split("T")[0]}`);
+  }
+
+  const forked: PromptTemplateConfig = {
+    ...source,
+    id: newId,
+    name: overrides?.name || `${source.name} (v${newVer})`,
+    description: overrides?.description || source.description,
+    version: newVer,
+    parentId: source.id || sourceProfileId,
+    changelog: existingChangelog,
+    tags: overrides?.tags || source.tags || [],
+    isPrivate: true,
+  };
+
+  const savePath = path.join(CONFIG_DIR, `prompts.${newId}.json`);
+  writeJsonFile(savePath, forked);
+  return setActiveProfile(newId);
 }
 
 export function setActiveProfile(id: string): PromptTemplateConfig {

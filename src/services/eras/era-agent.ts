@@ -1,5 +1,6 @@
 import type { ProviderConfig, ChatMessage, ToolCallRequest } from "../../types/provider";
 import { routeLLMCompletion } from "../llm/provider-router";
+import { rawHttpPost } from "../llm/llamacpp";
 import { UNCENSORED_SYSTEM_PROMPT } from "../generator/uncensored-prompts";
 import {
   type EraDefinition,
@@ -450,18 +451,18 @@ async function postOpenAICompatWithTools(
   };
   if (options.useTools) body.tools = ERA_TOOL_SCHEMA;
 
-  const res = await fetch(url, { method: "POST", headers, body: JSON.stringify(body) });
+  // 30 minute timeout (1,800,000 ms) via lower-level streaming HTTP request with TCP keep-alive
+  const timeoutMs = 30 * 60 * 1000;
+  const rawRes = await rawHttpPost(url, headers, body, timeoutMs);
 
-  if (!res.ok) {
-    const errText = await res.text();
-    // Servers without native function-calling templates may reject the tools field.
-    if (options.useTools && (res.status === 400 || res.status === 422)) {
+  if (rawRes.status < 200 || rawRes.status >= 300) {
+    if (options.useTools && (rawRes.status === 400 || rawRes.status === 422)) {
       return postOpenAICompatWithTools(config, messages, { ...options, useTools: false });
     }
-    throw new Error(`LLM returned HTTP ${res.status}: ${errText.slice(0, 300)}`);
+    throw new Error(`LLM returned HTTP ${rawRes.status}: ${rawRes.text.slice(0, 300)}`);
   }
 
-  const data = (await res.json()) as any;
+  const data = JSON.parse(rawRes.text) as any;
   const msg = data?.choices?.[0]?.message || {};
   const rawToolCalls: ToolCallRequest[] | undefined = Array.isArray(msg.tool_calls) ? msg.tool_calls : undefined;
   const visibleContent = typeof msg.content === "string" ? msg.content : "";

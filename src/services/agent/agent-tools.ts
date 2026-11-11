@@ -22,8 +22,8 @@ export interface TakeOption {
 }
 
 export interface GreetingAction {
-  action: "add" | "update" | "delete";
-  index?: number;
+  action: "add" | "update" | "delete" | "prepend_header" | "append_footer";
+  index?: number | "all";
   content?: string;
   explanation?: string;
 }
@@ -143,6 +143,56 @@ export const CARD_AGENT_TOOL_SCHEMA = [
           },
         },
         required: ["index", "explanation"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "prepend_alternate_greeting_header",
+      description: "Prepend a framing header (lore prefix, atmospheric prose, scenario context tag, or setting primer) to one or ALL alternate greetings without having to re-emit 16,000 tokens for 50 greetings. Omit index or pass 'all' (or -1) to prepend to all greetings.",
+      parameters: {
+        type: "object",
+        properties: {
+          header: {
+            type: "string",
+            description: "Text/header to prepend to the beginning of the greeting(s).",
+          },
+          index: {
+            type: "string",
+            description: "0-based index of a specific greeting, or 'all' / omitted to apply across all existing alternate greetings.",
+          },
+          explanation: {
+            type: "string",
+            description: "Reasoning for prepending this header.",
+          },
+        },
+        required: ["header", "explanation"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "append_alternate_greeting_footer",
+      description: "Append a contextual footer (spoken postscript, system prompt trigger, closing dialogue prompt, or scene cliffhanger) to one or ALL alternate greetings without having to re-emit 16,000 tokens for 50 greetings. Omit index or pass 'all' (or -1) to append to all greetings.",
+      parameters: {
+        type: "object",
+        properties: {
+          footer: {
+            type: "string",
+            description: "Text/footer to append to the end of the greeting(s).",
+          },
+          index: {
+            type: "string",
+            description: "0-based index of a specific greeting, or 'all' / omitted to apply across all existing alternate greetings.",
+          },
+          explanation: {
+            type: "string",
+            description: "Reasoning for appending this footer.",
+          },
+        },
+        required: ["footer", "explanation"],
       },
     },
   },
@@ -290,6 +340,30 @@ export function parseAgentResponse(raw: string, nativeToolCalls?: ToolCallReques
           toolCalls.push({
             name: "update_field",
             args: { field: "alternate_greetings", action: "delete", index: rawIdx, explanation: args.explanation || "" },
+            id: tc.id,
+          });
+        }
+      } else if (fnName === "prepend_alternate_greeting_header") {
+        const headerText = args.header || args.content || "";
+        if (headerText) {
+          const isAll = args.index === undefined || args.index === "all" || args.index === -1 || args.index === "-1";
+          const parsedIdx = isAll ? "all" : parseInt(String(args.index), 10);
+          greetingActions.push({ action: "prepend_header", index: parsedIdx, content: headerText, explanation: args.explanation });
+          toolCalls.push({
+            name: "update_field",
+            args: { field: "alternate_greetings", action: "prepend_header", index: parsedIdx, content: headerText, explanation: args.explanation || "" },
+            id: tc.id,
+          });
+        }
+      } else if (fnName === "append_alternate_greeting_footer") {
+        const footerText = args.footer || args.content || "";
+        if (footerText) {
+          const isAll = args.index === undefined || args.index === "all" || args.index === -1 || args.index === "-1";
+          const parsedIdx = isAll ? "all" : parseInt(String(args.index), 10);
+          greetingActions.push({ action: "append_footer", index: parsedIdx, content: footerText, explanation: args.explanation });
+          toolCalls.push({
+            name: "update_field",
+            args: { field: "alternate_greetings", action: "append_footer", index: parsedIdx, content: footerText, explanation: args.explanation || "" },
             id: tc.id,
           });
         }
@@ -467,6 +541,44 @@ export function parseAgentResponse(raw: string, nativeToolCalls?: ToolCallReques
       args: { field: "alternate_greetings", action: "delete", index, explanation },
       rawBlock: match[0],
     });
+  }
+
+  // Prepend alternate greeting header tag (<tool:prepend_alternate_greeting_header [index="..."] [explanation="..."]>Header text</tool:...>)
+  const prependHeaderRegex = /<(?:tool:)?(?:call:)?prepend_alternate_greeting_header(?:\s+index=["']([^"']*)["'])?(?:\s+explanation=["']([^"']*)["'])?\s*>([\s\S]*?)<\/(?:tool:)?(?:call:)?prepend_alternate_greeting_header>/gi;
+  while ((match = prependHeaderRegex.exec(trimmed)) !== null) {
+    hasToolTags = true;
+    const rawIdx = match[1];
+    const isAll = rawIdx === undefined || rawIdx === "all" || rawIdx === "-1" || rawIdx === "";
+    const index = isAll ? "all" : parseInt(rawIdx, 10);
+    const explanation = match[2] || `Prepended header to alternate greeting(s)`;
+    const content = match[3].trim();
+    if (content) {
+      greetingActions.push({ action: "prepend_header", index, content, explanation });
+      toolCalls.push({
+        name: "update_field",
+        args: { field: "alternate_greetings", action: "prepend_header", index, content, explanation },
+        rawBlock: match[0],
+      });
+    }
+  }
+
+  // Append alternate greeting footer tag (<tool:append_alternate_greeting_footer [index="..."] [explanation="..."]>Footer text</tool:...>)
+  const appendFooterRegex = /<(?:tool:)?(?:call:)?append_alternate_greeting_footer(?:\s+index=["']([^"']*)["'])?(?:\s+explanation=["']([^"']*)["'])?\s*>([\s\S]*?)<\/(?:tool:)?(?:call:)?append_alternate_greeting_footer>/gi;
+  while ((match = appendFooterRegex.exec(trimmed)) !== null) {
+    hasToolTags = true;
+    const rawIdx = match[1];
+    const isAll = rawIdx === undefined || rawIdx === "all" || rawIdx === "-1" || rawIdx === "";
+    const index = isAll ? "all" : parseInt(rawIdx, 10);
+    const explanation = match[2] || `Appended footer to alternate greeting(s)`;
+    const content = match[3].trim();
+    if (content) {
+      greetingActions.push({ action: "append_footer", index, content, explanation });
+      toolCalls.push({
+        name: "update_field",
+        args: { field: "alternate_greetings", action: "append_footer", index, content, explanation },
+        rawBlock: match[0],
+      });
+    }
   }
 
   // Check for <tool:search_lore query="..." />

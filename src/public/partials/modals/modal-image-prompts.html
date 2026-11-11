@@ -1,0 +1,220 @@
+<div class="modal-overlay hidden" id="modal-image-prompts">
+<div class="modal" style="width: 820px; max-width: 95vw; max-height: 90vh; display: flex; flex-direction: column;">
+<div class="modal-header" style="flex-shrink: 0;">
+<div>
+<h3 style="font-size: 16px; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 8px;">
+<span>🖼️ Image Prompt Generator &amp; Offline Queue</span>
+</h3>
+<div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
+            Generate prompts for multiple characters → Turn off LLM to save VRAM → Run ComfyUI / SDXL / Flux
+          </div>
+</div>
+<button class="btn btn-sm" id="btn-close-image-prompts">✕</button>
+</div>
+<!-- Modal Tabs -->
+<div class="nav-tabs" style="flex-shrink: 0; padding: 0 16px; margin: 10px 0 0; border-bottom: 1px solid var(--border-color);">
+<button class="modal-tab active" data-img-tab="img-tab-gen" id="tab-btn-img-gen" type="button">🎨 Prompt Generator</button>
+<button class="modal-tab" data-img-tab="img-tab-queue" id="tab-btn-img-queue" type="button">📋 Offline Queue (<span id="img-queue-tab-count">0</span>)</button>
+<button class="modal-tab" data-img-tab="img-tab-comfy" id="tab-btn-img-comfy" type="button">⚡ ComfyUI Client</button>
+</div>
+<div class="modal-body" style="overflow-y: auto; flex: 1; padding: 16px;">
+<!-- TAB 1: Generator -->
+<div id="img-tab-gen">
+<div style="background: rgba(147, 51, 234, 0.08); border: 1px solid rgba(168, 85, 247, 0.25); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 14px;">
+<div style="display: flex; justify-content: space-between; align-items: center;">
+<span style="font-size: 12px; font-weight: 700; color: #c084fc;">Target Character:</span>
+<span id="img-target-char-name" style="font-size: 12px; font-weight: 600; color: #fff;">(Currently Active Character)</span>
+</div>
+</div>
+<div style="margin-bottom: 12px; display: flex; gap: 14px; align-items: center; background: rgba(255,255,255,0.03); padding: 8px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); flex-wrap: wrap;">
+<span style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Generation Purpose:</span>
+<label style="display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; cursor: pointer; color: #fff;">
+<input checked="" id="img-purpose-avatar" name="img-purpose-radio" type="radio" value="avatar"/>
+<span>👤 Character Profile Avatar</span>
+</label>
+<label style="display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; cursor: pointer; color: #c084fc;">
+<input id="img-purpose-greeting" name="img-purpose-radio" type="radio" value="greeting"/>
+<span>💬 Greeting / Opening Scene</span>
+</label>
+<label style="display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; cursor: pointer; color: #f43f5e;" title="Generate an unfiltered scenario scene to use as the character's card avatar profile picture">
+<input id="img-purpose-scenario" name="img-purpose-radio" type="radio" value="scenario_avatar"/>
+<span>🔥 Unfiltered Scenario Avatar (Scene as Profile Pic)</span>
+</label>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 12px;">
+<div class="form-group" style="margin-bottom: 0;">
+<label class="form-label">Target Model Architecture</label>
+<select class="form-select" id="img-target-model">
+<option value="anima">CircleStone Anima (Cosmos 2B / Qwen3 Hybrid)</option>
+<option value="flux">FLUX.1 / SD 3.5 (Natural Language)</option>
+<option value="pony">Pony Diffusion V6 / XL (Score Tags)</option>
+<option value="illustrious">Illustrious-XL / Animagine (Booru)</option>
+<option value="sdxl">SDXL Standard (Detailed Quality)</option>
+<option value="midjourney">Midjourney V6 (Cinematic Raw)</option>
+<option value="general">General Diffusion</option>
+</select>
+</div>
+<div class="form-group" style="margin-bottom: 0;">
+<label class="form-label">Portrait Type / Intent</label>
+<select class="form-select" id="img-portrait-intent">
+<option value="standard_avatar">👤 Normal Profile Avatar (Clean, Regular Clothes)</option>
+<option value="casual">👕 Casual / Daily Life</option>
+<option value="action">⚔️ Action / Combat Stance</option>
+<option value="sensual_kink">⛓️ Kink / Restraint Scene (Explicitly Requested)</option>
+</select>
+</div>
+<div class="form-group" style="margin-bottom: 0;">
+<label class="form-label">Art Style</label>
+<select class="form-select" id="img-art-style">
+<option value="anime">Anime / Manga Illustration</option>
+<option value="photorealistic">Photorealistic / 8k Cinema</option>
+<option value="semi_realistic">Semi-Realistic / Digital Concept Art</option>
+<option value="dark_fantasy">Dark Fantasy / Grim Gothic</option>
+<option value="cyberpunk">Cyberpunk / Neon Atmosphere</option>
+<option value="oil_painting">Painterly / Fine Art</option>
+<option value="custom">Custom Specified</option>
+</select>
+</div>
+<div class="form-group" style="margin-bottom: 0;">
+<label class="form-label">Framing &amp; Shot</label>
+<select class="form-select" id="img-shot-type">
+<option value="card_portrait">Card Portrait (Bust / 2:3)</option>
+<option value="full_body">Full Body Standing (9:16)</option>
+<option value="action_scene">Action / Scene (16:9)</option>
+<option value="square_avatar">Square Avatar (1:1)</option>
+<option value="intimate_close_up">Close-Up Face &amp; Eyes (4:5)</option>
+</select>
+</div>
+<div class="form-group" style="margin-bottom: 0;">
+<label class="form-label">Aspect Ratio / Resolution</label>
+<select class="form-select" id="img-aspect-ratio">
+<option value="2:3">2:3 (832 x 1216 - Card Portrait)</option>
+<option value="1:1">1:1 (1024 x 1024 - Square)</option>
+<option value="16:9">16:9 (1216 x 832 - Landscape)</option>
+<option value="9:16">9:16 (768 x 1344 - Full Height)</option>
+<option value="4:5">4:5 (896 x 1152 - Portrait)</option>
+</select>
+</div>
+</div>
+<div class="form-group">
+<label class="form-label">Custom Scene &amp; Outfit Steering (Optional)</label>
+<input class="form-input" id="img-custom-steering" placeholder="e.g. wearing a tattered trench coat in a rain-drenched alley, holding a smoking revolver" type="text"/>
+</div>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+<label class="checkbox-label" style="font-size: 12px;">
+<input checked="" id="img-nsfw-check" type="checkbox"/>
+<span>Enable Mature / Uncensored Visual Tags</span>
+</label>
+<div style="display: flex; gap: 8px; align-items: center;">
+<button class="btn btn-secondary" id="btn-open-visual-identity" title="Review or edit locked character visual identity &amp; Booru tags" type="button">
+<span>🎨 Visual Tags</span>
+</button>
+<button class="btn btn-primary" id="btn-do-gen-img-prompt" style="background: linear-gradient(135deg, #7c3aed, #a855f7); border: none;" type="button">
+<span>⚡ Generate Image Prompt</span>
+</button>
+</div>
+</div>
+<!-- Output Panel -->
+<div id="img-gen-output-container" style="display: none; border-top: 1px solid var(--border-color); padding-top: 14px; margin-top: 10px;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+<label class="form-label" style="margin: 0; font-weight: 700; color: var(--accent-cyan); font-size: 13px;">Generated Image Prompt</label>
+<button class="btn btn-sm btn-primary" id="btn-copy-pos-prompt" style="font-weight: 700;" type="button">📋 Copy Prompt</button>
+</div>
+<textarea class="form-textarea" id="img-out-positive" style="min-height: 100px; margin-bottom: 10px; font-family: monospace; font-size: 11px;"></textarea>
+<!-- Optional Negative Prompt (Collapsible) -->
+<div id="img-negative-wrapper" style="display: none; margin-bottom: 10px;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+<label class="form-label" style="margin: 0; font-size: 11px; color: var(--text-muted);">Negative Prompt (Optional)</label>
+<button class="btn btn-sm" id="btn-copy-neg-prompt" style="padding: 1px 6px; font-size: 10px;" type="button">📋 Copy Neg</button>
+</div>
+<textarea class="form-textarea" id="img-out-negative" style="min-height: 48px; font-family: monospace; font-size: 11px;"></textarea>
+</div>
+<div style="display: flex; gap: 8px; justify-content: flex-end; align-items: center; margin-top: 6px;">
+<button class="btn btn-sm" id="btn-toggle-show-negative" style="color: var(--text-dim); font-size: 11px;" type="button">
+                + Show Negative Prompt
+              </button>
+<button class="btn btn-success" id="btn-add-to-img-queue" style="background: linear-gradient(135deg, #059669, #10b981); border: none; font-weight: 700;" type="button">
+                ➕ Add to Queue
+              </button>
+<button class="btn btn-primary" id="btn-quick-dispatch-comfy" style="background: linear-gradient(135deg, #7c3aed, #6366f1); border: none; font-weight: 700;" title="Queue and immediately dispatch to ComfyClient" type="button">
+                ⚡ Queue &amp; Dispatch
+              </button>
+</div>
+</div>
+</div>
+<!-- TAB 2: Offline Queue -->
+<div id="img-tab-queue" style="display: none;">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color);">
+<div style="display: flex; align-items: center; gap: 8px;">
+<input class="form-input" id="img-queue-search" placeholder="🔍 Search queue..." style="width: 180px; height: 28px; font-size: 11px;" type="text"/>
+<select class="form-select" id="img-queue-filter-status" style="width: 120px; height: 28px; font-size: 11px; padding: 2px 6px;">
+<option value="all">All Items</option>
+<option value="queued">Queued Only</option>
+<option value="completed">Completed Only</option>
+</select>
+</div>
+<div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+<button class="btn btn-sm" id="btn-queue-copy-all" title="Copy all queued prompts to clipboard">
+                📋 Copy All
+              </button>
+<button class="btn btn-sm" id="btn-queue-export-json" title="Download JSON file for ComfyUI batch queue">
+                💾 Export JSON
+              </button>
+<button class="btn btn-sm" id="btn-queue-export-text" title="Download formatted prompt text sheet">
+                📄 Export .TXT
+              </button>
+<button class="btn btn-sm" id="btn-queue-clear-done" title="Remove completed items from queue">
+                🧹 Clear Done
+              </button>
+<button class="btn btn-sm btn-danger" id="btn-queue-clear-all" title="Clear entire queue">
+                🗑️ Clear All
+              </button>
+</div>
+</div>
+<!-- Queue List Container -->
+<div id="img-queue-list-container" style="display: flex; flex-direction: column; gap: 10px;">
+<!-- Populated dynamically by app.js -->
+</div>
+</div>
+<!-- TAB 3: ComfyUI Client -->
+<div id="img-tab-comfy" style="display: none;">
+<!-- Server Connection Bar -->
+<div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 14px; --darkreader-inline-bgcolor: var(--darkreader-background-10b98114, rgba(13, 148, 103, 0.08)); --darkreader-inline-bgimage: none; --darkreader-inline-border-top: var(--darkreader-border-10b98140, rgba(15, 179, 125, 0.25)); --darkreader-inline-border-right: var(--darkreader-border-10b98140, rgba(15, 179, 125, 0.25)); --darkreader-inline-border-bottom: var(--darkreader-border-10b98140, rgba(15, 179, 125, 0.25)); --darkreader-inline-border-left: var(--darkreader-border-10b98140, rgba(15, 179, 125, 0.25));">
+<div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+<div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 260px;">
+<label style="font-size: 11px; font-weight: 700; color: rgb(110, 231, 183); text-transform: uppercase; --darkreader-inline-color: var(--darkreader-text-6ee7b7, #6ee7b7);">ComfyClient Socket:</label>
+<input class="form-input" id="comfy-server-url" style="padding: 4px 8px; font-size: 12px; font-family: monospace; flex: 1;" type="text" value="/tmp/comfyclient.sock"/>
+<button class="btn btn-sm btn-primary" id="btn-test-comfy-conn" style="white-space: nowrap;" type="button">
+                  🔌 Check Socket
+                </button>
+</div>
+<div id="comfy-status-badge" style="font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 4px; background: rgba(255, 255, 255, 0.06); color: var(--text-muted); --darkreader-inline-bgcolor: var(--darkreader-background-ffffff0f, rgba(24, 26, 27, 0.06)); --darkreader-inline-bgimage: none; --darkreader-inline-color: var(--darkreader-text--text-muted, var(--darkreader-text-000000, #e8e6e3));">
+                ⚪ Not Tested
+              </div>
+</div>
+</div>
+<!-- Non-Destructive Invariant Guarantee Banner -->
+<div style="background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.25); border-radius: var(--radius-sm); padding: 10px 14px; margin-bottom: 14px; display: flex; gap: 10px; align-items: center; --darkreader-inline-bgcolor: var(--darkreader-background-3b82f614, rgba(8, 68, 166, 0.08)); --darkreader-inline-bgimage: none; --darkreader-inline-border-top: var(--darkreader-border-3b82f640, rgba(7, 64, 156, 0.25)); --darkreader-inline-border-right: var(--darkreader-border-3b82f640, rgba(7, 64, 156, 0.25)); --darkreader-inline-border-bottom: var(--darkreader-border-3b82f640, rgba(7, 64, 156, 0.25)); --darkreader-inline-border-left: var(--darkreader-border-3b82f640, rgba(7, 64, 156, 0.25));">
+<span style="font-size: 18px;">⚡</span>
+<div style="font-size: 11px; color: rgb(147, 197, 253); line-height: 1.4; --darkreader-inline-color: var(--darkreader-text-93c5fd, #81c4fd);">
+<strong>Dedicated ComfyClient IPC:</strong> Diffusion generations are managed by the standalone <code>comfyclient</code> service via its Unix Domain Socket (<code>/tmp/comfyclient.sock</code>). Long-running workflow generations are decoupled and execute independently.
+            </div>
+</div>
+<!-- Quick Dispatch Bar -->
+<div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 14px;">
+<div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+<button class="btn btn-primary" id="btn-comfy-run-all" style="background: linear-gradient(135deg, rgb(16, 185, 129), rgb(5, 150, 105)); border: medium; font-weight: 700; --darkreader-inline-bgcolor: var(--darkreader-background-00000000, rgba(0, 0, 0, 0)); --darkreader-inline-bgimage: linear-gradient(135deg, var(--darkreader-background-10b981, #0d9467), var(--darkreader-background-059669, #047854)); --darkreader-inline-border-top: medium; --darkreader-inline-border-right: medium; --darkreader-inline-border-bottom: medium; --darkreader-inline-border-left: medium;" type="button">
+<span>🚀 Dispatch All Queued Prompts</span>
+</button>
+</div>
+<span id="comfy-run-summary-text" style="font-size: 11px; color: var(--text-muted); --darkreader-inline-color: var(--darkreader-text--text-muted, var(--darkreader-text-000000, #e8e6e3));">Ready to queue in ComfyClient</span>
+</div>
+<!-- Live Progress Console -->
+<div id="comfy-progress-console" style="display: none; background: rgb(9, 9, 11); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 12px; font-family: monospace; font-size: 11px; max-height: 200px; overflow-y: auto; --darkreader-inline-border-short: 1px solid var(--darkreader-border--border-color); --darkreader-inline-bgcolor: var(--darkreader-background-09090b, #080808); --darkreader-inline-bgimage: none;">
+<div id="comfy-progress-lines" style="display: flex; flex-direction: column; gap: 4px; color: rgb(161, 161, 170); --darkreader-inline-color: var(--darkreader-text-a1a1aa, #afa99e);"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Modal: Historical & Fantasy Era Discovery Studio -->

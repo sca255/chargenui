@@ -1,0 +1,116 @@
+<div class="modal-overlay hidden" id="modal-households">
+<div class="modal modal-xl" style="max-width: 1100px;">
+<div class="modal-header">
+<div style="display:flex; align-items:center; gap:8px;">
+<span style="font-size:18px;">👑</span>
+<div>
+<h3 style="font-size: 15px; font-weight: 700; margin:0;">Households, Courts &amp; Group Encounter Binders</h3>
+<div style="font-size: 11px; color: var(--text-muted);">Organize multiple cards into arbitrary households/covens/courts with hierarchy &amp; forge multi-character group encounters</div>
+</div>
+</div>
+<button class="btn btn-sm" id="btn-close-households">✕</button>
+</div>
+<div class="modal-body" style="display: flex; gap: 16px; min-height: 480px;">
+<!-- Left: Household List & Selector -->
+<div style="width: 280px; display: flex; flex-direction: column; gap: 8px; border-right: 1px solid var(--border-color); padding-right: 12px;">
+<div style="display: flex; justify-content: space-between; align-items: center;">
+<span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted);">Your Binders</span>
+<button class="btn btn-xs btn-primary" id="btn-create-household">➕ New Binder</button>
+</div>
+<div id="household-list-container" style="display: flex; flex-direction: column; gap: 6px; overflow-y: auto; max-height: 440px;">
+<div style="text-align: center; color: var(--text-dim); padding: 20px 0; font-size: 11px;">Loading households...</div>
+</div>
+</div>
+<!-- Right: Active Household Details, Roster & Encounter Generator -->
+<div id="household-detail-container" style="flex: 1; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; max-height: 520px;">
+<div id="household-empty-state" style="text-align: center; padding: 60px 20px; color: var(--text-dim);">
+<div style="font-size: 36px; margin-bottom: 8px;">👑</div>
+<div style="font-size: 13px; font-weight: 600;">No Household Selected</div>
+<div style="font-size: 11px; margin-top: 4px;">Select an existing household binder from the left or click "➕ New Binder" to create one.</div>
+</div>
+<div class="hidden" id="household-editor-view" style="display: flex; flex-direction: column; gap: 12px;">
+<!-- Binder Metadata -->
+<div style="background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px; display: flex; flex-direction: column; gap: 8px;">
+<div style="display: flex; gap: 8px;">
+<div style="flex: 2;">
+<label class="form-label" style="font-size: 10px;">Household / Court Name</label>
+<input class="form-input" id="hh-input-name" placeholder="e.g. Sunstone Solar Citadel or Obsidian Guild" type="text"/>
+</div>
+<div style="flex: 1.5;">
+<label class="form-label" style="font-size: 10px;">Arbitrary Category Label</label>
+<input class="form-input" id="hh-input-category" placeholder="e.g. Imperial Harem, Rogue Coven, Mercenary Guild" type="text"/>
+</div>
+<div style="flex: 1.2;">
+<label class="form-label" style="font-size: 10px;">{{user}} Sovereign Title</label>
+<input class="form-input" id="hh-input-usertitle" placeholder="e.g. Master, Patriarch, Sovereign, Lord" type="text"/>
+</div>
+</div>
+<div>
+<label class="form-label" style="font-size: 10px;">Estate Setting &amp; Atmosphere</label>
+<textarea class="form-textarea" id="hh-input-lore" placeholder="Chamber layout, tactile environment, sensory specifics..." rows="2" style="font-size: 11px;"></textarea>
+</div>
+<div>
+<label class="form-label" style="font-size: 10px;">Household Codes &amp; Etiquette (one per line)</label>
+<textarea class="form-textarea" id="hh-input-rules" placeholder="e.g. Evening audience protocol; dispute resolution; seniority privileges..." rows="2" style="font-size: 11px;"></textarea>
+</div>
+<div style="display: flex; justify-content: flex-end; gap: 6px;">
+<button class="btn btn-xs btn-primary" id="btn-save-household-meta">💾 Save Binder Details</button>
+<button class="btn btn-xs" id="btn-delete-household" style="background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #f87171;">🗑️ Delete Binder</button>
+</div>
+</div>
+<!-- Member Roster Management -->
+<div style="background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+<div>
+<span style="font-size: 12px; font-weight: 700; color: #f472b6;">Companions Roster</span>
+<span id="hh-roster-count" style="font-size: 10px; color: var(--text-muted); margin-left: 6px;">(0 members)</span>
+</div>
+<div style="display: flex; gap: 6px; align-items: center;">
+<select class="form-select" id="hh-add-card-select" style="font-size: 11px; padding: 2px 6px; height: 26px; max-width: 220px;">
+<option value="">-- Add Character from Library --</option>
+</select>
+<button class="btn btn-xs btn-primary" id="btn-hh-add-member">➕ Add to Binder</button>
+</div>
+</div>
+<div id="hh-members-table-container">
+<div style="text-align: center; color: var(--text-dim); padding: 16px; font-size: 11px;">No characters assigned yet. Choose from your library above!</div>
+</div>
+</div>
+<!-- Group Encounter / Scene Generator -->
+<div style="background: var(--bg-primary); border: 1px solid #8b5cf6; border-radius: 6px; padding: 10px; display: flex; flex-direction: column; gap: 8px;">
+<div style="display: flex; justify-content: space-between; align-items: center;">
+<div>
+<span style="font-size: 12px; font-weight: 700; color: #c084fc;">⚡ Multi-Companion Group Encounter Generator</span>
+<div style="font-size: 10px; color: var(--text-muted);">Synthesize a live, multi-character scene starter where companions interact and react to {{user}} simultaneously</div>
+</div>
+<button class="btn btn-xs" id="btn-hh-gen-encounter" style="background: rgba(139, 92, 246, 0.25); border: 1px solid #8b5cf6; color: #d8b4fe; font-weight: 700;">
+                  ✨ Synthesize Group Scene
+                </button>
+</div>
+<div style="display: flex; gap: 8px;">
+<input class="form-input" id="hh-encounter-goal" placeholder="Inciting moment: e.g. An unexpected dispute over evening seating, or a quiet shared moment after training..." style="flex: 1; font-size: 11px;" type="text"/>
+<label style="font-size: 10px; display: flex; align-items: center; gap: 4px; color: var(--text-muted); cursor: pointer; user-select: none;">
+<input checked="" id="hh-encounter-save-alt" type="checkbox"/>
+                  Save as Alternate Greeting to cards
+                </label>
+</div>
+<!-- Output Box -->
+<div class="hidden" id="hh-encounter-output-box" style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 4px; padding: 8px; margin-top: 4px;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+<span id="hh-encounter-title" style="font-weight: 700; font-size: 11px; color: var(--accent-cyan);">Generated Scene</span>
+<button class="btn btn-xs" id="btn-hh-copy-encounter">📋 Copy Text</button>
+</div>
+<div id="hh-encounter-scenario" style="font-size: 10px; color: var(--text-muted); margin-bottom: 6px; font-style: italic;"></div>
+<div id="hh-encounter-text" style="font-size: 11px; line-height: 1.5; white-space: pre-wrap; max-height: 180px; overflow-y: auto;"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="modal-footer" style="justify-content: space-between;">
+<span style="font-size: 11px; color: var(--text-dim);">Arbitrary Household Binders stored in data/households.json</span>
+<button class="btn btn-sm" id="btn-close-households-footer">Close</button>
+</div>
+</div>
+</div>
+<!-- Revision History & Visual Diff Modal -->

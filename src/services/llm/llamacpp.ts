@@ -35,7 +35,7 @@ function getRequestTimeoutMs(): number {
  * Executes a resilient HTTP POST to llama-server without arbitrary runtime socket timeouts.
  * Keeps socket alive and enables TCP keep-alive probes.
  */
-function rawHttpPost(
+export function rawHttpPost(
   targetUrl: string,
   headers: Record<string, string>,
   bodyObj: Record<string, any>,

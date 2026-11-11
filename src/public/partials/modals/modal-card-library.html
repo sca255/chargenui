@@ -1,0 +1,35 @@
+<div class="modal-overlay hidden" id="modal-card-library">
+<div class="modal modal-lg">
+<div class="modal-header">
+<div style="display:flex; align-items:center; gap:8px;">
+<span style="font-size:18px;">📚</span>
+<div>
+<h3 style="font-size: 15px; font-weight: 700; margin:0;">Card Library &amp; Multi-Deck Manager</h3>
+<div style="font-size: 11px; color: var(--text-muted);">Manage your local saved characters and alternate roleplay variants</div>
+</div>
+</div>
+<button class="btn btn-sm" id="btn-close-library">✕</button>
+</div>
+<div class="modal-body">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+<input class="form-input" id="library-search-input" placeholder="🔍 Search saved cards by name or tags..." style="flex: 1;" type="text"/>
+<button class="btn btn-sm btn-primary" id="btn-lib-save-current" type="button">
+            💾 Save Active Card
+          </button>
+<button class="btn btn-sm" id="btn-lib-new-blank" type="button">
+            ➕ New Blank Card
+          </button>
+</div>
+<div class="deck-grid" id="library-cards-container">
+<div style="grid-column: 1/-1; text-align: center; padding: 30px; color: var(--text-dim);">
+            Loading saved cards...
+          </div>
+</div>
+</div>
+<div class="modal-footer" style="justify-content: space-between;">
+<span id="library-storage-info" style="font-size: 11px; color: var(--text-dim);">Stored locally in data/cards/</span>
+<button class="btn btn-sm" id="btn-close-library-footer">Close</button>
+</div>
+</div>
+</div>
+<!-- Custom Household & Court Binder Modal -->

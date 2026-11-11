@@ -1,4 +1,5 @@
 import type { ProviderConfig, ChatMessage, LLMCompletionOptions } from "../../types/provider";
+import { rawHttpPost } from "./llamacpp";
 
 export async function callOpenAICompat(
   config: ProviderConfig,
@@ -56,18 +57,15 @@ export async function callOpenAICompat(
     body.response_format = { type: "json_object" };
   }
 
-  const res = await fetch(url, {
-    method: "POST",
-    headers,
-    body: JSON.stringify(body),
-  });
+  // 30 minute timeout (1,800,000 ms) via lower-level streaming HTTP request with TCP keep-alive
+  const timeoutMs = 30 * 60 * 1000;
+  const rawRes = await rawHttpPost(url, headers, body, timeoutMs);
 
-  if (!res.ok) {
-    const errText = await res.text();
-    throw new Error(`OpenAI-compatible API error (${res.status} from ${url}): ${errText}`);
+  if (rawRes.status < 200 || rawRes.status >= 300) {
+    throw new Error(`OpenAI-compatible API error (${rawRes.status} from ${url}): ${rawRes.text.slice(0, 300)}`);
   }
 
-  const data = (await res.json()) as any;
+  const data = JSON.parse(rawRes.text);
   const reply = data.choices?.[0]?.message?.content;
   if (!reply) {
     throw new Error("No completion content returned by API.");

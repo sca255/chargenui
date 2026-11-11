@@ -343,11 +343,11 @@ ${getGenreFidelityDirective(spine?.archetype, (spine?.tags || []).join(" "), spi
    - ${cfg.fieldRenderers?.aliChatAndAlts?.aliChatRule || "Strict Example Messages convention: <START> blocks with {{user}}: and {{char}}:."}
    - ANTI-ROBOTIC MANDATE: STRICTLY NEVER make {{char}} talk like a calculator, thesaurus, or Spock caricature. FORBIDDEN in domestic dialogue: "statistical anomaly", "mathematically unsound", "altering my trajectory", "nutrient density", "inefficiency of your chaos". Smart characters speak with natural contractions, dry brevity, and grounded human cadence.
 2. ALTERNATE GREETINGS (alternate_greetings):
-    - ${cfg.fieldRenderers?.aliChatAndAlts?.altGreetingsRule || `At least ${targetAltCount} distinct opening scenes in voiced narration tailored organically to {{char}}'s setting and dynamic.`}
+    - ${targetAltCount > 3 ? `You MUST generate EXACTLY ${targetAltCount} alternate greetings in the array.` : (cfg.fieldRenderers?.aliChatAndAlts?.altGreetingsRule || `At least ${targetAltCount} distinct opening scenes in voiced narration tailored organically to {{char}}'s setting and dynamic.`)}
     - **LENGTH: Each greeting MUST be exactly 2 paragraphs, richly sensory, and equal in depth to a main first_mes. NOT a short blurb.** Ground the scene dynamically in an active moment together. Vary physical locations, times of day, and emotional stakes across the greetings.
     - PRESERVE INITIAL TENSION: On Turn 0, {{char}} MUST maintain their defensive armor, professional dignity, or bratty front; do not allow premature surrender or instant breakdown.
 
-Output STRICT JSON:
+Output STRICT JSON — The "alternate_greetings" array MUST have EXACTLY ${targetAltCount} entries:
 {
   "mes_example": "<START>\\n{{user}}: [Prompt 1]\\n{{char}}: [Voiced response]\\n<START>\\n{{user}}: [Prompt 2]\\n{{char}}: [Voiced response]...",
   "alternate_greetings": [
@@ -359,6 +359,95 @@ ${sampleAltPlaceholders}
     { role: "system" as const, content: cfg.systemPrompt },
     { role: "user" as const, content: prompt },
   ];
+
+  // If requesting more than 6 greetings, generate in sequential batches to prevent LLM context truncation or early stopping
+  if (targetAltCount > 6) {
+    console.log(`[renderExampleMsgsAndAlts] Large request (${targetAltCount} greetings). Generating in batches of up to 6...`);
+    const initialBatchCount = Math.min(6, targetAltCount);
+    const initialPlaceholders = Array.from({ length: initialBatchCount }, (_, i) => `    { "phase": "Phase/Turning Point label", "greeting": "Complete multi-paragraph Alternate Opening ${i + 1} as voiced scene" }`).join(",\n");
+    const initialPrompt = prompt.replace(sampleAltPlaceholders, initialPlaceholders)
+      .replace(new RegExp(`EXACTLY ${targetAltCount}`, "g"), `EXACTLY ${initialBatchCount}`)
+      .replace(new RegExp(`At least ${targetAltCount}`, "g"), `At least ${initialBatchCount}`);
+
+    const initialRes = await routeLLMJson<{ mes_example: string; alternate_greetings: Array<{ phase: string; greeting: string }> | string[] }>(
+      provider,
+      [{ role: "system" as const, content: cfg.systemPrompt }, { role: "user" as const, content: initialPrompt }],
+      { maxTokens }
+    );
+
+    const accumulatedAlts: string[] = [];
+    const rawFirst = initialRes.alternate_greetings || [];
+    if (Array.isArray(rawFirst)) {
+      for (const item of rawFirst) {
+        if (typeof item === "string") accumulatedAlts.push(normalizeDialogueQuotes(normalizeRpMacros(item, charName)));
+        else if (item && typeof item.greeting === "string") accumulatedAlts.push(normalizeDialogueQuotes(normalizeRpMacros(item.greeting, charName)));
+      }
+    }
+
+    let currentStartIdx = accumulatedAlts.length + 1;
+    while (accumulatedAlts.length < targetAltCount) {
+      const remainingNeeded = targetAltCount - accumulatedAlts.length;
+      const thisBatchSize = Math.min(6, remainingNeeded);
+      console.log(`[renderExampleMsgsAndAlts] Generating batch: openings ${currentStartIdx} to ${currentStartIdx + thisBatchSize - 1} of ${targetAltCount}...`);
+
+      const batchPlaceholders = Array.from({ length: thisBatchSize }, (_, i) => `    { "phase": "Phase/Turning Point label", "greeting": "Complete multi-paragraph Alternate Opening ${currentStartIdx + i} as voiced scene" }`).join(",\n");
+      const continuationPrompt = `You are continuing the generation of ALTERNATE GREETINGS for ${charName}.
+We have already created the first ${accumulatedAlts.length} greetings.
+
+THE AUTHORING SPINE & VOICE:
+- Character: ${charName}
+- Archetype: ${spine?.archetype || "Unspecified"}
+- Voice: ${v.cadence || "Standard"} (${v.dialect_register || "Standard"})
+- Signature Lexicon: ${(v.signature_lexicon || []).join(", ") || "None"}
+${storyArc ? `\nSTORY ARC:\n${storyArc}\n` : ""}
+
+REQUIREMENTS:
+- Generate the NEXT ${thisBatchSize} distinct alternate greetings (Openings ${currentStartIdx} to ${currentStartIdx + thisBatchSize - 1}).
+- LENGTH: Each greeting MUST be exactly 2 paragraphs, richly sensory, voiced third-person limited narration.
+- Do NOT repeat previously used scenes. Continue exploring different phases or turning points of the story arc.
+
+Output STRICT JSON:
+{
+  "alternate_greetings": [
+${batchPlaceholders}
+  ]
+}`;
+
+      try {
+        const batchRes = await routeLLMJson<{ alternate_greetings: Array<{ phase: string; greeting: string }> | string[] }>(
+          provider,
+          [{ role: "system" as const, content: cfg.systemPrompt }, { role: "user" as const, content: continuationPrompt }],
+          { maxTokens }
+        );
+        const rawBatch = batchRes.alternate_greetings || [];
+        let addedThisBatch = 0;
+        if (Array.isArray(rawBatch)) {
+          for (const item of rawBatch) {
+            let text = "";
+            if (typeof item === "string") text = item;
+            else if (item && typeof item.greeting === "string") text = item.greeting;
+            if (text && text.trim()) {
+              accumulatedAlts.push(normalizeDialogueQuotes(normalizeRpMacros(text, charName)));
+              addedThisBatch++;
+            }
+          }
+        }
+        if (addedThisBatch === 0) {
+          console.warn("[renderExampleMsgsAndAlts] Batch returned no new greetings. Breaking loop to prevent infinite retry.");
+          break;
+        }
+        currentStartIdx = accumulatedAlts.length + 1;
+      } catch (batchErr) {
+        console.error("[renderExampleMsgsAndAlts] Error generating batch of greetings:", batchErr);
+        break;
+      }
+    }
+
+    return {
+      mes_example: normalizeDialogueQuotes(normalizeRpMacros(initialRes.mes_example || "", charName)),
+      alternate_greetings: accumulatedAlts,
+    };
+  }
 
   const res = await routeLLMJson<{ mes_example: string; alternate_greetings: Array<{ phase: string; greeting: string }> | string[] }>(provider, messages, { maxTokens });
   const rawAlts = res.alternate_greetings || [];

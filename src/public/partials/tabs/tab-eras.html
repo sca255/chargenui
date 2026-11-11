@@ -1,0 +1,136 @@
+<div class="tab-content hidden" id="tab-eras" style="display: flex; flex-direction: column; gap: 10px;">
+<div style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(168, 85, 247, 0.12)); border: 1px solid var(--accent-purple); border-radius: var(--radius-sm); padding: 10px;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+<span style="font-size: 13px; font-weight: 700; color: #e0e7ff;">📜 Era Forge &amp; Mythic Settings</span>
+<span style="font-size: 10px; background: rgba(99, 102, 241, 0.25); color: var(--accent-cyan); padding: 2px 6px; border-radius: 4px; font-weight: 600;">TOOL CALLING &amp; QUALITY LINTER</span>
+</div>
+<p style="font-size: 11px; color: var(--text-muted); margin: 0;">
+              Agent-assisted worldbuilder. Generates paired eras (Multi-Partner &amp; Sole Partner), audits structural quality, and saves directly to <code>data/eras_extensions/</code>.
+            </p>
+</div>
+<!-- Preset Concept Chips -->
+<div>
+<label class="form-label" style="font-size: 11px; margin-bottom: 4px;">Inspiration Presets:</label>
+<div class="steering-chips" style="gap: 4px;">
+<span class="steering-chip era-preset-chip" data-concept="Floating Sky-Island Freehold high above the clouds with Aether-Skiff captain, crystal levitation sails, and zero ground watchers">☁️ Sky Island</span>
+<span class="steering-chip era-preset-chip" data-concept="Volcanic Geothermal Hot Springs Sanctuary in secluded obsidian caldera with mineral baths and thermal privacy wards">🌋 Hot Springs</span>
+<span class="steering-chip era-preset-chip" data-concept="Abyssal Pearl Trench in deep bioluminescent underwater grotto with deep-diver master and siren/mermaid brides">🌊 Abyssal Trench</span>
+<span class="steering-chip era-preset-chip" data-concept="Desert Mirage Oasis Estate hidden behind perpetual sand-veil wards with caravan master and silk-tent solariums">🏜️ Sand Oasis</span>
+<span class="steering-chip era-preset-chip" data-concept="Enchanted Alpine Hearth &amp; Ironwood Timber Lodge secluded in snowy mountain pass with master wood-smith">🏔️ Alpine Hearth</span>
+<span class="steering-chip era-preset-chip" data-concept="Astral Lighthouse Sanctuary atop a lonely sea-spire with star-navigator master and acoustic silence runes">🔮 Astral Spire</span>
+</div>
+</div>
+<!-- Era Input Form -->
+<div class="form-group" style="margin-bottom: 6px; position: relative;">
+<label class="form-label" style="font-size: 11px;">Era Premise / Setting Request (type <code>era:</code> for setting or <code>erac:</code> for category):</label>
+<textarea class="form-textarea" id="era-agent-prompt" placeholder="Describe your setting: e.g. 'era: desert fortress' or 'erac: Fantasy' or 'Secluded geothermal cavern hot springs...'" rows="3" style="font-size: 12px; resize: vertical;"></textarea>
+<div class="hidden" id="era-agent-autocomplete" style="position: absolute; left: 0; right: 0; top: 100%; z-index: 1050; background: var(--bg-card, #1e293b); border: 1px solid var(--accent-indigo, #6366f1); border-radius: var(--radius-sm, 6px); box-shadow: 0 10px 25px rgba(0,0,0,0.5); max-height: 220px; overflow-y: auto;"></div>
+</div>
+<!-- Controls: Dual-Pair, Extension File, Generate Button -->
+<div style="display: flex; gap: 8px; align-items: center; justify-content: space-between; flex-wrap: wrap; background: var(--bg-card); padding: 8px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+<div style="display: flex; gap: 10px; align-items: center;">
+<label class="checkbox-label" style="font-size: 11px; margin: 0;" title="Generates both Version A (Multi-Wife Polygyny) and Version B (Sole Bride Monogamy)">
+<input checked="" id="chk-era-dual-pair" type="checkbox"/>
+<span>⚔️ Dual-Format Pair (Multi-Wife &amp; Sole Bride)</span>
+</label>
+</div>
+<div style="display: flex; gap: 6px; align-items: center;">
+<span style="font-size: 11px; color: var(--text-muted);">File:</span>
+<input class="form-input" id="era-extension-filename" placeholder="custom_eras.json" style="width: 140px; padding: 2px 6px; font-size: 11px; height: 26px;" type="text" value="my_fantasy_eras.json"/>
+<button class="btn btn-sm btn-primary" id="btn-era-agent-generate" style="padding: 4px 12px; height: 26px;" type="button">
+<span>⚡ Forge Era Pair</span>
+</button>
+</div>
+</div>
+<!-- Agent Tool Execution Feed & Status -->
+<div class="hidden" id="era-agent-feed" style="background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 8px; font-size: 11px; max-height: 120px; overflow-y: auto;">
+<div style="font-weight: 700; color: var(--accent-cyan); margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+<span>🤖 Era Architect Feedback &amp; Tool Logs:</span>
+<span class="status-indicator" id="era-agent-status-indicator"></span>
+</div>
+<div id="era-agent-message-body" style="color: var(--text-main); white-space: pre-wrap; margin-bottom: 6px;"></div>
+<div id="era-tool-calls-container" style="display: flex; gap: 4px; flex-wrap: wrap;"></div>
+</div>
+<!-- Dual-Card Preview Section -->
+<div class="hidden" id="era-preview-section" style="display: flex; flex-direction: column; gap: 8px;">
+<div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 6px;">
+<div style="display: flex; gap: 4px;">
+<button class="nav-tab active" id="btn-preview-poly" style="padding: 4px 10px; font-size: 11px;" type="button">🌸 Multi-Wife (Polygyny)</button>
+<button class="nav-tab" id="btn-preview-mono" style="padding: 4px 10px; font-size: 11px;" type="button">💍 Sole Bride (Monogamy)</button>
+</div>
+<div id="era-compliance-badge-summary" style="font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.4);">
+                🛡️ 100% Compliant
+              </div>
+</div>
+<!-- Active Era Card Content -->
+<div id="era-card-display" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+<div style="display: flex; justify-content: space-between; align-items: flex-start;">
+<div>
+<h4 id="era-preview-title" style="margin: 0 0 2px 0; font-size: 14px; color: var(--accent-cyan);">☁️ Floating Sky-Island Freehold</h4>
+<div style="display: flex; gap: 6px; font-size: 10px; color: var(--text-dim);">
+<span id="era-preview-span" style="background: var(--bg-input); padding: 1px 6px; border-radius: 3px;">Age of the Bound Clouds</span>
+<span id="era-preview-region" style="background: var(--bg-input); padding: 1px 6px; border-radius: 3px;">The Untamed Cloud-Sea</span>
+</div>
+</div>
+<button class="btn btn-sm" id="btn-copy-era-json" style="font-size: 10px; padding: 2px 6px;" type="button">📋 Copy JSON</button>
+</div>
+<div>
+<label style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Sensory Aesthetic:</label>
+<p id="era-preview-aesthetic" style="font-size: 11px; margin: 2px 0; color: var(--text-main); line-height: 1.4;"></p>
+</div>
+<div>
+<label style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Tech &amp; Domestic Enchantments:</label>
+<p id="era-preview-tech" style="font-size: 11px; margin: 2px 0; color: var(--text-main); line-height: 1.4;"></p>
+</div>
+<div>
+<label style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Social Codes, Non-Royal Privacy &amp; Domestic Authority:</label>
+<p id="era-preview-social" style="font-size: 11px; margin: 2px 0; color: #e2e8f0; line-height: 1.45; background: rgba(0,0,0,0.25); padding: 8px; border-radius: 4px; border-left: 3px solid var(--accent-purple);"></p>
+</div>
+<div>
+<label style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Character Archetypes &amp; Bride Titles:</label>
+<div id="era-preview-titles" style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 2px;"></div>
+</div>
+<div>
+<label style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Tags:</label>
+<div id="era-preview-tags" style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 2px;"></div>
+</div>
+</div>
+<!-- Era Quality Audit Checklist -->
+<div id="era-compliance-details" style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 10px;">
+<div style="font-size: 11px; font-weight: 700; color: var(--accent-purple); margin-bottom: 6px;">🛡️ Era Architecture &amp; Quality Audit:</div>
+<div id="era-pillars-checklist" style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 11px;">
+<div id="pillar-check-dual">⚔️ Dual-Format Pair: <span style="font-weight:600;">...</span></div>
+<div id="pillar-check-depth">🏰 Setting &amp; Aesthetic Depth: <span style="font-weight:600;">...</span></div>
+<div id="pillar-check-social">📜 Social Codes &amp; Dynamic: <span style="font-weight:600;">...</span></div>
+<div id="pillar-check-richness">📚 Rich Names &amp; Archetypes: <span style="font-weight:600;">...</span></div>
+</div>
+<div id="era-compliance-issues" style="margin-top: 6px; font-size: 10px; color: #f87171;"></div>
+</div>
+<!-- Action Toolbar -->
+<div style="display: flex; gap: 8px; justify-content: flex-end; align-items: center; margin-top: 4px; flex-wrap: wrap;">
+<div style="display: flex; align-items: center; gap: 4px; margin-right: auto;">
+<label for="era-save-destination" style="font-size: 11px; color: var(--text-dim);">Target:</label>
+<select class="form-input" id="era-save-destination" style="font-size: 11px; padding: 2px 6px; height: 26px;">
+<option selected="" value="project_data">Project data/eras_extensions</option>
+<option value="local_user">OS User AppData (.local / AppData)</option>
+</select>
+</div>
+<button class="btn btn-sm" id="btn-test-era-spark" style="background: rgba(99, 102, 241, 0.15); border: 1px solid var(--accent-cyan); color: var(--accent-cyan);" title="Test spark a new character card concept set in this exact era" type="button">
+                ⚡ Test Spark Character in Era
+              </button>
+<button class="btn btn-sm btn-primary" id="btn-save-era-extension" title="Save this paired era definition into extension folder" type="button">
+                💾 Save to Extensions Folder
+              </button>
+</div>
+</div>
+<!-- Existing Extensions Drawer Section -->
+<div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 10px; margin-top: 4px;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+<span style="font-size: 12px; font-weight: 700; color: var(--text-main);">📁 Installed Extension Packs (data/ + user AppData)</span>
+<button class="btn btn-sm" id="btn-refresh-extensions" style="font-size: 10px; padding: 2px 6px;" type="button">🔄 Refresh</button>
+</div>
+<div id="installed-extensions-list" style="display: flex; flex-direction: column; gap: 4px; max-height: 140px; overflow-y: auto;">
+<span style="font-size: 11px; color: var(--text-dim);">Scanning extensions...</span>
+</div>
+</div>
+</div>

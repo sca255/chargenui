@@ -1,0 +1,50 @@
+<div class="tab-content hidden" id="tab-evolution" style="display: flex; flex-direction: column; gap: 10px;">
+  <div style="background: linear-gradient(135deg, rgba(168, 85, 247, 0.12), rgba(59, 130, 246, 0.12)); border: 1px solid var(--accent-purple); border-radius: var(--radius-sm); padding: 10px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+      <span style="font-size: 13px; font-weight: 700; color: #e0e7ff;">🧬 Archetype Evolution & Vector Arithmetic</span>
+      <span style="font-size: 10px; background: rgba(168, 85, 247, 0.25); color: var(--accent-purple-light); padding: 2px 6px; border-radius: 4px; font-weight: 600;">SEMANTIC VECTORS</span>
+    </div>
+    <div style="font-size: 11px; color: var(--text-muted); line-height: 1.4;">
+      Mutate character embedding vector (+ injected traits, - suppressed traits), discover nearest library archetypes, and synthesize steering-guided variants.
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label" style="display: flex; justify-content: space-between;">
+      <span>Injected Traits (+)</span>
+      <span style="font-size: 10px; color: var(--accent-cyan);">Comma separated</span>
+    </label>
+    <input class="form-input" id="mutation-add-traits" placeholder="e.g. ruthless tactician, melancholic scholar, cybernetic augs" type="text" />
+  </div>
+
+  <div class="form-group">
+    <label class="form-label" style="display: flex; justify-content: space-between;">
+      <span>Suppressed Traits (-)</span>
+      <span style="font-size: 10px; color: var(--accent-rose);">Comma separated</span>
+    </label>
+    <input class="form-input" id="mutation-remove-traits" placeholder="e.g. naive optimism, hesitation, soft-spoken" type="text" />
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+    <div class="form-group">
+      <label class="form-label">Mutation Intensity</label>
+      <input class="form-input" id="mutation-intensity" type="number" step="0.1" min="0.1" max="2.0" value="1.0" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Variant Count</label>
+      <select class="form-select" id="mutation-count">
+        <option value="1">1 Variant</option>
+        <option value="2">2 Variants</option>
+        <option value="3">3 Variants</option>
+      </select>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" id="btn-mutate-archetype" style="justify-content: center; padding: 10px; font-weight: 700; margin-top: 4px;" type="button">
+    <span>🧬 Evolve Archetype Vector</span>
+  </button>
+
+  <div id="mutation-results" style="display: flex; flex-direction: column; gap: 8px; margin-top: 6px;"></div>
+</div>
+
+<!-- TAB: Narrative Timeline & Arc Tracker -->

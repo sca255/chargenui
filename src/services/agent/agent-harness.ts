@@ -1,6 +1,7 @@
 import type { ProviderConfig, ChatMessage, ToolCallRequest } from "../../types/provider";
 import type { RoleplayCharacter } from "../../types/character";
 import { routeLLMCompletion } from "../llm/provider-router";
+import { rawHttpPost } from "../llm/llamacpp";
 import { UNCENSORED_SYSTEM_PROMPT } from "../generator/uncensored-prompts";
 import { normalizeRpMacros, normalizeDialogueQuotes } from "../character/macro-engine";
 import { parseAgentResponse, CARD_AGENT_TOOL_SCHEMA, type TakeOption } from "./agent-tools";
@@ -67,19 +68,20 @@ async function postCardAgentChat(
       console.log("=================================================================\n");
     }
 
-    const res = await fetch(url, { method: "POST", headers, body: JSON.stringify(payloadBody) });
-    if (!res.ok) {
-      // Fallback: If model or server rejects tools field (HTTP 400 or 422), fallback to regular text
-      if (res.status === 400 || res.status === 422) {
-        console.warn(`Server rejected native tools with HTTP ${res.status}; falling back to non-tool completion`);
+    // 30 minute timeout (1,800,000 ms) via lower-level streaming HTTP request with TCP keep-alive
+    const timeoutMs = 30 * 60 * 1000;
+    const rawRes = await rawHttpPost(url, headers, payloadBody, timeoutMs);
+
+    if (rawRes.status < 200 || rawRes.status >= 300) {
+      if (rawRes.status === 400 || rawRes.status === 422) {
+        console.warn(`Server rejected native tools with HTTP ${rawRes.status}; falling back to non-tool completion`);
         const fallbackText = await routeLLMCompletion(config, messages);
         return { content: fallbackText };
       }
-      const errText = await res.text();
-      throw new Error(`LLM returned HTTP ${res.status}: ${errText.slice(0, 300)}`);
+      throw new Error(`LLM returned HTTP ${rawRes.status}: ${rawRes.text.slice(0, 300)}`);
     }
 
-    const data = (await res.json()) as any;
+    const data = JSON.parse(rawRes.text) as any;
     const msg = data?.choices?.[0]?.message || {};
     const rawToolCalls: ToolCallRequest[] | undefined = Array.isArray(msg.tool_calls) ? msg.tool_calls : undefined;
     const visibleContent = typeof msg.content === "string" ? msg.content : "";
@@ -269,6 +271,14 @@ const AGENT_SYSTEM_PROMPT_XML_FALLBACK = `${AGENT_SYSTEM_PROMPT_BASE}
      </tool:update_alternate_greeting>
    - Delete a single stale alternate greeting by its 0-based index:
      <tool:delete_alternate_greeting index="1" explanation="Removed redundant encounter" />
+   - Prepend a framing header (lore prefix, scene primer) to ONE or ALL greetings without re-emitting entire texts:
+     <tool:prepend_alternate_greeting_header index="all" explanation="Prepended atmosphere primer">
+     [Header text to prepend]
+     </tool:prepend_alternate_greeting_header>
+   - Append a contextual footer (cliffhanger, spoken quote) to ONE or ALL greetings without re-emitting entire texts:
+     <tool:append_alternate_greeting_footer index="all" explanation="Appended cliffhanger prompt">
+     [Footer text to append]
+     </tool:append_alternate_greeting_footer>
 
    ERA DATABASE TOOLS (Read & explore existing settings from eras_db.json):
    - Read the complete worldbuilding specification of any existing era:
@@ -288,12 +298,13 @@ const AGENT_SYSTEM_PROMPT_XML_FALLBACK = `${AGENT_SYSTEM_PROMPT_BASE}
 const AGENT_SYSTEM_PROMPT_NATIVE = `${AGENT_SYSTEM_PROMPT_BASE}
 
 5. NATIVE TOOL USAGE:
-   You drive card edits by calling the provided native tools (update_field, add_alternate_greeting, update_alternate_greeting, delete_alternate_greeting, search_lore, read_era, list_eras, list_era_categories).
+   You drive card edits by calling the provided native tools (update_field, add_alternate_greeting, update_alternate_greeting, delete_alternate_greeting, prepend_alternate_greeting_header, append_alternate_greeting_footer, search_lore, read_era, list_eras, list_era_categories).
    - Use update_field for updating description, personality, scenario, first_mes, mes_example, post_history_instructions, tags, name, or creator_notes.
    - For alternate greetings, never overwrite the whole array via update_field.
    - When the user asks to edit, revise, rewrite, fix, or polish an existing alternate greeting, ALWAYS call update_alternate_greeting with the 0-based index of that greeting (e.g. Greeting #1 / first greeting is index 0, Greeting #2 is index 1, etc.).
    - ONLY call add_alternate_greeting when the user explicitly requests a NEW, additional, or extra greeting.
    - Call delete_alternate_greeting with its 0-based index to remove an unwanted or obsolete greeting.
+   - Use prepend_alternate_greeting_header or append_alternate_greeting_footer to attach a prefix or suffix to a specific greeting (index: "0") or to ALL 50 greetings at once (index: "all") without having to re-emit thousands of tokens!
    - Provide your conversational summary, advice, or critique to the user in your message content alongside your tool calls.
 `;
 
@@ -387,12 +398,17 @@ export async function executeAgentModify(req: AgentModifyRequest): Promise<Agent
     ? "Please analyze the request, determine which fields need updating, apply the modifications using tool action tags (<tool:update_field name=\"...\">), and provide your explanation to the user."
     : "Please analyze the request, determine which fields need updating, call the appropriate tools (update_field, add/update/delete_alternate_greeting), and provide your explanation to the user.";
 
-  const userTurn = `CURRENT CHARACTER CARD STATE:
+  // Context Caching Optimization:
+  // Pinned system prompt is index 0.
+  // Pinned base character card snapshot is pinned at index 1 as a static system/context reference.
+  // Prior conversational history follows strictly in index 2..N.
+  // Ephemeral user wishes and turn-specific directives remain at the very end.
+  const staticCardContext = `CURRENT BASE CHARACTER CARD STATE:
 \`\`\`json
 ${JSON.stringify(cardSnapshot, null, 2)}
-\`\`\`
+\`\`\``;
 
-${scopeInstruction}${pinnedBlock}${targetedBlock}${takesBlock}${dbEraContext}
+  const userTurn = `${scopeInstruction}${pinnedBlock}${targetedBlock}${takesBlock}${dbEraContext}
 
 USER'S WISHES / MODIFICATION REQUEST:
 """
@@ -403,6 +419,7 @@ ${promptInstruction}`;
 
   const messages: ChatMessage[] = [
     { role: "system", content: systemPrompt },
+    { role: "system", content: staticCardContext },
     ...historyMessages,
     { role: "user", content: userTurn },
   ];
@@ -603,6 +620,50 @@ ${promptInstruction}`;
             index: rawIdx,
           });
         }
+      } else if (ga.action === "prepend_header" && ga.content) {
+        const headerText = normalizeRpMacros(ga.content, charName).trim();
+        const isAll = ga.index === "all" || ga.index === undefined || ga.index === -1;
+        const targetIndices = isAll
+          ? existingAlts.map((_, i) => i)
+          : typeof ga.index === "number" && ga.index >= 0 && ga.index < existingAlts.length
+          ? [ga.index]
+          : [];
+
+        for (const idx of targetIndices) {
+          const beforeGreeting = existingAlts[idx];
+          const combined = `${headerText}\n\n${beforeGreeting}`.trim();
+          existingAlts[idx] = combined;
+          changes.push({
+            field: "alternate_greetings",
+            before: beforeGreeting,
+            after: combined,
+            explanation: ga.explanation || `Prepended header to greeting #${idx + 1}`,
+            action: "update",
+            index: idx,
+          });
+        }
+      } else if (ga.action === "append_footer" && ga.content) {
+        const footerText = normalizeRpMacros(ga.content, charName).trim();
+        const isAll = ga.index === "all" || ga.index === undefined || ga.index === -1;
+        const targetIndices = isAll
+          ? existingAlts.map((_, i) => i)
+          : typeof ga.index === "number" && ga.index >= 0 && ga.index < existingAlts.length
+          ? [ga.index]
+          : [];
+
+        for (const idx of targetIndices) {
+          const beforeGreeting = existingAlts[idx];
+          const combined = `${beforeGreeting}\n\n${footerText}`.trim();
+          existingAlts[idx] = combined;
+          changes.push({
+            field: "alternate_greetings",
+            before: beforeGreeting,
+            after: combined,
+            explanation: ga.explanation || `Appended footer to greeting #${idx + 1}`,
+            action: "update",
+            index: idx,
+          });
+        }
       }
     }
 
@@ -655,5 +716,77 @@ ${promptInstruction}`;
     agentMessage: parsed.agentMessage || "I have analyzed your request and updated the character card accordingly.",
     appliedFields,
     takes: normalizedTakes,
+  };
+}
+
+export interface AgentCompactRequest {
+  provider: ProviderConfig;
+  chatHistory: { role: string; content: string }[];
+  characterName?: string;
+}
+
+export interface AgentCompactResponse {
+  summary: string;
+  compactedHistory: { role: "user" | "assistant"; content: string; time?: string }[];
+}
+
+/**
+ * Summarizes an extended agent conversation using AI into an authoritative working memory checkpoint.
+ */
+export async function executeAgentCompact(req: AgentCompactRequest): Promise<AgentCompactResponse> {
+  const { provider, chatHistory, characterName } = req;
+  const validHistory = (chatHistory || []).filter((m) => m && m.content && m.content.trim());
+
+  if (validHistory.length === 0) {
+    return {
+      summary: "No prior conversation to compact.",
+      compactedHistory: [],
+    };
+  }
+
+  const name = characterName || "the character";
+  const formattedTranscript = validHistory
+    .map((m, i) => `Turn ${i + 1} [${m.role.toUpperCase()}]:\n${m.content}`)
+    .join("\n\n");
+
+  const promptMessages: ChatMessage[] = [
+    {
+      role: "system",
+      content: `You are an expert dialogue and character engineering summarizer.
+Your goal is to distill a multi-turn character card engineering conversation into a crystal-clear, dense executive summary.
+Capture:
+1. Core character revisions and creative decisions made so far for "${name}".
+2. Key user preferences, tone calibrations, and vetoes (what the user liked vs rejected).
+3. Active creative direction or pending tasks.
+Keep it concise, actionable, and structured (under 300 words). Do not include pleasantries.`,
+    },
+    {
+      role: "user",
+      content: `Here is the multi-turn agent conversation transcript:\n\n${formattedTranscript}\n\nProvide the consolidated executive summary:`,
+    },
+  ];
+
+  const summary = await routeLLMCompletion(provider, promptMessages, {
+    temperature: 0.3,
+    maxTokens: 500,
+  });
+
+  const nowTime = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  const compactedHistory: { role: "user" | "assistant"; content: string; time?: string }[] = [
+    {
+      role: "user",
+      content: `[CONVERSATION COMPACTED - PREVIOUS TURNS SUMMARY]:\n${summary.trim()}`,
+      time: nowTime,
+    },
+    {
+      role: "assistant",
+      content: `Understood. I have consolidated our prior engineering decisions into working memory. Ready to proceed with refining ${name}.`,
+      time: nowTime,
+    },
+  ];
+
+  return {
+    summary: summary.trim(),
+    compactedHistory,
   };
 }

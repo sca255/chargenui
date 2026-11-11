@@ -1,0 +1,95 @@
+<div class="tab-content hidden" id="tab-companion" style="display: flex; flex-direction: column; gap: 12px;">
+<!-- Banner -->
+<div style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(6, 182, 212, 0.12)); border: 1px solid var(--accent-emerald, #10b981); border-radius: var(--radius-sm); padding: 10px;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+<span style="font-size: 13px; font-weight: 700; color: #a7f3d0;">📖 Lorebook Companion Creator</span>
+<span style="font-size: 10px; background: rgba(16, 185, 129, 0.25); color: #34d399; padding: 2px 6px; border-radius: 4px; font-weight: 600;">LOREBOOK-INTEGRATED</span>
+</div>
+<p style="font-size: 11px; color: var(--text-muted); margin: 0;">
+              Forge an authentic living companion, guide, bodyguard, or scholar specifically attuned to navigate and trigger any SillyTavern Lorebook.
+            </p>
+</div>
+<!-- Section 1: Lorebook Input -->
+<div class="form-group" style="margin-bottom: 4px;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+<label class="form-label" style="margin-bottom: 0;">World Lorebook / Setting Input</label>
+<div style="display: flex; gap: 6px;">
+<button class="btn btn-sm" id="btn-companion-use-active-lore" style="padding: 2px 8px; font-size: 10px; color: var(--accent-cyan); border-color: var(--accent-cyan); background: rgba(56, 189, 248, 0.1);" title="Load lorebook from currently active character card" type="button">
+<span>⚡ Use Active Card Lorebook</span>
+</button>
+<label class="btn btn-sm" style="padding: 2px 8px; font-size: 10px; cursor: pointer; color: #c084fc; border: 1px solid rgba(192, 132, 252, 0.4); background: rgba(192, 132, 252, 0.1);" title="Upload a SillyTavern Lorebook JSON file">
+<span>📁 Upload JSON</span>
+<input accept=".json" id="companion-lorebook-file" style="display: none;" type="file"/>
+</label>
+</div>
+</div>
+<textarea class="form-textarea" id="companion-lorebook-input" placeholder="Paste SillyTavern Lorebook JSON, worldbuilding notes, faction wikis, or markdown entries with headers..." rows="4"></textarea>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
+<button class="btn btn-sm" id="btn-companion-analyze" style="padding: 3px 10px; font-size: 11px; background: rgba(56, 189, 248, 0.15); border: 1px solid var(--accent-cyan); color: #38bdf8;" type="button">
+<span>🔍 Analyze Lorebook</span>
+</button>
+<div id="companion-lorebook-badge" style="font-size: 11px; color: var(--text-dim);">No lorebook loaded yet</div>
+</div>
+<div class="hidden" id="companion-entities-preview" style="margin-top: 6px; display: flex; flex-wrap: wrap; gap: 4px;"></div>
+</div>
+<!-- Section 2: Companion Role -->
+<div class="form-group" style="margin-bottom: 4px;">
+<label class="form-label">Companion Archetype &amp; Role</label>
+<div class="steering-chips" id="companion-role-chips" style="gap: 4px;">
+<span class="steering-chip companion-role-chip active" data-role="guide" style="border-color: var(--accent-purple); background: rgba(168, 85, 247, 0.2); color: #c084fc;">🧭 Native Guide</span>
+<span class="steering-chip companion-role-chip" data-role="scholar">📜 Lorekeeper Scholar</span>
+<span class="steering-chip companion-role-chip" data-role="bodyguard">⚔️ Mercenary Escort</span>
+<span class="steering-chip companion-role-chip" data-role="defector">🗡️ Faction Defector</span>
+<span class="steering-chip companion-role-chip" data-role="scoundrel">🎭 Underworld Smuggler</span>
+<span class="steering-chip companion-role-chip" data-role="bound_familiar">🔮 Bound Familiar</span>
+<span class="steering-chip companion-role-chip" data-role="rival">⚡ Reluctant Ally</span>
+<span class="steering-chip companion-role-chip" data-role="custom">✍️ Custom</span>
+</div>
+<input class="form-input hidden" id="companion-custom-role-input" placeholder="Specify custom role: e.g. 'Blind oracle of the Obsidian Coven'..." style="margin-top: 6px;" type="text"/>
+</div>
+<!-- Section 3: Relationship to {{user}} -->
+<div class="form-group" style="margin-bottom: 4px;">
+<label class="form-label">{{user}}'s Identity &amp; Relationship in this World</label>
+<div class="steering-chips" id="companion-rel-chips" style="gap: 4px;">
+<span class="steering-chip companion-rel-chip active" data-rel="stranger" style="border-color: var(--accent-cyan); background: rgba(56, 189, 248, 0.2); color: #38bdf8;">🌍 Outsider / Stranger</span>
+<span class="steering-chip companion-rel-chip" data-rel="amnesiac">❓ Amnesiac with Relic</span>
+<span class="steering-chip companion-rel-chip" data-rel="heir">👑 Fallen Heir</span>
+<span class="steering-chip companion-rel-chip" data-rel="contractor">📜 Employer / Contractor</span>
+<span class="steering-chip companion-rel-chip" data-rel="fugitive">🏹 Fugitives on the Run</span>
+<span class="steering-chip companion-rel-chip" data-rel="custom">✍️ Custom</span>
+</div>
+<input class="form-input hidden" id="companion-custom-rel-input" placeholder="Specify custom relationship: e.g. 'Childhood pact rekindled after a 10-year siege'..." style="margin-top: 6px;" type="text"/>
+</div>
+<!-- Section 4: Preferences & Steering -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+<div class="form-group" style="margin-bottom: 0;">
+<label class="form-label" style="font-size: 11px;">Gender</label>
+<select class="form-select" id="companion-gender" style="font-size: 11px;">
+<option value="any">Any / Flexible</option>
+<option value="female">Female</option>
+<option value="male">Male</option>
+<option value="nonbinary">Non-Binary</option>
+</select>
+</div>
+<div class="form-group" style="margin-bottom: 0;">
+<label class="form-label" style="font-size: 11px;">Mature / NSFW</label>
+<div style="display: flex; align-items: center; height: 32px;">
+<input checked="" id="companion-nsfw" style="margin-right: 6px;" type="checkbox"/>
+<label for="companion-nsfw" style="font-size: 11px; color: var(--text-muted); cursor: pointer;">Enable Mature / NSFW</label>
+</div>
+</div>
+</div>
+<div class="form-group" style="margin-bottom: 4px;">
+<label class="form-label" style="font-size: 11px;">Tone &amp; Atmosphere</label>
+<input class="form-input" id="companion-tone" style="font-size: 11px;" type="text" value="Tactical, atmospheric, dry banter, sharp perceptiveness"/>
+</div>
+<div class="form-group" style="margin-bottom: 4px;">
+<label class="form-label" style="font-size: 11px;">Director's Steering Notes (Optional)</label>
+<input class="form-input" id="companion-steering" placeholder="e.g. 'She has a secret bounty from the Nightfall Syndicate'..." style="font-size: 11px;" type="text"/>
+</div>
+<!-- Section 5: Forge Button -->
+<button class="btn" id="btn-companion-forge" style="justify-content: center; background: linear-gradient(135deg, #059669, #0d9488); border: 1px solid #34d399; color: #ffffff; font-weight: 700; padding: 10px; margin-top: 4px;" type="button">
+<span>⚡ Forge Lorebook Companion (Embeds Lorebook)</span>
+</button>
+</div>
+<!-- TAB 5: Era Forge & Mythic Temporal Settings -->

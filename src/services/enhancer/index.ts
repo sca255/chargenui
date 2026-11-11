@@ -14,6 +14,10 @@ import { compressAndFormatCard } from "./token-compressor";
 import { generateCharacterLorebook } from "./lorebook-builder";
 import { shiftCharacterTone } from "./tone-shifter";
 import { retrieveCharacterLore } from "../search/web-search";
+import { transferCharacterStyle } from "./style-transfer";
+import { evaluateCharacterWithJudge } from "./evaluator";
+
+import { continueNarrativeArc } from "../character/timeline";
 
 export async function processEnhanceRequest(
   req: EnhanceCharacterRequest
@@ -241,6 +245,24 @@ export async function processEnhanceRequest(
       break;
     }
 
+    case "style_transfer": {
+      const res = await transferCharacterStyle(updatedChar, options, req.provider);
+      updatedChar = res.character;
+      changesSummary.push(...res.changesSummary);
+      break;
+    }
+
+    case "judge_eval": {
+      const judgeReport = await evaluateCharacterWithJudge(updatedChar, req.provider);
+      return {
+        character: updatedChar,
+        diagnosticBefore,
+        diagnosticAfter: diagnosticBefore,
+        judgeReport,
+        changesSummary: [`LLM Judge evaluation complete. Grade: [${judgeReport.rpReadinessGrade}] (${judgeReport.overallScore}/100).`],
+      };
+    }
+
     case "full_overhaul": {
       // 1. Deepen persona with steering & retrieved lore
       const deepened = await deepenCharacterPersona(
@@ -280,6 +302,22 @@ export async function processEnhanceRequest(
       };
       addedAlts = greetingsResult.alternate_greetings;
       changesSummary.push("Re-wrote immersive starter and added alternate greetings.");
+      break;
+    }
+
+    case "continue_arc": {
+      const arcResult = await continueNarrativeArc({
+        character: updatedChar,
+        timeAdvance: options.scenarioPrompt || "Next narrative phase",
+        focusPlot: options.steeringInstructions,
+        divergenceBranch: options.toneShift,
+        provider: req.provider,
+      });
+      updatedChar = arcResult.updatedCharacter;
+      addedAlts = [arcResult.nextGreeting];
+      changesSummary.push(
+        `Advanced narrative timeline arc: "${arcResult.newEvent.title}" (${arcResult.newEvent.timestamp}). Generated new starter beat.`
+      );
       break;
     }
   }

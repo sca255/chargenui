@@ -88,6 +88,7 @@ const el = {
   btnAgentSend: document.getElementById("btn-agent-send"),
   btnAgentCancel: document.getElementById("btn-agent-cancel"),
   btnAgentClearChat: document.getElementById("btn-agent-clear-chat"),
+  btnAgentCompact: document.getElementById("btn-agent-compact"),
   btnAgentImportCard: document.getElementById("btn-agent-import-card"),
   btnAgentPrescription: document.getElementById("btn-agent-prescription"),
   btnOpenAgentFullscreen: document.getElementById("btn-open-agent-fullscreen"),
@@ -102,6 +103,7 @@ const el = {
   btnAgentStudioSend: document.getElementById("btn-agent-studio-send"),
   btnAgentStudioCancel: document.getElementById("btn-agent-studio-cancel"),
   btnAgentStudioClear: document.getElementById("btn-agent-studio-clear"),
+  btnAgentStudioCompact: document.getElementById("btn-agent-studio-compact"),
   btnAgentStudioSaveCard: document.getElementById("btn-agent-studio-save-card"),
   agentStudioScope: document.getElementById("agent-studio-scope"),
   agentStudioTwoTakes: document.getElementById("agent-studio-two-takes"),
@@ -862,7 +864,7 @@ function syncUIToState() {
   scheduleCardAutosave();
 }
 
-// Render Alternate Greetings
+// Render Alternate Greetings (with Fragment & Delegated Events for 50+ greetings)
 function renderAltGreetings() {
   if (!el.altGreetingsList) return;
   el.altGreetingsList.innerHTML = "";
@@ -881,12 +883,13 @@ function renderAltGreetings() {
     return;
   }
 
+  const fragment = document.createDocumentFragment();
+  const galleryItems = Array.isArray(state.character?.extensions?.gallery) ? state.character.extensions.gallery : [];
+
   alts.forEach((alt, idx) => {
     const card = document.createElement("div");
     card.style = "background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 12px;";
 
-    // Find if there is an attached gallery scene or background for this alt greeting (index = idx + 1)
-    const galleryItems = Array.isArray(state.character?.extensions?.gallery) ? state.character.extensions.gallery : [];
     const altScene = galleryItems.find(g => g.greetingIndex === idx + 1 && !g.isBackground && g.type !== "background");
     const altBg = galleryItems.find(g => g.greetingIndex === idx + 1 && (g.isBackground || g.type === "background"));
 
@@ -918,101 +921,89 @@ function renderAltGreetings() {
       </div>
       <textarea class="form-textarea alt-text-input" data-idx="${idx}" style="min-height:100px; font-family:monospace; font-size:12px;">${alt}</textarea>
     `;
-    el.altGreetingsList.appendChild(card);
+    fragment.appendChild(card);
   });
 
-  // Attach handlers
-  el.altGreetingsList.querySelectorAll(".alt-text-input").forEach(ta => {
-    ta.addEventListener("input", (e) => {
-      const idx = parseInt(e.target.dataset.idx, 10);
-      state.character.alternate_greetings[idx] = e.target.value;
-    });
-  });
+  el.altGreetingsList.appendChild(fragment);
 
-  el.altGreetingsList.querySelectorAll(".btn-del-alt").forEach(b => {
-    b.addEventListener("click", (e) => {
-      const idx = parseInt(e.target.dataset.idx, 10);
-      state.character.alternate_greetings.splice(idx, 1);
-      renderAltGreetings();
-    });
-  });
-
-  el.altGreetingsList.querySelectorAll(".btn-copy-alt").forEach(b => {
-    b.addEventListener("click", (e) => {
-      const idx = parseInt(e.target.dataset.idx, 10);
-      navigator.clipboard.writeText(state.character.alternate_greetings[idx]);
-      b.textContent = "✓ Copied!";
-      setTimeout(() => b.textContent = "📋 Copy", 1500);
-    });
-  });
-
-  el.altGreetingsList.querySelectorAll(".btn-queue-alt-greeting-img").forEach(b => {
-    b.addEventListener("click", async (e) => {
-      const idx = parseInt(e.target.dataset.idx, 10);
-      const text = state.character.alternate_greetings[idx] || "";
-      await handleQueueGreetingImage(text, `Alternate Greeting #${idx + 1} Scene`, "greeting", idx + 1);
-    });
-  });
-
-  el.altGreetingsList.querySelectorAll(".btn-queue-alt-greeting-bg").forEach(b => {
-    b.addEventListener("click", async (e) => {
-      const idx = parseInt(e.target.dataset.idx, 10);
-      const text = state.character.alternate_greetings[idx] || "";
-      await handleQueueGreetingImage(text, `Alternate Greeting #${idx + 1} Chat BG`, "greeting_bg", idx + 1);
-    });
-  });
-
-  // Improve individual alternate greeting
-  el.altGreetingsList.querySelectorAll(".btn-improve-alt").forEach(b => {
-    b.addEventListener("click", async (e) => {
-      const idx = parseInt(e.target.dataset.idx, 10);
-      if (!state.character || !state.character.name) {
-        alert("No active character loaded.");
-        return;
+  // Single delegated input listener for high performance across 50 textareas
+  if (!el.altGreetingsList._hasInputDelegated) {
+    el.altGreetingsList._hasInputDelegated = true;
+    el.altGreetingsList.addEventListener("input", (e) => {
+      const ta = e.target.closest(".alt-text-input");
+      if (ta && ta.dataset.idx !== undefined) {
+        const idx = parseInt(ta.dataset.idx, 10);
+        state.character.alternate_greetings[idx] = ta.value;
       }
-      if (!assertProviderConfigured()) return;
+    });
 
-      const currentAlt = state.character.alternate_greetings[idx];
-      if (!currentAlt) {
-        alert("No greeting to improve.");
+    el.altGreetingsList.addEventListener("click", async (e) => {
+      const delBtn = e.target.closest(".btn-del-alt");
+      if (delBtn && delBtn.dataset.idx !== undefined) {
+        const idx = parseInt(delBtn.dataset.idx, 10);
+        state.character.alternate_greetings.splice(idx, 1);
+        renderAltGreetings();
         return;
       }
 
-      const btn = e.target;
-      const origHtml = btn.innerHTML;
-      btn.disabled = true;
-      btn.innerHTML = "<span class='spinner'></span> <span>Improving...</span>";
+      const copyBtn = e.target.closest(".btn-copy-alt");
+      if (copyBtn && copyBtn.dataset.idx !== undefined) {
+        const idx = parseInt(copyBtn.dataset.idx, 10);
+        navigator.clipboard.writeText(state.character.alternate_greetings[idx] || "");
+        copyBtn.textContent = "✓ Copied!";
+        setTimeout(() => copyBtn.textContent = "📋 Copy", 1500);
+        return;
+      }
 
-      try {
-        const payload = {
-          character: state.character,
-          options: {
-            minAltGreetings: 1,
-            steeringInstructions: `Improve ONLY alternate greeting #${idx + 1}. Current text:\n\n${state.character.alternate_greetings[idx]}\n\nImprove this specific greeting: make it more sensory, arc-aware (if story arc exists), exactly 2 paragraphs, richly sensory, arc-aware. Preserve the scene context but enhance sensory details, emotional stakes, and character voice. Do NOT change the scene context. Keep it as a distinct entry point into the story arc.`,
-          },
-          provider: state.provider,
-          mode: "improve_greetings",
-        };
+      const sceneBtn = e.target.closest(".btn-queue-alt-greeting-img");
+      if (sceneBtn && sceneBtn.dataset.idx !== undefined) {
+        const idx = parseInt(sceneBtn.dataset.idx, 10);
+        const text = state.character.alternate_greetings[idx] || "";
+        await handleQueueGreetingImage(text, `Alternate Greeting #${idx + 1} Scene`, "greeting", idx + 1);
+        return;
+      }
 
-        const res = await apiPost("/api/enhance", payload);
-        
-        if (res.character && res.character.alternate_greetings && res.character.alternate_greetings.length > 0) {
-          state.character.alternate_greetings[idx] = res.character.alternate_greetings[0];
-          renderAltGreetings();
-          showIpcToast(`✅ Improved Alternate Greeting #${idx + 1}!`, "success");
-        } else {
-          throw new Error("No improved greeting returned");
+      const bgBtn = e.target.closest(".btn-queue-alt-greeting-bg");
+      if (bgBtn && bgBtn.dataset.idx !== undefined) {
+        const idx = parseInt(bgBtn.dataset.idx, 10);
+        const text = state.character.alternate_greetings[idx] || "";
+        await handleQueueGreetingImage(text, `Alternate Greeting #${idx + 1} Background`, "background", idx + 1);
+        return;
+      }
+
+      const improveBtn = e.target.closest(".btn-improve-alt");
+      if (improveBtn && improveBtn.dataset.idx !== undefined) {
+        const idx = parseInt(improveBtn.dataset.idx, 10);
+        const currentAlt = state.character.alternate_greetings[idx];
+        if (!currentAlt) return;
+        if (!assertProviderConfigured()) return;
+        improveBtn.disabled = true;
+        improveBtn.textContent = "⏳ Improving...";
+        try {
+          const res = await apiPost("/api/enhance-field", {
+            character: { ...state.character, alternate_greetings: [currentAlt] },
+            field: "alternate_greetings",
+            mode: "punch_up",
+            provider: state.provider,
+            steeringInstructions: `Improve ONLY alternate greeting #${idx + 1}. Current text:\n\n${currentAlt}\n\nImprove this specific greeting: make it more sensory, arc-aware (if story arc exists), exactly 2 paragraphs, richly sensory, arc-aware. Preserve the scene context but enhance sensory details, emotional stakes, and character voice. Do NOT change the scene context. Keep it as a distinct entry point into the story arc.`,
+          });
+          if (res.character && res.character.alternate_greetings && res.character.alternate_greetings.length > 0) {
+            state.character.alternate_greetings[idx] = res.character.alternate_greetings[0];
+            renderAltGreetings();
+            showIpcToast(`✓ Alternate Greeting #${idx + 1} improved!`, "success");
+          }
+        } catch (err) {
+          alert("Failed improving greeting: " + err.message);
+        } finally {
+          improveBtn.disabled = false;
+          improveBtn.textContent = "✨ Improve";
         }
-      } catch (err) {
-        alert("❌ Improve failed: " + (err.message || err));
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = "✨ Improve";
       }
     });
-  });
+  }
+}
 
-}// Render Lorebook Entries
+// Render Lorebook Entries
 function renderLorebook() {
   el.lorebookList.innerHTML = "";
   if (state.character.character_book && Array.isArray(state.character.character_book.entries)) {
@@ -3849,6 +3840,19 @@ async function sendAgentChatMessage(customPrompt) {
     ""
   ).trim();
   if (!prompt) return;
+  if (prompt === "/compact" || prompt.startsWith("/compact ")) {
+    if (el.agentChatInput) el.agentChatInput.value = "";
+    if (el.agentStudioInput) el.agentStudioInput.value = "";
+    compactAgentHistory();
+    return;
+  }
+  if (prompt === "/clear" || prompt === "/reset") {
+    if (el.agentChatInput) el.agentChatInput.value = "";
+    if (el.agentStudioInput) el.agentStudioInput.value = "";
+    clearAgentHistory();
+    return;
+  }
+
   const scope = isStudioOpen
     ? el.agentStudioScope?.value || "auto"
     : el.agentTargetScope?.value || "auto";
@@ -4628,6 +4632,68 @@ function handleAgentStreamClick(e) {
 el.agentChatStream?.addEventListener("click", handleAgentStreamClick);
 el.agentStudioStream?.addEventListener("click", handleAgentStreamClick);
 
+// Compact agent conversation (client prune + optional AI summary)
+async function compactAgentHistory() {
+  const history = (state.agentChatHistory || []).filter((m) => !m.isPending);
+  if (history.length <= 2) {
+    showToast("Conversation is already compact (2 or fewer messages).", "info");
+    return;
+  }
+
+  const choice = confirm(
+    `Compact ${history.length} conversation turns?\n\n` +
+    `• Click OK to generate an AI Executive Summary of previous decisions and prune old turns.\n` +
+    `• Click Cancel if you want to keep full conversation turns.`
+  );
+
+  if (!choice) return;
+
+  const nowTime = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+  // If provider configured, try AI summary compaction
+  if (state.provider && state.provider.type && state.provider.type !== "none") {
+    const tempMsg = {
+      role: "assistant",
+      content: "🗜️ Summarizing and compacting conversation memory...",
+      time: nowTime,
+      isPending: true,
+    };
+    state.agentChatHistory.push(tempMsg);
+    renderAgentChatStream();
+
+    try {
+      const res = await apiPost("/api/agent/compact", {
+        provider: state.provider,
+        chatHistory: history,
+        characterName: state.character?.name,
+      });
+
+      if (res && res.compactedHistory && res.compactedHistory.length > 0) {
+        state.agentChatHistory = res.compactedHistory;
+        renderAgentChatStream();
+        showToast("Conversation compacted with AI summary! KV cache prefix optimized.", "success");
+        return;
+      }
+    } catch (err) {
+      console.warn("AI compact failed, falling back to local client prune:", err);
+      showToast("AI summary failed; falling back to local prune.", "warning");
+    }
+  }
+
+  // Local client-side prune: keep first user turn + last 4 turns
+  const kept = [
+    {
+      role: "user",
+      content: `[CONVERSATION COMPACTED - LOCAL PRUNE]: Kept initial direction and recent turns to optimize token usage.`,
+      time: nowTime,
+    },
+    ...history.slice(-4),
+  ];
+  state.agentChatHistory = kept;
+  renderAgentChatStream();
+  showToast("Pruned older turns client-side.", "info");
+}
+
 // Clear agent conversation
 const clearAgentHistory = () => {
   if (state.agentChatHistory.length > 0 && !confirm("Clear agent chat history?")) return;
@@ -4636,6 +4702,9 @@ const clearAgentHistory = () => {
 };
 el.btnAgentClearChat?.addEventListener("click", clearAgentHistory);
 el.btnAgentStudioClear?.addEventListener("click", clearAgentHistory);
+
+el.btnAgentCompact?.addEventListener("click", compactAgentHistory);
+el.btnAgentStudioCompact?.addEventListener("click", compactAgentHistory);
 
 // Enter key to send (Shift+Enter for newline)
 el.agentChatInput?.addEventListener("keydown", (e) => {
@@ -5436,36 +5505,49 @@ async function initApp() {
     el.imgArtStyle.value = state.imageConfig.defaultArtStyle;
   }
 
-  // Fetch env keys
-  try {
-    const res = await fetch("/api/env-keys");
-    if (res.ok) {
-      state.envKeys = await res.json();
-    }
-  } catch {}
-
-  await loadPromptProfilesUI();
-
-  // If the user previously selected a prompt profile in browser localStorage, restore and sync it
-  const savedPromptProfile = localStorage.getItem("chargen_active_prompt_profile");
-  if (savedPromptProfile && currentPromptConfig && currentPromptConfig.id !== savedPromptProfile) {
-    try {
-      const pRes = await fetch("/api/prompts/select", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ profileId: savedPromptProfile })
-      });
-      if (pRes.ok) {
-        await loadPromptProfilesUI();
+  // Fire initialization requests in parallel rather than blocking in serial waterfall
+  const promptProfileRestorePromise = (async () => {
+    await loadPromptProfilesUI();
+    const savedPromptProfile = localStorage.getItem("chargen_active_prompt_profile");
+    if (savedPromptProfile && currentPromptConfig && currentPromptConfig.id !== savedPromptProfile) {
+      try {
+        const pRes = await fetch("/api/prompts/select", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ profileId: savedPromptProfile })
+        });
+        if (pRes.ok) {
+          await loadPromptProfilesUI();
+        }
+      } catch (e) {
+        console.warn("Failed restoring saved prompt profile:", e);
       }
-    } catch (e) {
-      console.warn("Failed restoring saved prompt profile:", e);
     }
-  }
+  })();
 
-  await fetchLibrary();
-  await fetchHouseholds();
-  await refreshImageQueue();
+  const envPromise = (async () => {
+    try {
+      const res = await fetch("/api/env-keys");
+      if (res.ok) state.envKeys = await res.json();
+    } catch {}
+  })();
+
+  // Render active character immediately from state/cache for zero-latency first paint
+  syncStateToUI();
+  recordSnapshot("Initial State");
+
+  // Non-blocking parallel data fetch
+  Promise.all([
+    promptProfileRestorePromise,
+    envPromise,
+    fetchLibrary(),
+    fetchHouseholds(),
+    refreshImageQueue(),
+  ]).finally(() => {
+    updateActiveCardBadge();
+    checkAutosaveAvailability();
+  });
+
   initComfyUIClient();
   initIpcWebSocket();
   updateProviderBadge();
@@ -5509,9 +5591,6 @@ async function initApp() {
   renderAgentChatStream();
   initEraForgeUI();
   renderThemePills();
-  syncStateToUI();
-  recordSnapshot("Initial State");
-  checkAutosaveAvailability();
 }
 
 // Prompt Configuration UI & Management
@@ -6971,8 +7050,9 @@ function openRegenGreetingsSpineModal() {
   }
 
   if (el.regenTargetCharName) el.regenTargetCharName.textContent = state.character.name;
-  if (el.regenStoryArc) el.regenStoryArc.value = "";
-  if (el.regenMinAlts) el.regenMinAlts.value = "6";
+  const storedStoryArc = state.character?.extensions?.["chargenui:creationInputs"]?.storyArc || "";
+  if (el.regenStoryArc) el.regenStoryArc.value = storedStoryArc || (el.genStoryArc ? el.genStoryArc.value.trim() : "");
+  if (el.regenMinAlts) el.regenMinAlts.value = el.genMinAlts?.value || "6";
   if (el.regenSteering) el.regenSteering.value = "";
 
   if (el.modalRegenGreetingsSpine) el.modalRegenGreetingsSpine.classList.remove("hidden");
@@ -7471,8 +7551,11 @@ document.addEventListener("click", (event) => {
   else closeRegenGreetingsSpineModal();
 });
 
-// Regenerate with Spine Button (in Generate tab) - opens modal
+// Regenerate with Spine Button (in Generate tab & Alts tab) - opens modal
 el.btnRunGreetingsSpine?.addEventListener("click", () => {
+  openRegenGreetingsSpineModal();
+});
+document.getElementById("btn-regen-alts-direct")?.addEventListener("click", () => {
   openRegenGreetingsSpineModal();
 });
 

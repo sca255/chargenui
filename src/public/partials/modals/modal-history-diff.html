@@ -1,0 +1,51 @@
+<div class="modal-overlay hidden" id="modal-history-diff">
+<div class="modal modal-xl">
+<div class="modal-header">
+<div style="display:flex; align-items:center; gap:8px;">
+<span style="font-size:18px;">🕒</span>
+<div>
+<h3 style="font-size: 15px; font-weight: 700; margin:0;">Revision History &amp; Visual Diff</h3>
+<div style="font-size: 11px; color: var(--text-muted);">Inspect before/after changes across generation and enhancement passes</div>
+</div>
+</div>
+<button class="btn btn-sm" id="btn-close-history">✕</button>
+</div>
+<div class="modal-body">
+<div class="diff-layout">
+<!-- Left: Snapshot List -->
+<div class="diff-sidebar" id="diff-snapshot-list">
+<!-- Populated dynamically -->
+</div>
+<!-- Right: Visual Diff Viewer -->
+<div class="diff-main">
+<div style="display: flex; justify-content: space-between; align-items: center;">
+<div>
+<span id="diff-compare-title" style="font-size: 13px; font-weight: 700; color: var(--accent-cyan);">Comparing Snapshot → Active Card</span>
+<span id="diff-delta-badge" style="font-size: 11px; margin-left: 8px; color: var(--text-muted);"></span>
+</div>
+<button class="btn btn-sm btn-primary" id="btn-diff-restore" type="button">
+                ⏪ Restore This Revision to Workspace
+              </button>
+</div>
+<!-- Field Selector Tabs -->
+<div class="diff-tabs" id="diff-field-tabs">
+<button class="diff-tab active" data-field="description">Description</button>
+<button class="diff-tab" data-field="personality">Personality</button>
+<button class="diff-tab" data-field="scenario">Scenario</button>
+<button class="diff-tab" data-field="first_mes">First Message</button>
+<button class="diff-tab" data-field="alternate_greetings">Alt Greetings</button>
+<button class="diff-tab" data-field="mes_example">Example Messages</button>
+</div>
+<!-- Visual Diff View Box -->
+<div class="diff-view-box" id="diff-view-content">
+              Select a revision from the left to view visual differences.
+            </div>
+</div>
+</div>
+</div>
+<div class="modal-footer">
+<button class="btn btn-sm" id="btn-close-history-footer">Close</button>
+</div>
+</div>
+</div>
+<!-- Scenario Matrix Modal -->

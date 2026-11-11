@@ -73,6 +73,7 @@
       </button>
 </div>
 </header>
+
 <!-- Main Three-Column Application Grid -->
 <div class="app-container">
 <!-- Left Column: Generator, Vision Scanner & Enhancer Toolbox -->
@@ -85,15 +86,37 @@
 <!-- Navigation Tabs -->
 <div class="nav-tabs">
 <button class="nav-tab active" data-tab="tab-generate">🔮 Spark New</button>
-<button class="nav-tab" data-tab="tab-vision">👁️ Vision Scan</button>
 <button class="nav-tab" data-tab="tab-enhance">⚡ Enhancer</button>
 <button class="nav-tab" data-tab="tab-agent">🤖 Agent Mode</button>
 <button class="nav-tab" data-tab="tab-reimagine">✨ Reimagine</button>
 <button class="nav-tab" data-tab="tab-companion">📖 Lore Companion</button>
 <button class="nav-tab" data-tab="tab-eras">📜 Era Forge</button>
+<button class="nav-tab" data-tab="tab-evolution">🧬 Evolution</button>
+<button class="nav-tab" data-tab="tab-timeline">⏳ Timeline</button>
+<button class="nav-tab" data-tab="tab-branches">🌿 Branches</button>
+<button class="nav-tab" data-tab="tab-assets">📦 Assets</button>
 </div>
 <!-- TAB 1: Generate from Spark / Concept -->
 <div class="tab-content" id="tab-generate">
+<div class="form-group">
+<label class="form-label">Character Portrait / Concept Art (Optional Vision Reference)</label>
+<div class="dropzone" id="vision-dropzone" style="padding: 14px; text-align: center;">
+<div class="dropzone-icon" style="font-size: 20px;">📷</div>
+<div class="dropzone-text" style="font-size: 11px;"><strong>Drag &amp; Drop</strong> portrait / concept art here, or click to browse</div>
+<input accept="image/png,image/jpeg,image/webp" id="vision-file-input" multiple="" style="display:none;" type="file"/>
+</div>
+<div class="hidden" id="vision-batch-status" style="margin-top: 8px; font-size: 11px; color: var(--accent-cyan); font-weight: 600;">
+  📁 <span id="vision-batch-count">0</span> images selected for batch scan
+</div>
+<div class="image-preview-container hidden" id="vision-preview-box" style="margin-top: 8px; display: flex; align-items: center; gap: 10px;">
+  <img alt="Portrait preview" class="image-preview" id="vision-img-preview" src="" style="width: 52px; height: 52px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--accent-cyan);"/>
+  <div style="flex: 1; display: flex; flex-direction: column; gap: 2px;">
+    <span style="font-size: 11px; font-weight: 700; color: var(--accent-cyan);">👁️ Visual Reference Attached</span>
+    <span style="font-size: 10px; color: var(--text-muted);">Visual cues and traits will guide character synthesis</span>
+  </div>
+  <button class="btn btn-ghost btn-xs" id="btn-clear-vision-image" style="color: #ef4444;" type="button" title="Remove attached image">✕ Remove</button>
+</div>
+</div>
 <div class="form-group">
 <label class="form-label">Bot Generation Mode</label>
 <div id="bot-mode-selector" style="display: flex; gap: 8px; margin-bottom: 4px;">
@@ -154,9 +177,9 @@
 <button class="theme-chip theme-chip-bdsm" data-theme="Switch" type="button">🔄 Switch</button>
 <button class="theme-chip theme-chip-bdsm" data-theme="Bondage / Shibari" type="button">🪢 Bondage / Shibari</button>
 <button class="theme-chip theme-chip-bdsm" data-theme="Brat / Brat Tamer" type="button">😼 Brat / Brat Tamer</button>
-<button class="theme-chip theme-chip-bdsm" data-theme="Petplay &amp; Collaring" type="button">🐾 Petplay &amp; Collaring</button>
-<button class="theme-chip theme-chip-bdsm" data-theme="Praise &amp; Degradation" type="button">👄 Praise &amp; Degradation</button>
-<button class="theme-chip theme-chip-bdsm" data-theme="Taboo &amp; Dark Erotica" type="button">🔞 Taboo &amp; Dark Erotica</button>
+<button class="theme-chip theme-chip-bdsm" data-theme="Petplay & Collaring" type="button">🐾 Petplay &amp; Collaring</button>
+<button class="theme-chip theme-chip-bdsm" data-theme="Praise & Degradation" type="button">👄 Praise &amp; Degradation</button>
+<button class="theme-chip theme-chip-bdsm" data-theme="Taboo & Dark Erotica" type="button">🔞 Taboo &amp; Dark Erotica</button>
 <button class="theme-chip theme-chip-bdsm" data-theme="Sensory Deprivation" type="button">🕶️ Sensory Deprivation</button>
 </div>
 </div>
@@ -185,11 +208,11 @@
 </div>
 <div class="theme-chips-row" style="display: flex; flex-wrap: wrap; gap: 5px;">
 <button class="theme-chip" data-theme="Psychological Thriller" type="button">🧠 Psychological Thriller</button>
-<button class="theme-chip" data-theme="Grimdark &amp; Gritty" type="button">💀 Grimdark &amp; Gritty</button>
-<button class="theme-chip" data-theme="Melancholic &amp; Tragic" type="button">🌧️ Melancholic &amp; Tragic</button>
+<button class="theme-chip" data-theme="Grimdark & Gritty" type="button">💀 Grimdark &amp; Gritty</button>
+<button class="theme-chip" data-theme="Melancholic & Tragic" type="button">🌧️ Melancholic &amp; Tragic</button>
 <button class="theme-chip" data-theme="Moral Ambiguity" type="button">⚖️ Moral Ambiguity</button>
-<button class="theme-chip" data-theme="Wholesome &amp; Cozy" type="button">☕ Wholesome &amp; Cozy</button>
-<button class="theme-chip" data-theme="Dry Wit &amp; Sarcasm" type="button">🍸 Dry Wit &amp; Sarcasm</button>
+<button class="theme-chip" data-theme="Wholesome & Cozy" type="button">☕ Wholesome &amp; Cozy</button>
+<button class="theme-chip" data-theme="Dry Wit & Sarcasm" type="button">🍸 Dry Wit &amp; Sarcasm</button>
 </div>
 </div>
 </div>
@@ -207,7 +230,7 @@
 <label class="form-label" style="margin-bottom:0;">Minimum Alternate Greetings</label>
 <span style="font-size:11px; color:var(--text-muted);">Forces AI to author at least N distinct openings</span>
 </div>
-<input class="form-input" id="gen-min-alts" min="1" max="10" style="margin-top:4px;" type="number" value="3"/>
+<input class="form-input" id="gen-min-alts" min="1" max="100" style="margin-top:4px;" type="number" value="3"/>
 </div>
 <div class="form-group">
 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
@@ -308,42 +331,7 @@
 </div>
 </div>
 </div>
-<!-- TAB 2: Multimodal Vision Image Scanner -->
-<div class="tab-content hidden" id="tab-vision">
-<div class="form-group">
-<label class="form-label">Upload Character Portrait / Concept Art</label>
-<div class="dropzone" id="vision-dropzone">
-<div class="dropzone-icon">📷</div>
-<div class="dropzone-text"><strong>Drag &amp; Drop</strong> single or multiple character images, or click to browse</div>
-<input accept="image/png,image/jpeg,image/webp" id="vision-file-input" multiple="" style="display:none;" type="file"/>
-</div>
-<div class="hidden" id="vision-batch-status" style="margin-top: 8px; font-size: 11px; color: var(--accent-cyan); font-weight: 600;">
-              📁 <span id="vision-batch-count">0</span> images selected for batch scan
-            </div>
-<div class="image-preview-container hidden" id="vision-preview-box">
-<img alt="Portrait preview" class="image-preview" id="vision-img-preview" src=""/>
-</div>
-</div>
-<div class="form-group">
-<label class="form-label">Additional Character Context / Hints (Optional)</label>
-<input class="form-input" id="vision-hints" placeholder="e.g. Cyberpunk mercenary, sarcastic, secretly protective" type="text"/>
-</div>
-<div class="form-group">
-<label class="checkbox-label">
-<input checked="" id="vision-nsfw" type="checkbox"/>
-<span>Uncensored character synthesis from visual scan</span>
-</label>
-</div>
-<button class="btn btn-primary" id="btn-run-vision" style="width: 100%; justify-content: center; margin-top: 8px;">
-<span>👁️ Scan Image &amp; Synthesize Card</span>
-</button>
-<!-- Vision Findings Box -->
-<div class="hidden" id="vision-findings-box" style="margin-top: 14px; padding: 12px; background: var(--bg-card); border-radius: var(--radius-sm); border: 1px solid var(--border-color); font-size: 11px;">
-<div style="font-weight: 700; color: var(--accent-cyan); margin-bottom: 6px;">FORENSIC VISUAL DECONSTRUCTION</div>
-<div id="vision-findings-text" style="color: var(--text-muted); line-height: 1.4;"></div>
-</div>
-</div>
-<!-- TAB 3: Character Enhancer Suite -->
+<!-- TAB 2: Character Enhancer Suite -->
 <div class="tab-content hidden" id="tab-enhance">
 <!-- Legacy/Unmaintained Warning -->
 <div style="background: rgba(245, 158, 11, 0.15); border: 1px solid #f59e0b; border-radius: var(--radius-sm); padding: 8px 12px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; font-size: 11px;">
@@ -632,6 +620,7 @@
 </div>
 </div>
 <div style="display: flex; gap: 4px; align-items: center;">
+<button class="btn btn-xs" id="btn-agent-compact" style="background: rgba(147, 51, 234, 0.2); border: 1px solid #a855f7; color: #c084fc; font-weight: 600;" title="Compact conversation history with client-side prune and optional AI summary" type="button">🗜️ Compact</button>
 <button class="btn btn-xs" id="btn-agent-expand-fullscreen" style="background: rgba(6, 182, 212, 0.2); border: 1px solid #06b6d4; color: #22d3ee; font-weight: 600;" title="Open in Full Screen Studio with Card Sidebar" type="button">⛶ Fullscreen</button>
 <button class="btn btn-xs" id="btn-agent-clear-chat" title="Clear conversation thread" type="button">🧹 Reset Chat</button>
 <button class="btn btn-xs" id="btn-agent-import-card" title="Import PNG, JSON, or CharX into Agent Mode" type="button">📂 Import Card</button>
@@ -961,8 +950,174 @@
 </div>
 </div>
 </div>
+<div class="tab-content hidden" id="tab-evolution" style="display: flex; flex-direction: column; gap: 10px;">
+  <div style="background: linear-gradient(135deg, rgba(168, 85, 247, 0.12), rgba(59, 130, 246, 0.12)); border: 1px solid var(--accent-purple); border-radius: var(--radius-sm); padding: 10px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+      <span style="font-size: 13px; font-weight: 700; color: #e0e7ff;">🧬 Archetype Evolution & Vector Arithmetic</span>
+      <span style="font-size: 10px; background: rgba(168, 85, 247, 0.25); color: var(--accent-purple-light); padding: 2px 6px; border-radius: 4px; font-weight: 600;">SEMANTIC VECTORS</span>
+    </div>
+    <div style="font-size: 11px; color: var(--text-muted); line-height: 1.4;">
+      Mutate character embedding vector (+ injected traits, - suppressed traits), discover nearest library archetypes, and synthesize steering-guided variants.
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label" style="display: flex; justify-content: space-between;">
+      <span>Injected Traits (+)</span>
+      <span style="font-size: 10px; color: var(--accent-cyan);">Comma separated</span>
+    </label>
+    <input class="form-input" id="mutation-add-traits" placeholder="e.g. ruthless tactician, melancholic scholar, cybernetic augs" type="text" />
+  </div>
+
+  <div class="form-group">
+    <label class="form-label" style="display: flex; justify-content: space-between;">
+      <span>Suppressed Traits (-)</span>
+      <span style="font-size: 10px; color: var(--accent-rose);">Comma separated</span>
+    </label>
+    <input class="form-input" id="mutation-remove-traits" placeholder="e.g. naive optimism, hesitation, soft-spoken" type="text" />
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+    <div class="form-group">
+      <label class="form-label">Mutation Intensity</label>
+      <input class="form-input" id="mutation-intensity" type="number" step="0.1" min="0.1" max="2.0" value="1.0" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Variant Count</label>
+      <select class="form-select" id="mutation-count">
+        <option value="1">1 Variant</option>
+        <option value="2">2 Variants</option>
+        <option value="3">3 Variants</option>
+      </select>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" id="btn-mutate-archetype" style="justify-content: center; padding: 10px; font-weight: 700; margin-top: 4px;" type="button">
+    <span>🧬 Evolve Archetype Vector</span>
+  </button>
+
+  <div id="mutation-results" style="display: flex; flex-direction: column; gap: 8px; margin-top: 6px;"></div>
+</div>
+
+<!-- TAB: Narrative Timeline & Arc Tracker -->
+<div class="tab-content hidden" id="tab-timeline" style="display: flex; flex-direction: column; gap: 10px;">
+  <div style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(59, 130, 246, 0.12)); border: 1px solid #10b981; border-radius: var(--radius-sm); padding: 10px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+      <span style="font-size: 13px; font-weight: 700; color: #a7f3d0;">⏳ Narrative Timeline & Story Arc</span>
+      <span style="font-size: 10px; background: rgba(16, 185, 129, 0.25); color: #34d399; padding: 2px 6px; border-radius: 4px; font-weight: 600;">CHRONO TRACKER</span>
+    </div>
+    <div style="font-size: 11px; color: var(--text-muted); line-height: 1.4;">
+      Track chronological story beats across scenario, first message, and roleplay arcs. Continue arcs forward or branch into flashbacks.
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 6px;">
+    <button class="btn btn-secondary" id="btn-timeline-extract" style="flex: 1; font-size: 11px; padding: 6px;" type="button">
+      <span>Auto-Extract Beats</span>
+    </button>
+    <button class="btn btn-secondary" id="btn-timeline-add" style="flex: 1; font-size: 11px; padding: 6px;" type="button">
+      <span>+ Add Beat</span>
+    </button>
+  </div>
+
+  <div id="timeline-events-list" style="display: flex; flex-direction: column; gap: 6px; max-height: 240px; overflow-y: auto; padding-right: 2px;">
+    <div style="font-size: 11px; color: var(--text-dim); text-align: center; padding: 12px;">No timeline beats recorded yet.</div>
+  </div>
+
+  <div style="border-top: 1px solid var(--border-subtle); padding-top: 8px; display: flex; flex-direction: column; gap: 6px;">
+    <span style="font-size: 12px; font-weight: 700; color: #e2e8f0;">Continue Story Arc Forward</span>
+    <input class="form-input" id="arc-time-advance" placeholder="Temporal jump (e.g. Three months later, Next morning)" value="Three months later" type="text" />
+    <input class="form-input" id="arc-focus-plot" placeholder="Plot focus or consequence..." type="text" />
+    <button class="btn btn-primary" id="btn-continue-arc" style="justify-content: center; padding: 8px; font-weight: 700;" type="button">
+      <span>⏩ Advance Story Arc & Generate Beat</span>
+    </button>
+  </div>
+</div>
+
+<!-- TAB: Git-like Character Branching -->
+<div class="tab-content hidden" id="tab-branches" style="display: flex; flex-direction: column; gap: 10px;">
+  <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(239, 68, 68, 0.12)); border: 1px solid #f59e0b; border-radius: var(--radius-sm); padding: 10px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+      <span style="font-size: 13px; font-weight: 700; color: #fde68a;">🌿 Git-Like Character Branching</span>
+      <span style="font-size: 10px; background: rgba(245, 158, 11, 0.25); color: #fbbf24; padding: 2px 6px; border-radius: 4px; font-weight: 600;">CANON & FORKS</span>
+    </div>
+    <div style="font-size: 11px; color: var(--text-muted); line-height: 1.4;">
+      Create branch storylines (AU, villain turn, romance route), commit snapshot changes, checkout history, and merge branches.
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Active Branch</label>
+    <div style="display: flex; gap: 6px;">
+      <select class="form-select" id="branch-select" style="flex: 1;">
+        <option value="main">main</option>
+      </select>
+      <button class="btn btn-secondary" id="btn-branch-checkout" style="font-size: 11px; padding: 6px 10px;" type="button">Checkout</button>
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 6px;">
+    <input class="form-input" id="branch-new-name" placeholder="New branch name (e.g. dark-au, modern)" style="flex: 1;" type="text" />
+    <button class="btn btn-secondary" id="btn-branch-create" style="font-size: 11px; padding: 6px 10px;" type="button">+ Fork</button>
+  </div>
+
+  <div class="form-group" style="margin-top: 4px;">
+    <label class="form-label">Commit Current State</label>
+    <div style="display: flex; gap: 6px;">
+      <input class="form-input" id="branch-commit-msg" placeholder="Commit message (e.g. Added combat gear & darker tone)" style="flex: 1;" type="text" />
+      <button class="btn btn-primary" id="btn-branch-commit" style="font-size: 11px; padding: 6px 10px;" type="button">Commit</button>
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 6px; border-top: 1px solid var(--border-subtle); padding-top: 8px;">
+    <button class="btn btn-secondary" id="btn-branch-diff" style="flex: 1; font-size: 11px; padding: 6px;" type="button">Diff View</button>
+    <button class="btn btn-secondary" id="btn-branch-merge" style="flex: 1; font-size: 11px; padding: 6px;" type="button">Merge Into Active</button>
+  </div>
+
+  <div id="branch-history-container" style="display: flex; flex-direction: column; gap: 4px; max-height: 180px; overflow-y: auto;"></div>
+</div>
+
+<!-- TAB: Asset Pipeline Plugins -->
+<div class="tab-content hidden" id="tab-assets" style="display: flex; flex-direction: column; gap: 10px;">
+  <div style="background: linear-gradient(135deg, rgba(6, 182, 212, 0.12), rgba(59, 130, 246, 0.12)); border: 1px solid #06b6d4; border-radius: var(--radius-sm); padding: 10px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+      <span style="font-size: 13px; font-weight: 700; color: #cffafe;">📦 Asset Pipeline Plugins</span>
+      <span style="font-size: 10px; background: rgba(6, 182, 212, 0.25); color: #22d3ee; padding: 2px 6px; border-radius: 4px; font-weight: 600;">EXPRESSIONS & VTT</span>
+    </div>
+    <div style="font-size: 11px; color: var(--text-muted); line-height: 1.4;">
+      Generate expression sprite sheets (8 faces), outfit variants (4 sets), and VTT texture atlases dispatched to ComfyClient IPC.
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 6px;">
+    <label style="display: flex; align-items: center; gap: 6px; font-size: 11px; color: #e2e8f0; cursor: pointer;">
+      <input type="checkbox" id="asset-chk-expressions" checked />
+      <span>😊 Expression Sheet (8 Canonical Expressions)</span>
+    </label>
+    <label style="display: flex; align-items: center; gap: 6px; font-size: 11px; color: #e2e8f0; cursor: pointer;">
+      <input type="checkbox" id="asset-chk-outfits" checked />
+      <span>👗 Outfit Variants (Canonical, Combat, Casual, Formal)</span>
+    </label>
+    <label style="display: flex; align-items: center; gap: 6px; font-size: 11px; color: #e2e8f0; cursor: pointer;">
+      <input type="checkbox" id="asset-chk-atlas" checked />
+      <span>🗺️ Texture Atlas & VTT Pack (Tokens, Insignia, Prop Atlas)</span>
+    </label>
+    <label style="display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--accent-cyan); margin-top: 4px; cursor: pointer;">
+      <input type="checkbox" id="asset-chk-dispatch-comfy" checked />
+      <span>⚡ Send Directly to ComfyClient Socket (/tmp/comfyclient.sock)</span>
+    </label>
+  </div>
+
+  <button class="btn btn-primary" id="btn-generate-assets" style="justify-content: center; padding: 10px; font-weight: 700; margin-top: 4px;" type="button">
+    <span>🎨 Generate Character Asset Packs</span>
+  </button>
+
+  <div id="asset-gen-feedback" style="font-size: 11px; color: var(--text-muted); line-height: 1.4;"></div>
 </div>
 </div>
+</div>
+
+<!-- Center Column: Character Deck & Live Editor -->
 <!-- Center Column: Character Deck & Live Editor -->
 <div class="panel" style="background-color: var(--bg-primary);">
 <!-- Character Header Card -->
@@ -1074,9 +1229,12 @@
 </div>
 <!-- Tab: Alternate Greetings -->
 <div class="ed-tab-content hidden" id="ed-alts">
-<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap: 8px; flex-wrap: wrap;">
 <div style="font-size: 12px; color: var(--text-muted);">Alternative Opening Greetings for different roleplay scenarios</div>
+<div style="display:flex; gap: 8px;">
+<button class="btn btn-sm" id="btn-regen-alts-direct" style="background: linear-gradient(135deg, #7c3aed, #a855f7); border: none; color: #fff; font-weight: 700;" title="Regenerate all alternate greetings completely (arc-aware)">🔄 Regenerate All Alts</button>
 <button class="btn btn-sm" id="btn-add-alt-greeting">➕ Add Alternate Greeting</button>
+</div>
 </div>
 <div id="alt-greetings-list"></div>
 </div>
@@ -1206,6 +1364,8 @@
 </div>
 </div>
 </div>
+
+<!-- Right Column: Inspector & Live Metrics -->
 <!-- Right Column: Inspector & Live Metrics -->
 <div class="panel panel-right">
 <div class="panel-header">
@@ -1279,7 +1439,8 @@
 </div>
 </div>
 </div>
-<!-- Settings & API Keys Modal -->
+
+<!-- Modals & Overlays -->
 <div class="modal-overlay hidden" id="modal-settings">
 <div class="modal">
 <div class="modal-header">
@@ -2223,6 +2384,9 @@
 <button class="btn btn-sm" id="btn-agent-studio-toggle-sidebar" style="background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main);" title="Toggle Card Inspector Sidebar" type="button">
             📋 <span id="agent-studio-sidebar-btn-text">Hide Card Sidebar</span>
 </button>
+<button class="btn btn-sm" id="btn-agent-studio-compact" style="background: rgba(147, 51, 234, 0.2); border: 1px solid #a855f7; color: #c084fc; font-weight: 600;" title="Compact conversation history with client-side prune and optional AI summary" type="button">
+            🗜️ Compact
+</button>
 <button class="btn btn-sm" id="btn-agent-studio-clear" title="Clear chat history" type="button">
             🧹 Clear Chat
           </button>
@@ -2406,7 +2570,8 @@ Finally, she lifted her chin, tossing her tangled hair back with a sharp, defian
 </div>
 </div>
 </div>
-</div><div class="modal-overlay hidden" id="modal-visual-identity" style="z-index: 10000;">
+</div>
+<div class="modal-overlay hidden" id="modal-visual-identity" style="z-index: 10000;">
 <div class="modal" style="width: 720px; max-width: 95vw; max-height: 90vh; display: flex; flex-direction: column;">
 <div class="modal-header" style="flex-shrink: 0;">
 <div>
@@ -2663,6 +2828,9 @@ Finally, she lifted her chin, tossing her tangled hair back with a sharp, defian
 </div>
 </div>
 <!-- Scripts (loaded after all modals so DOM elements exist) -->
-<script src="app.js"></script>
+
+<!-- Scripts & Footer -->
+<script src="dist/bundle.js?v=2"></script>
 </body>
 </html>
+

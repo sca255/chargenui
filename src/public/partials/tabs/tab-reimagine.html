@@ -1,0 +1,17 @@
+<div class="tab-content hidden" id="tab-reimagine" style="display: flex; flex-direction: column; gap: 10px;">
+<div class="agent-reimagine-header">
+<div>
+<strong>✨ Reimagine the current card</strong>
+<div class="muted">Send the active RoleplayCharacter to the same agent service for a cohesive redesign or a fresh inspired direction.</div>
+</div>
+<span class="status-badge" id="reimagine-card-name">No card</span>
+</div>
+<div class="reimagine-mode-row">
+<button class="btn btn-sm reimagine-mode active" data-mode="redesign" type="button">🛠️ Redesign</button>
+<button class="btn btn-sm reimagine-mode" data-mode="inspire" type="button">💡 Inspire</button>
+</div>
+<textarea class="form-textarea" id="reimagine-prompt" placeholder="Optional direction: preserve her voice, move the conflict to a haunted lighthouse, make the opening more immediate..." rows="3"></textarea>
+<button class="btn btn-primary" id="btn-run-reimagine" type="button">✨ Reimagine Current Card</button>
+<div class="agent-reimagine-result hidden" id="reimagine-result"></div>
+</div>
+<!-- TAB: Lorebook Companion Creator -->

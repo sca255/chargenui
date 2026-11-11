@@ -265,7 +265,8 @@ export async function attachImageToQueueItem(
             });
           }
 
-          await saveCardRecord(cardRecord.character, cardRecord.avatarBase64 || cardRecord.character.avatar || imageDataUrl, targetId);
+          const avatarForSave = imageType === "avatar" ? imageDataUrl : (cardRecord.avatarBase64 || cardRecord.character.avatar);
+          await saveCardRecord(cardRecord.character, avatarForSave, targetId);
         } else {
           cardRecord.character.avatar = imageDataUrl;
           const assets = Array.isArray(cardRecord.character.assets) ? [...cardRecord.character.assets] : [];

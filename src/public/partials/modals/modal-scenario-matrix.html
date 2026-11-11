@@ -1,0 +1,28 @@
+<div class="modal-overlay hidden" id="modal-scenario-matrix">
+<div class="modal modal-xl">
+<div class="modal-header">
+<div style="display:flex; align-items:center; gap:8px;">
+<span style="font-size:18px;">🎭</span>
+<div>
+<h3 style="font-size: 15px; font-weight: 700; margin:0;">Scenario Matrix (4 Dynamic Branches)</h3>
+<div style="font-size: 11px; color: var(--text-muted);">Switch between 4 distinct roleplay setups for this character with one click</div>
+</div>
+</div>
+<button class="btn btn-sm" id="btn-close-matrix">✕</button>
+</div>
+<div class="modal-body">
+<div class="hidden" id="matrix-loading" style="text-align: center; padding: 40px;">
+<div class="spinner" style="margin: 0 auto 12px; width: 24px; height: 24px;"></div>
+<div style="font-size: 13px; font-weight: 600; color: var(--accent-cyan);">Synthesizing 4 dynamic scenario branches...</div>
+<div style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">Crafting Canon Encounter, Crisis (In Media Res), Late-Night Intimacy &amp; Hostile Friction</div>
+</div>
+<div class="matrix-grid" id="matrix-packages-container">
+<!-- Populated with 4 scenario cards -->
+</div>
+</div>
+<div class="modal-footer">
+<button class="btn btn-sm" id="btn-close-matrix-footer">Close</button>
+</div>
+</div>
+</div>
+<!-- Modal: Incorporate Legacy System Prompt -->

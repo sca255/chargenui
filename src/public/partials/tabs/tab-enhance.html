@@ -1,0 +1,277 @@
+<div class="tab-content hidden" id="tab-enhance">
+<!-- Legacy/Unmaintained Warning -->
+<div style="background: rgba(245, 158, 11, 0.15); border: 1px solid #f59e0b; border-radius: var(--radius-sm); padding: 8px 12px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; font-size: 11px;">
+  <span style="color: #fbbf24; font-weight: 700;">⚠️ LEGACY / UNMAINTAINED</span>
+  <span style="color: var(--text-muted); flex: 1;">This Enhancer tab uses older enhancement pipeline. Prefer <strong>Agent Mode (Tab 4)</strong> or <strong>Spark/Weaver</strong> for new characters. Spine-aware regeneration via "Regenerate with Spine" button in Generate tab.</span>
+</div>
+<div style="margin-bottom: 10px; display: flex; gap: 8px;">
+<button class="btn btn-sm" id="btn-run-audit" style="flex: 1;" type="button">
+              🩺 Run Card Audit
+            </button>
+<button class="btn btn-sm btn-primary" id="btn-full-overhaul" style="flex: 1;" type="button">
+              🚀 Full Overhaul
+            </button>
+</div>
+<!-- Global AI Steering Panel (Director's Directive) -->
+<div class="steering-panel">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+<label class="form-label" style="margin: 0; font-size: 11px; display: flex; align-items: center; gap: 4px;">
+<span>🎯</span> <strong>AI Steering Directive (Director's Notes)</strong>
+</label>
+<button id="btn-clear-steering" style="font-size: 10px; color: var(--text-dim); border: none; background: none; cursor: pointer; padding: 0;" type="button">Clear</button>
+</div>
+<textarea class="form-textarea" id="enhance-steering-notes" placeholder="Guide the AI: e.g. 'Emphasize her academic detachment vs hidden longing for {{user}}, keep her icy exterior intact, sharp scientific vocabulary'" rows="2"></textarea>
+<div class="steering-pills-row" id="steering-chips">
+<span class="steering-chip" data-text="High emotional walls, guarded suspicion, and slow-burn trust">❄️ Guarded</span>
+<span class="steering-chip" data-text="Suppressed romantic yearning and visceral physical tension">🔥 Slow-Burn</span>
+<span class="steering-chip" data-text="Academic precision, clinical vocabulary, and analytical rigor">🧠 Intellectual</span>
+<span class="steering-chip" data-text="Razor-sharp dry wit, cynical teasing, and sarcastic banter">🗡️ Sarcastic</span>
+<span class="steering-chip" data-text="Heavy sensory tells (scent of ozone, chilled breath, physical flinching)">👁️ Sensory Tells</span>
+<span class="steering-chip" data-text="Dark psychological conflict, moral ambiguity, and taboo tension">🌑 Dark Noir</span>
+<span class="steering-chip" data-text="Dominant authority, command protocols, psychological discipline, and intoxicating control">👑 Dominant</span>
+<span class="steering-chip" data-text="Trembling submission, sensory vulnerability, surrender of autonomy, and safe-word trust">⛓️ Submissive</span>
+<span class="steering-chip" data-text="Bratty defiance, playful rebellion, and testing boundaries to provoke discipline">😼 Brat</span>
+<span class="steering-chip" data-text="Intense praise, degradation, humiliation, and psychological contrast">👄 Praise/Degradation</span>
+</div>
+<!-- Optional Web Lore Search & Canon Retrieval (Feeds Overhaul & Modules) -->
+<div style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed rgba(255, 255, 255, 0.1);">
+<div style="display: flex; justify-content: space-between; align-items: center;">
+<label class="checkbox-label" style="font-size: 11px; font-weight: 600; margin: 0;">
+<input id="enhance-web-search" type="checkbox"/>
+<span>🌐 Web Lore Search &amp; Canon Retrieval (Optional)</span>
+</label>
+<span style="font-size: 10px; color: var(--text-dim);">Feeds Overhaul &amp; Modules</span>
+</div>
+<div class="hidden" id="box-enhance-search" style="margin-top: 8px;">
+<div style="display: flex; gap: 6px;">
+<input class="form-input" id="enhance-search-query" placeholder="Search query (e.g. 'Si Arknights lore powers personality')" type="text"/>
+<button class="btn btn-sm" id="btn-enhance-preview-search" title="Test search &amp; retrieve lore" type="button">🔎 Fetch</button>
+</div>
+<label class="checkbox-label" style="font-size: 11px; margin-top: 6px;">
+<input checked="" id="enhance-include-headcanons" type="checkbox"/>
+<span>Extract Fan Headcanons, Mindcanons &amp; Dynamic Tropes</span>
+</label>
+<div class="hidden" id="enhance-search-lore-preview" style="margin-top: 6px; padding: 8px; background: var(--bg-card); border-radius: var(--radius-sm); border: 1px solid var(--border-color); font-size: 11px; max-height: 120px; overflow-y: auto; color: var(--text-muted);"></div>
+</div>
+</div>
+</div>
+<div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-dim); margin: 12px 0 6px;">
+            Targeted Enhancement Modules
+          </div>
+<!-- Module 0: Scenario Matrix (4 Dynamic Branches) -->
+<div class="action-card" id="act-scenario-matrix" style="border-color: rgba(59, 130, 246, 0.4); background: rgba(59, 130, 246, 0.05);">
+<div class="action-card-header">
+<span style="color: var(--accent-cyan);">🎭 Scenario Matrix (4 Dynamic Branches)</span>
+<span class="chevron">▾</span>
+</div>
+<div class="action-card-desc">
+              Generate 4 instant roleplay branches: Canon Encounter, Crisis (In Media Res), Late-Night Intimacy, and Hostile Interrogation.
+            </div>
+<div class="enhancer-drawer">
+<div class="drawer-field">
+<label class="drawer-label">Optional Branching Directive / Context</label>
+<input class="form-input" id="matrix-custom-steering" placeholder="e.g. Set in an abandoned subterranean lab during a blizzard" type="text"/>
+</div>
+<button class="btn btn-sm btn-primary" id="btn-generate-matrix" style="width: 100%; justify-content: center; margin-top: 4px;" type="button">
+                ⚡ Forge 4-Branch Scenario Matrix
+              </button>
+</div>
+</div>
+<!-- Module 1: Deepen Persona -->
+<div class="action-card" id="act-deepen-persona">
+<div class="action-card-header">
+<span>🧠 Deepen Persona &amp; Psychology</span>
+<span class="chevron">▾</span>
+</div>
+<div class="action-card-desc">
+              Sharpen the central contradiction, sensory tells, formative experiences, and reaction gradient.
+            </div>
+<div class="enhancer-drawer">
+<div class="drawer-field">
+<label class="drawer-label">Focus Areas to Accentuate</label>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; font-size: 11px;">
+<label class="checkbox-label" style="font-size: 11px;"><input checked="" class="deepen-focus" type="checkbox" value="Central Contradiction &amp; Internal Friction"/> Contradiction</label>
+<label class="checkbox-label" style="font-size: 11px;"><input checked="" class="deepen-focus" type="checkbox" value="Sensory Presence, Posture &amp; Physical Tells"/> Sensory Presence</label>
+<label class="checkbox-label" style="font-size: 11px;"><input checked="" class="deepen-focus" type="checkbox" value="Reaction Gradient (Cold/Limits/Cravings/Trust)"/> Reaction Gradient</label>
+<label class="checkbox-label" style="font-size: 11px;"><input class="deepen-focus" type="checkbox" value="Formative Trauma &amp; Secret Insecurities"/> Dark Subtext</label>
+</div>
+</div>
+<div class="drawer-field">
+<label class="drawer-label">Specific Persona Steering</label>
+<input class="form-input" id="deepen-custom-hint" placeholder="e.g. Focus on her fear of intimacy and obsession with precision" type="text"/>
+</div>
+<button class="btn btn-sm btn-primary" id="btn-run-deepen" style="width: 100%; justify-content: center; margin-top: 4px;" type="button">
+                ⚡ Deepen Persona with Steering
+              </button>
+</div>
+</div>
+<!-- Module 2: Polish Voice & Example Messages -->
+<div class="action-card" id="act-polish-voice">
+<div class="action-card-header">
+<span>🎙️ Voice Rules &amp; Example Messages</span>
+<span class="chevron">▾</span>
+</div>
+<div class="action-card-desc">
+              Establish idiolect, forbidden words, and craft 3-5 multi-beat example exchanges with &lt;START&gt; tags.
+            </div>
+<div class="enhancer-drawer">
+<div class="drawer-field">
+<label class="drawer-label">Speech Register / Vocal Cadence</label>
+<select class="form-select" id="voice-register-select">
+<option selected="" value="Natural &amp; grounded human speech (Authentic cadence, natural contractions, dry irony - strictly bans robotic jargon)">✨ Natural &amp; Grounded (Grounded human - strictly bans robot cliches)</option>
+<option value="Informal &amp; casual (Relaxed, colloquial rhythm, zero stiffness, natural familiarity)">Informal &amp; Casual (Warm, colloquial, zero stiffness)</option>
+<option value="Biting dry wit &amp; understated sarcasm (Deadpan, cynical, realistic subtext)">Biting Dry Wit &amp; Sarcasm (Deadpan, sharp subtext)</option>
+<option value="Clipped &amp; laconic (Short, blunt, few words, practical)">Clipped &amp; Laconic (Short, blunt, no fluff)</option>
+<option value="Soft, quiet &amp; guarded (Hesitant, low-toned, watchful)">Soft, Quiet &amp; Guarded (Watchful, observant)</option>
+<option value="Measured &amp; articulate (Intellectual without sounding like a thesaurus or calculator)">Measured &amp; Articulate (Sharp mind, but natural)</option>
+<option value="Formal &amp; ceremonial (High lexicon - only use for royalty or ancient rituals)">Formal &amp; Ceremonial (Stiff, archaic - use with caution)</option>
+<option value="custom">Custom Register (Specified in steering notes)...</option>
+</select>
+</div>
+<div class="drawer-field">
+<label class="checkbox-label" style="font-size: 11px; margin-top: 2px;">
+<input checked="" id="voice-ban-robot" type="checkbox"/>
+<span>Strictly Ban Robotic / Spock Jargon ("statistical anomaly", "nutrient density", etc.)</span>
+</label>
+</div>
+<div class="drawer-field">
+<label class="drawer-label">Dialogue Scenario Steering</label>
+<input class="form-input" id="voice-scenario-hint" placeholder="e.g. Include an argument over mission protocol where she refuses to break" type="text"/>
+</div>
+<button class="btn btn-sm btn-primary" id="btn-run-voice" style="width: 100%; justify-content: center; margin-top: 4px;" type="button">
+                ⚡ Polish Voice with Steering
+              </button>
+</div>
+</div>
+<!-- Module 3: Punch First Message & Alternate Greetings -->
+<div class="action-card" id="act-punch-first-mes">
+<div class="action-card-header">
+<span>🎬 Scene Starter &amp; Alternate Greetings</span>
+<span class="chevron">▾</span>
+</div>
+<div class="action-card-desc">
+              Elevate first message with vivid atmosphere and generate 3 alternate scenario openings.
+            </div>
+<div class="enhancer-drawer">
+<div class="drawer-field">
+<label class="drawer-label">Opening Scene Atmosphere &amp; Context</label>
+<input class="form-input" id="greetings-scene-hint" placeholder="e.g. Late night in the frozen command module during a reactor alarm" type="text"/>
+</div>
+<div class="drawer-field">
+<label class="drawer-label">Alternate Greeting Themes</label>
+<input class="form-input" id="greeting-theme-1" style="margin-bottom: 4px;" type="text" value="Hostile / Guarded Encounter (weapons drawn, suspicious evaluation)"/>
+<input class="form-input" id="greeting-theme-2" style="margin-bottom: 4px;" type="text" value="Quiet Vulnerability / Intimate Late-Night (alone together, defenses lowered)"/>
+<input class="form-input" id="greeting-theme-3" type="text" value="In Media Res / Emergency Crisis (immediate shared danger or action)"/>
+</div>
+<button class="btn btn-sm btn-primary" id="btn-run-greetings" style="width: 100%; justify-content: center; margin-top: 4px;" type="button">
+                ⚡ Punch Greetings with Steering
+              </button>
+              <button class="btn btn-sm" id="btn-improve-greetings" style="width: 100%; justify-content: center; margin-top: 4px; background: linear-gradient(135deg, #059669, #0d9488); border: none; color: #fff; font-weight: 700;" type="button">
+                ✨ Improve Greetings (First Mes + Alts)
+              </button>
+</div>
+</div>
+<!-- Module 4: Format Optimizer & Token Compressor -->
+<div class="action-card" id="act-format-optimize">
+<div class="action-card-header">
+<span>🗜️ Token Compressor &amp; Formatter</span>
+<span class="chevron">▾</span>
+</div>
+<div class="action-card-desc">
+              Convert between Prose, Boostyle, W++, or Markdown and compress token footprint.
+            </div>
+<div class="enhancer-drawer">
+<div class="drawer-field">
+<label class="drawer-label">Target Format</label>
+<select class="form-select" id="format-target-select">
+<option value="prose">Rich Evocative Prose (Natural paragraphs)</option>
+<option value="boostyle">Boostyle Pseudocode [Character("Name"){...}]</option>
+<option value="wxx">W++ Format [character("Name"){...}]</option>
+<option value="markdown">Dense Structured Markdown Bullets</option>
+</select>
+</div>
+<div class="drawer-field">
+<label class="drawer-label">Target Token Budget (Optional)</label>
+<input class="form-input" id="format-token-budget" placeholder="e.g. 500, 750 (Leave blank for auto-compression)" type="number"/>
+</div>
+<button class="btn btn-sm btn-primary" id="btn-run-format" style="width: 100%; justify-content: center; margin-top: 4px;" type="button">
+                ⚡ Compress &amp; Convert Format
+              </button>
+</div>
+</div>
+<!-- Module 5: Lorebook Builder -->
+<div class="action-card" id="act-lorebook-builder">
+<div class="action-card-header">
+<span>📚 World Info &amp; Lorebook Generator</span>
+<span class="chevron">▾</span>
+</div>
+<div class="action-card-desc">
+              Auto-generate embedded SillyTavern character_book entries for weapons, factions, and lore.
+            </div>
+<div class="enhancer-drawer">
+<div class="drawer-field">
+<label class="drawer-label">Lorebook Depth</label>
+<select class="form-select" id="lorebook-depth-select">
+<option value="detailed">Detailed (6 to 10 entries with rich keys)</option>
+<option value="compact">Compact (3 to 5 crucial signature entries)</option>
+</select>
+</div>
+<div class="drawer-field">
+<label class="drawer-label">Priority Lore Topics / Entities</label>
+<input class="form-input" id="lorebook-topics-hint" placeholder="e.g. Cryo-tech weapons, Endfield Foundation, personal relics, faction rivals" type="text"/>
+</div>
+<button class="btn btn-sm btn-primary" id="btn-run-lorebook" style="width: 100%; justify-content: center; margin-top: 4px;" type="button">
+                ⚡ Generate Lorebook with Steering
+              </button>
+</div>
+</div>
+<!-- Module 6: Tone Shifter -->
+<div class="action-card" id="act-tone-shift">
+<div class="action-card-header">
+<span>🎭 Tone &amp; Dynamic Calibrator</span>
+<span class="chevron">▾</span>
+</div>
+<div class="action-card-desc">
+              Shift attitude toward Grittier, Sensual, Tsundere, Yandere, Stoic, or Playful.
+            </div>
+<div class="enhancer-drawer">
+<div class="drawer-field">
+<label class="drawer-label">Quick Tone Presets</label>
+<div class="preset-pills-container" id="tone-preset-chips">
+<span class="preset-pill" data-tone="Cold, authoritative, intellectually rigorous, emotionally guarded">Cold &amp; Guarded</span>
+<span class="preset-pill" data-tone="Darker, predatory, cynical, and morally ambiguous">Dark &amp; Predatory</span>
+<span class="preset-pill" data-tone="Sharp prickly tsundere, defensive exterior with hidden affection">Tsundere</span>
+<span class="preset-pill" data-tone="Obsessive, unhinged yandere, quietly possessive and dangerous">Yandere</span>
+<span class="preset-pill" data-tone="Playful, witty, teasing, dry humor with subtle flirtation">Playful Banter</span>
+<span class="preset-pill" data-tone="Melancholic noir, weary, stoic, haunted by past mistakes">Noir / Weary</span>
+</div>
+</div>
+<div class="drawer-field">
+<label class="drawer-label">Target Tone / Emotional Dynamic</label>
+<input class="form-input" id="tone-custom-input" type="text" value="Cold, authoritative, intellectually rigorous, emotionally guarded"/>
+</div>
+<button class="btn btn-sm btn-primary" id="btn-run-tone" style="width: 100%; justify-content: center; margin-top: 4px;" type="button">
+                ⚡ Calibrate Tone with Steering
+              </button>
+</div>
+</div>
+</div>
+<!-- Module 7: Synthesize Spine for Existing Character (Retroactive) -->
+<div class="action-card" id="act-synthesize-spine" style="border-color: rgba(147, 51, 234, 0.5); background: rgba(147, 51, 234, 0.06);">
+  <div class="action-card-header">
+    <span style="color: #c084fc;">🧬 Synthesize Authoring Spine (Retroactive)</span>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="action-card-desc">
+    Reverse-engineer internal psychometric scaffolding (archetype, contradiction, reaction gradient, voice, scene frame) from an existing card using your original prompt & story arc. Enables arc-aware 'Regenerate with Spine' enhancer mode later.
+  </div>
+  <div class="enhancer-drawer">
+    <button class="btn btn-sm btn-primary" id="btn-open-synthesize-spine" style="width: 100%; justify-content: center; margin-top: 4px; background: linear-gradient(135deg, #7c3aed, #a855f7); border: none;" type="button">
+      🧬 Open Spine Synthesis Modal
+    </button>
+    <div style="margin-top: 8px; font-size: 10px; color: var(--text-muted); text-align: center;">
+      Use if you have the original prompt and/or story arc for a character created before spine persistence.
+    </div>
+  </div>
+</div>
+<!-- TAB 4: Agent Mode (Interactive AI Co-Writer & Card Doctor - Full Chat Experience) -->

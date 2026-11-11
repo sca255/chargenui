@@ -1,0 +1,72 @@
+<!-- Right Column: Inspector & Live Metrics -->
+<div class="panel panel-right">
+<div class="panel-header">
+<span class="panel-title">Diagnostic &amp; Token Engine</span>
+</div>
+<div class="panel-body">
+<!-- Quality Health Gauge -->
+<div class="health-gauge">
+<div class="score-display">
+<span class="score-num" id="card-score-num">--</span>
+<span class="score-label">/ 100 HEALTH</span>
+</div>
+<div id="card-score-summary" style="font-size: 11px; color: var(--text-muted); line-height: 1.4;">
+            Import or generate a card to view diagnostic health analysis.
+          </div>
+</div>
+<!-- Detected Weaknesses & Strengths -->
+<div style="margin-bottom: 16px;">
+<div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px;">
+            Audit Findings
+          </div>
+<div id="audit-findings-list" style="font-size: 11px; max-height: 200px; overflow-y: auto;">
+<div style="color: var(--text-dim); font-style: italic;">No audit conducted yet.</div>
+</div>
+</div>
+<!-- Token Counter Breakdown -->
+<div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 14px; margin-bottom: 16px;">
+<div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px;">
+            Token Budget Estimate
+          </div>
+<div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom: 8px;">
+<span id="token-total-num" style="font-size: 22px; font-weight: 800; color: var(--accent-emerald);">0</span>
+<span style="font-size: 11px; color: var(--text-dim);">permanent + starter</span>
+</div>
+<ul class="token-breakdown-list">
+<li class="token-breakdown-item">
+<span style="color:var(--text-muted)">Description</span>
+<span id="tb-desc">0</span>
+</li>
+<li class="token-breakdown-item">
+<span style="color:var(--text-muted)">Personality</span>
+<span id="tb-pers">0</span>
+</li>
+<li class="token-breakdown-item">
+<span style="color:var(--text-muted)">Scenario</span>
+<span id="tb-scenario">0</span>
+</li>
+<li class="token-breakdown-item">
+<span style="color:var(--text-muted)">First Message</span>
+<span id="tb-first">0</span>
+</li>
+<li class="token-breakdown-item">
+<span style="color:var(--text-muted)">Example Messages</span>
+<span id="tb-examples">0</span>
+</li>
+<li class="token-breakdown-item">
+<span style="color:var(--text-muted)">System &amp; Directives</span>
+<span id="tb-system">0</span>
+</li>
+</ul>
+</div>
+<!-- Quick Copy Actions -->
+<div>
+<button class="btn btn-sm" id="btn-copy-prompt" style="width: 100%; justify-content: center; margin-bottom: 8px;">
+            📋 Copy Character Prompt to Clipboard
+          </button>
+<button class="btn btn-sm" id="btn-view-raw-json" style="width: 100%; justify-content: center;">
+            🔍 View Raw V2 JSON Spec
+          </button>
+</div>
+</div>
+</div>

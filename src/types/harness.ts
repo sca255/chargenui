@@ -195,6 +195,47 @@ export interface EnhanceOptions {
   searchProviderType?: "duckduckgo" | "tavily" | "brave" | "searxng";
   searchApiKey?: string;
   searxngUrl?: string;
+
+  // Style Transfer options
+  styleTargetFormat?: "prose" | "boostyle" | "wxx" | "ali_chat";
+  literaryRegister?: "victorian_gothic" | "gritty_noir" | "cyber_street" | "light_novel" | "pulp_fantasy" | "erotic_romance" | "custom";
+  customRegisterDescription?: string;
+}
+
+// LLM as Judge Types
+export interface JudgeEvaluationDimension {
+  name: string;
+  score: number; // 1 to 10
+  critique: string;
+}
+
+export interface JudgeEvaluationReport {
+  overallScore: number; // 1 to 100
+  rpReadinessGrade: "S" | "A" | "B" | "C" | "D";
+  dimensions: {
+    psychologicalConsistency: JudgeEvaluationDimension;
+    dialogueNaturalness: JudgeEvaluationDimension;
+    userAgencyCompliance: JudgeEvaluationDimension;
+    scenarioFriction: JudgeEvaluationDimension;
+    sensoryImmediacy: JudgeEvaluationDimension;
+  };
+  verdict: string;
+  actionableTweaks: string[];
+}
+
+// Batch Generation Types
+export interface BatchGenerationRequest extends GenerateCharacterRequest {
+  count: number; // 2 to 5 variants
+  variationAxis?: "archetype" | "tone" | "backstory_crucible" | "relationship_stance" | "intensity";
+}
+
+export interface BatchGenerationResult {
+  variants: Array<{
+    variantIndex: number;
+    variationTitle: string;
+    divergencePitch: string;
+    character: RoleplayCharacter;
+  }>;
 }
 
 // Enhancement request
@@ -209,8 +250,11 @@ export interface EnhanceCharacterRequest {
     | "format_optimize"
     | "generate_lorebook"
     | "tone_shift"
+    | "style_transfer"
+    | "judge_eval"
     | "full_overhaul"
-    | "regenerate_with_spine";
+    | "regenerate_with_spine"
+    | "continue_arc";
   options?: EnhanceOptions;
   provider: ProviderConfig;
 }
@@ -220,6 +264,7 @@ export interface EnhanceCharacterResponse {
   character: RoleplayCharacter;
   diagnosticBefore?: CharacterDiagnostic;
   diagnosticAfter?: CharacterDiagnostic;
+  judgeReport?: JudgeEvaluationReport;
   changesSummary: string[];
   addedAlternateGreetings?: string[];
   generatedLorebook?: CharacterBook;

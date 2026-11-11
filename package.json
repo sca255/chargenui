@@ -6,7 +6,14 @@
   "type": "module",
   "scripts": {
     "start": "bun run src/server.ts",
-    "dev": "bun --watch src/server.ts"
+    "dev": "bun --watch src/server.ts",
+    "build:html": "bun run scripts/build_html.ts",
+    "build:js": "bun build src/public/js/main.js --outfile src/public/dist/bundle.js",
+    "build": "bun run build:html && bun run build:js"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "devDependencies": {
+    "@types/bun": "^1.4.4",
+    "@types/node": "^26.6.6"
+  }
 }

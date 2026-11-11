@@ -1,0 +1,66 @@
+<div class="modal-overlay hidden" id="modal-incorporate-system">
+<div class="modal" style="width: 620px;">
+<div class="modal-header">
+<div>
+<h3 style="font-size: 15px; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 6px;">
+<span>✨ Legacy System Prompt Detected</span>
+</h3>
+<div style="font-size: 11px; color: var(--text-muted);">Incorporate directives cleanly into your character card</div>
+</div>
+<button class="btn btn-sm" id="btn-close-inc-modal">✕</button>
+</div>
+<div class="modal-body">
+<p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
+          The imported card contains a legacy <strong>System Prompt</strong>. Because CharGen Harness protects your SillyTavern client presets by leaving <code>system_prompt</code> empty, choose how you'd like the AI to incorporate it:
+        </p>
+<div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 10px; margin-bottom: 14px; max-height: 120px; overflow-y: auto;">
+<div style="font-size: 10px; font-weight: 700; color: var(--accent-cyan); text-transform: uppercase; margin-bottom: 4px;">Detected System Prompt Content:</div>
+<pre id="modal-inc-preview" style="font-family: monospace; font-size: 11px; white-space: pre-wrap; color: var(--text-main); margin: 0;"></pre>
+</div>
+<div class="form-group" style="margin-bottom: 12px;">
+<label class="form-label">Incorporate Destination:</label>
+<div style="display: flex; flex-direction: column; gap: 8px;">
+<label class="radio-label" style="display: flex; gap: 8px; align-items: flex-start; cursor: pointer; padding: 8px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-card);">
+<input checked="" name="modal-inc-target" style="margin-top: 3px;" type="radio" value="both"/>
+<div>
+<strong style="color: var(--accent-cyan); font-size: 12px;">⚡ Incorporate into Both (Recommended)</strong>
+<div style="font-size: 11px; color: var(--text-muted);">AI splits narrative lore/appearance to <em>Description</em> and behavioral rules/jailbreaks to <em>Post-History Instructions</em>.</div>
+</div>
+</label>
+<label class="radio-label" style="display: flex; gap: 8px; align-items: flex-start; cursor: pointer; padding: 8px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-card);">
+<input name="modal-inc-target" style="margin-top: 3px;" type="radio" value="post_history"/>
+<div>
+<strong style="font-size: 12px;">📜 Incorporate into Post-History Instructions Only</strong>
+<div style="font-size: 11px; color: var(--text-muted);">AI refines all rules, voice cadence, and uncensored instructions into <em>Post-History Instructions</em>.</div>
+</div>
+</label>
+<label class="radio-label" style="display: flex; gap: 8px; align-items: flex-start; cursor: pointer; padding: 8px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-card);">
+<input name="modal-inc-target" style="margin-top: 3px;" type="radio" value="description"/>
+<div>
+<strong style="font-size: 12px;">📖 Incorporate into Description Only</strong>
+<div style="font-size: 11px; color: var(--text-muted);">AI weaves character traits, background facts, and lore directly into <em>Description</em>.</div>
+</div>
+</label>
+</div>
+</div>
+<div class="form-group" style="margin-bottom: 0;">
+<label class="form-label" style="font-size: 11px;">Optional AI Guidance / Steering:</label>
+<input class="form-input" id="modal-inc-guidance" placeholder="e.g. Keep voice cadence cold, emphasize combat style" type="text"/>
+</div>
+</div>
+<div class="modal-footer" style="justify-content: space-between;">
+<div style="display: flex; gap: 6px;">
+<button class="btn btn-sm" id="btn-modal-inc-fallback" title="Paste to Post-History Instructions if empty, without calling AI" type="button">
+            📋 Plain Move (No AI)
+          </button>
+<button class="btn btn-sm" id="btn-modal-inc-discard" title="Discard the system prompt" type="button">
+            🗑️ Discard
+          </button>
+</div>
+<button class="btn btn-sm btn-primary" id="btn-modal-inc-run" type="button">
+<span>✨ Run AI Incorporation</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Weaver Interactive Interview Workshop Modal -->
