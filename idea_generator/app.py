@@ -9,6 +9,7 @@ Connects to:
 
 import sys
 import os
+import re
 import json
 import logging
 import time
@@ -17,9 +18,10 @@ from datetime import datetime
 import threading
 import urllib.request
 import urllib.error
+import base64
 import requests
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional, Dict, List
 from PySide6.QtWidgets import QApplication
 from PySide6.QtQml import QQmlApplicationEngine
 from PySide6.QtCore import QObject, Signal, Slot, Property, QUrl
@@ -39,6 +41,7 @@ from pipeline import (
     normalize_concept_dict_macros
 )
 from era_agent_harness import configure_logging
+from media_utils import load_media_payload, extract_fallback_keyframes, is_video_file, is_image_file
 from procedural_engine import (
     HISTORICAL_ERAS
 )
@@ -64,6 +67,97 @@ QUEUE_FILE = Path(__file__).parent / "dispatch_queue.json"
 AGENT_ERA_SESSION_FILE = Path(__file__).parent / "agent_era_session.json"
 AGENT_CHAR_SESSION_FILE = Path(__file__).parent / "agent_char_session.json"
 LOGGER = logging.getLogger("chargenui.idea_generator")
+
+CHARGEN_CANONICAL_GENRES = [
+    "Dark Fantasy",
+    "Cyberpunk",
+    "Modern Dark / Noir",
+    "Sci-Fi / Space Opera",
+    "Psychological Horror",
+    "Romance / Slice of Life",
+    "Supernatural / Urban Fantasy",
+    "Post-Apocalyptic",
+    "Historical / Period",
+    "Gothic / Cosmic Eldritch",
+    "Mystery / Crime Thriller",
+    "Anime / Action"
+]
+
+def classify_genre_from_context(character_data: dict, era_name: Optional[str] = None) -> Optional[str]:
+    """
+    Fast, deterministic System One decision classifier.
+    Maps synthesized character context (tags, premise, archetype, setting/era)
+    into one of the 12 canonical CharGenUI genres without forcing a domestic fallback.
+    """
+    if not isinstance(character_data, dict):
+        return None
+
+    # 1. If an era is provided, check era metadata category
+    if era_name and str(era_name).lower() != "off":
+        info = get_era_info(str(era_name))
+        if info:
+            cat = (info.get("category") or "").lower()
+            if "fantasy" in cat:
+                return "Dark Fantasy"
+            if "scifi" in cat or "space" in cat or "cyber" in cat:
+                return "Cyberpunk" if "cyber" in cat else "Sci-Fi / Space Opera"
+            if "victorian" in cat or "gothic" in cat or "regency" in cat:
+                return "Gothic / Cosmic Eldritch"
+            if any(hist in cat for hist in ["ancient", "medieval", "feudal", "renaissance", "colonial", "historical", "period"]):
+                return "Historical / Period"
+
+    # 2. Extract full character text tokens
+    tokens = []
+    for key in ["genre", "setting", "archetype", "title", "tags", "premise", "central_contradiction"]:
+        val = character_data.get(key)
+        if isinstance(val, list):
+            tokens.extend([str(v).lower() for v in val])
+        elif isinstance(val, str):
+            tokens.append(val.lower())
+    full_text = " ".join(tokens)
+
+    # 3. Decision scoring rules across canonical genres
+    scores = {g: 0 for g in CHARGEN_CANONICAL_GENRES}
+
+    # Cyberpunk
+    if re.search(r"\b(cyberpunk|android|cyborg|neon|hacker|megacorp|prosthetic|netrunner|underworld)\b", full_text):
+        scores["Cyberpunk"] += 3
+    # Sci-Fi / Space Opera
+    if re.search(r"\b(sci-fi|spaceship|starship|galaxy|space opera|orbital|extraterrestrial|mech|ftl|starlight)\b", full_text):
+        scores["Sci-Fi / Space Opera"] += 3
+    # Gothic / Eldritch
+    if re.search(r"\b(gothic|eldritch|cosmic horror|cthulhu|manor|abyssal|bloodborne|victorian gothic|crypt)\b", full_text):
+        scores["Gothic / Cosmic Eldritch"] += 3
+    # Dark Fantasy / Grimdark
+    if re.search(r"\b(dark fantasy|fantasy|elf|elven|fae|demon|inquisitor|dragon|sorcerer|magic|kingdom|swords?|grimoire|dungeon)\b", full_text):
+        scores["Dark Fantasy"] += 3
+    # Psychological Horror
+    if re.search(r"\b(psychological horror|sanity|delusion|nightmare|obsession|psychosis|unhinged|paranoia)\b", full_text):
+        scores["Psychological Horror"] += 3
+    # Supernatural / Urban Fantasy
+    if re.search(r"\b(vampire|werewolf|urban fantasy|witch|occult|paranormal|shifter|kitsune|ghost)\b", full_text):
+        scores["Supernatural / Urban Fantasy"] += 3
+    # Post-Apocalyptic
+    if re.search(r"\b(post-apocalyptic|wasteland|fallout|scavenger|radiation|ruins|survivalist|ruin)\b", full_text):
+        scores["Post-Apocalyptic"] += 3
+    # Modern Dark / Noir
+    if re.search(r"\b(noir|detective|mafia|crime boss|cartel|syndicate|hitman|smuggler|interrogation)\b", full_text):
+        scores["Modern Dark / Noir"] += 2
+    # Mystery / Crime Thriller
+    if re.search(r"\b(mystery|investigator|thriller|conspiracy|suspect|sleuth|alibi)\b", full_text):
+        scores["Mystery / Crime Thriller"] += 2
+    # Romance / Slice of Life
+    if re.search(r"\b(slice of life|domestic|marriage|spouse|husband|wife|dating|roommate|suburban|coffee shop|high school)\b", full_text):
+        scores["Romance / Slice of Life"] += 2
+    # Historical / Period
+    if re.search(r"\b(historical|victorian|regency|roman|samurai|medieval|knight|feudal|1920s|renaissance)\b", full_text):
+        scores["Historical / Period"] += 2
+    # Anime / Action
+    if re.search(r"\b(anime|action hero|martial arts|ninja|shonen|tournament|superhero)\b", full_text):
+        scores["Anime / Action"] += 2
+
+    best_genre = max(scores, key=scores.get)
+    return best_genre if scores[best_genre] > 0 else None
 
 
 def configure_app_logging() -> Path:
@@ -551,6 +645,13 @@ class Backend(QObject):
             except Exception:
                 themes = [t.strip() for t in str(themes_raw).split(",") if t.strip()]
 
+            # Determine genre intelligently from character context if not explicitly set
+            resolved_genre = None
+            if genre and str(genre).strip():
+                resolved_genre = str(genre).strip()
+            elif is_json_dossier and parsed_data:
+                resolved_genre = classify_genre_from_context(parsed_data, era_name=era)
+
             payload = {
                 "concept": concept,
                 "archetype": archetype,
@@ -558,10 +659,8 @@ class Backend(QObject):
                 "suggestedBy": "Idea Suggester QML App",
                 "autoGenerate": auto_generate
             }
-            if genre:
-                payload["genre"] = str(genre).strip()
-            elif self._cfg.get("default_genre"):
-                payload["genre"] = self._cfg.get("default_genre")
+            if resolved_genre:
+                payload["genre"] = resolved_genre
             if story_arc:
                 payload["storyArc"] = str(story_arc).strip()
             if era:
@@ -934,6 +1033,7 @@ class Backend(QObject):
         # The actual insertion logic would depend on how agentic messages are stored and edited
         return json.dumps({"inserted_era_id": era_id, "status": "success"}, ensure_ascii=False)
 
+    @Slot(str, str, str, str, float, str, str, str)
     @Slot(str, str, str, float, str, str, str)
     @Slot(str, str, str, float, str, str)
     @Slot(str, str, str, float, str)
@@ -944,37 +1044,88 @@ class Backend(QObject):
     def brainstormNaturalLanguage(
         self,
         prompt: str,
-        mode: str = "psychometric",
-        intensity: str = "any",
-        temperature: float = 0.85,
-        correction_tier: str = "off",
-        era: str = "off",
-        bot_mode: str = "single"
+        mode_or_image: str = "psychometric",
+        intensity_or_mode: str = "any",
+        temperature_or_intensity: Any = 0.85,
+        correction_tier_or_temp: Any = "off",
+        era_or_tier: str = "off",
+        bot_mode_or_era: str = "single",
+        maybe_bot_mode: str = "single",
+        image_notes: str = ""
     ):
-        """Forges a rich character concept dossier directly from freeform natural language text."""
+        """Forges a rich character concept dossier from freeform natural language text and optional visual evidence."""
+        # Overload handling if image_path is passed as second argument:
+        # brainstormNaturalLanguage(prompt, image_path, mode, intensity, temperature, correction_tier, era, bot_mode, image_notes)
+        if isinstance(temperature_or_intensity, str) and (isinstance(correction_tier_or_temp, (int, float))):
+            image_path = mode_or_image
+            mode = intensity_or_mode
+            intensity = temperature_or_intensity
+            temperature = float(correction_tier_or_temp)
+            correction_tier = era_or_tier
+            era = bot_mode_or_era
+            bot_mode = maybe_bot_mode
+            visual_notes = image_notes.strip()
+        else:
+            image_path = ""
+            mode = mode_or_image
+            intensity = intensity_or_mode
+            temperature = float(temperature_or_intensity) if isinstance(temperature_or_intensity, (int, float)) else 0.85
+            correction_tier = str(correction_tier_or_temp)
+            era = era_or_tier
+            bot_mode = bot_mode_or_era
+            visual_notes = ""
+
         if self._is_generating:
             return
 
         self._set_generating(True)
         self.generationStarted.emit()
         mode_label = "Multi-Character Cast" if bot_mode == "multi_character" else ("RPG World / GM" if bot_mode == "rpg_world" else "Character")
-        self.toast.emit(f"🧠 Forging {mode_label} concept from natural language prompt...")
+        if image_path:
+            self.toast.emit(f"👁️ Deconstructing visual seed & forging {mode_label} concept...")
+        else:
+            self.toast.emit(f"🧠 Forging {mode_label} concept from natural language prompt...")
 
         def _worker():
             try:
+                effective_prompt = prompt.strip()
+                media_blocks = []
+                fallback_blocks = []
+
+                # If an image or video was attached in the Natural Language tab
+                if image_path:
+                    local_img = QUrl(image_path).toLocalFile() if image_path.startswith("file:") else image_path
+                    if os.path.exists(local_img):
+                        payload_info = load_media_payload(local_img)
+                        if payload_info and "native_block" in payload_info:
+                            media_blocks.append(payload_info["native_block"])
+                            if payload_info.get("type") == "video":
+                                fallback_blocks = extract_fallback_keyframes(local_img)
+
+                augmented_prompt = effective_prompt
+                if visual_notes:
+                    if augmented_prompt:
+                        augmented_prompt = f"{augmented_prompt}\n\n[VISUAL SEED DETAILS & CONTEXT]:\n{visual_notes}"
+                    else:
+                        augmented_prompt = f"[VISUAL SEED DETAILS & CONTEXT]:\n{visual_notes}"
+
                 result = self._pipeline.brainstorm_natural_language(
-                    prompt=prompt,
+                    prompt=augmented_prompt,
                     mode=mode,
                     intensity=intensity,
                     temperature=temperature,
                     correction_tier=correction_tier,
                     era=era,
-                    bot_mode=bot_mode
+                    bot_mode=bot_mode,
+                    media_blocks=media_blocks,
+                    fallback_media_blocks=fallback_blocks
                 )
                 if bot_mode and bot_mode != "single":
                     result["bot_mode"] = bot_mode
-                result["origin_prompt"] = prompt.strip()
-                self._add_to_grimoire_silent(result, source="natural_language", origin_prompt=prompt.strip())
+                result["origin_prompt"] = effective_prompt
+                if image_path:
+                    result["visual_seed_image"] = image_path
+                self._add_to_grimoire_silent(result, source="natural_language", origin_prompt=effective_prompt)
                 result_json = json.dumps(result, ensure_ascii=False)
                 self.naturalIdeaReceived.emit(result_json)
                 self.generationFinished.emit(True, "")
@@ -986,6 +1137,32 @@ class Backend(QObject):
                 self._set_generating(False)
 
         threading.Thread(target=_worker, daemon=True).start()
+
+    @Slot(str, str, str, str, float, str, str, str, str)
+    def brainstormNaturalLanguageWithVision(
+        self,
+        prompt: str,
+        image_path: str,
+        mode: str = "psychometric",
+        intensity: str = "any",
+        temperature: float = 0.85,
+        correction_tier: str = "off",
+        era: str = "off",
+        bot_mode: str = "single",
+        image_notes: str = ""
+    ):
+        """Explicit entrypoint for forging with an attached image seed in the Natural Language tab."""
+        self.brainstormNaturalLanguage(
+            prompt=prompt,
+            mode_or_image=image_path,
+            intensity_or_mode=mode,
+            temperature_or_intensity=intensity,
+            correction_tier_or_temp=temperature,
+            era_or_tier=correction_tier,
+            bot_mode_or_era=era,
+            maybe_bot_mode=bot_mode,
+            image_notes=image_notes
+        )
 
     @Slot(str)
     def loadIdeaIntoStudio(self, idea_json: str):
@@ -1030,12 +1207,13 @@ class Backend(QObject):
         self._era_tool_steps = []
         self.eraToolStepsChanged.emit()
 
+    @Slot(str, float, str)
     @Slot(str, float)
     @Slot(str)
-    def sendAgentMessage(self, message: str, temperature: float = 0.85):
-        """Sends a message to the AI Character Architect or Era Architect Agent."""
+    def sendAgentMessage(self, message: str, temperature: float = 0.85, media_path: str = ""):
+        """Sends a message to the AI Character Architect or Era Architect Agent with optional media (image/video)."""
         cleaned = message.strip()
-        if not cleaned:
+        if not cleaned and not media_path:
             return
         if self._is_generating and self._agent_mode == "era":
             with self._agent_queue_lock:
@@ -1143,9 +1321,10 @@ class Backend(QObject):
             return
 
         # 2. Character Architect Mode
+        display_msg = cleaned if cleaned else "(Attached visual media)"
         user_turn = {
             "role": "user",
-            "content": cleaned
+            "content": display_msg
         }
         self._agent_history.append(user_turn)
         self._save_agent_char_session()
@@ -1158,11 +1337,26 @@ class Backend(QObject):
         def _worker():
             try:
                 past_turns = self._agent_history[:-1]
+                media_blocks = []
+                fallback_blocks = []
+                if media_path:
+                    local_p = QUrl(media_path).toLocalFile() if media_path.startswith("file:") else media_path
+                    if os.path.exists(local_p):
+                        payload_info = load_media_payload(local_p)
+                        if payload_info and "native_block" in payload_info:
+                            media_blocks.append(payload_info["native_block"])
+                            if payload_info.get("type") == "video":
+                                fallback_blocks = extract_fallback_keyframes(local_p)
+
+                effective_user_msg = cleaned if cleaned else "Examine the attached visual media and author a rich, deeply developed character dossier matching the aesthetic and demeanor."
+
                 result = self._pipeline.agent_chat_turn(
-                    user_message=cleaned,
+                    user_message=effective_user_msg,
                     chat_history=past_turns,
                     current_character=self._agent_character,
-                    temperature=temperature
+                    temperature=temperature,
+                    media_blocks=media_blocks,
+                    fallback_media_blocks=fallback_blocks
                 )
 
                 agent_msg = result.get("agent_message", "I have updated the character dossier.")
@@ -1195,6 +1389,44 @@ class Backend(QObject):
                 self._set_generating(False)
 
         threading.Thread(target=_worker, daemon=True).start()
+
+    @Slot(result=str)
+    def pasteMediaFromClipboard(self) -> str:
+        """Reads image or file paths from system clipboard and saves to temporary file if raw image."""
+        app = QGuiApplication.instance()
+        if not app:
+            return ""
+        cb = app.clipboard()
+        if not cb:
+            return ""
+        mime = cb.mimeData()
+        if not mime:
+            return ""
+
+        # 1. Check if clipboard has file URLs
+        if mime.hasUrls():
+            for u in mime.urls():
+                p = u.toLocalFile()
+                if os.path.exists(p) and (is_image_file(p) or is_video_file(p)):
+                    return p
+
+        # 2. Check if clipboard has raw image (e.g. screenshot or copied image from browser)
+        if mime.hasImage():
+            qimg = cb.image()
+            if not qimg.isNull():
+                import tempfile
+                tmp_dir = tempfile.gettempdir()
+                out_path = os.path.join(tmp_dir, f"cg_clip_{int(time.time()*1000)}.png")
+                if qimg.save(out_path, "PNG"):
+                    return out_path
+
+        # 3. Check plain text for file path
+        if mime.hasText():
+            t = mime.text().strip().replace("file://", "")
+            if os.path.exists(t) and (is_image_file(t) or is_video_file(t)):
+                return t
+
+        return ""
 
     @Slot()
     def resetAgentSession(self):
@@ -2046,6 +2278,13 @@ def main():
     app = QApplication(sys.argv)
     app.setApplicationName("CharGen Idea Forge")
     app.setOrganizationName("CharGen")
+
+    # Hard-cap Qt Pixmap Cache & periodic memory trim
+    try:
+        from PySide6.QtGui import QPixmapCache
+        QPixmapCache.setCacheLimit(32 * 1024)
+    except Exception:
+        pass
 
     backend = Backend()
 

@@ -34,8 +34,8 @@ ApplicationWindow {
         "source": ""
     })
 
-    // Dramatic Stakes Dial: "any", "mild", "medium", "heavy"
-    property string selectedIntensity: "heavy"
+    // Dramatic Stakes Dial: "off", "any", "mild", "medium", "heavy"
+    property string selectedIntensity: "off"
 
     // Power Dynamic & Correction Dial (with Off switch): "off", "any:r", "any:ai", "mild", "correction", "heavy"
     property string selectedCorrectionTier: "off"
@@ -160,6 +160,21 @@ ApplicationWindow {
     property int currentTab: 0 // 0 = Studio Forge, 1 = Natural Language AI, 2 = AI Agent, 3 = Grimoire & Queue
     property string currentAgentMode: "character" // "character" | "era"
     property var naturalIdea: null
+    property string nlAttachedVisionImage: ""
+    onNlAttachedVisionImageChanged: {
+        if (!nlAttachedVisionImage || nlAttachedVisionImage.length === 0) {
+            nlAttachedVisionImageNotes = "";
+        }
+    }
+    property string nlAttachedVisionImageNotes: ""
+    property string agentAttachedVisionImage: ""
+    onAgentAttachedVisionImageChanged: {
+        if (!agentAttachedVisionImage || agentAttachedVisionImage.length === 0) {
+            agentAttachedVisionImageNotes = "";
+        }
+    }
+    property string agentAttachedVisionImageNotes: ""
+    property string previewZoomImageUrl: ""
     property var agentIdea: null
     property var prevAgentIdea: null
     property bool showAgentDiffView: false
@@ -170,7 +185,7 @@ ApplicationWindow {
     property var agentEraCompliance: null
     property var eraToolSteps: []
     property bool isGenerating: false
-    property string selectedFocusMode: "psychometric"
+    property string selectedFocusMode: "off"
     property bool isEditingPremise: false
     property string activeScenarioHook: ""
     property bool isGeneratingScenario: false
@@ -258,10 +273,18 @@ ApplicationWindow {
     }
 
     function sendAgentChatMessage(msg) {
-        if (!msg || msg.trim().length === 0 || root.isGenerating) return;
+        if ((!msg || msg.trim().length === 0) && (!root.agentAttachedVisionImage || root.agentAttachedVisionImage.length === 0)) return;
+        if (root.isGenerating) return;
         if (typeof backend !== "undefined" && backend) {
             var temp = (typeof agentTempSlider !== "undefined" && agentTempSlider) ? agentTempSlider.value : 0.85;
-            backend.sendAgentMessage(msg.trim(), temp);
+            var media = root.agentAttachedVisionImage || "";
+            if (root.agentAttachedVisionImageNotes && root.agentAttachedVisionImageNotes.trim().length > 0) {
+                var notesText = "[VISUAL SEED DETAILS & CONTEXT]:\n" + root.agentAttachedVisionImageNotes.trim();
+                msg = msg ? (msg + "\n\n" + notesText) : notesText;
+            }
+            backend.sendAgentMessage(msg ? msg.trim() : "", temp, media);
+            root.agentAttachedVisionImage = "";
+            root.agentAttachedVisionImageNotes = "";
         }
     }
 
@@ -598,15 +621,34 @@ ApplicationWindow {
         }
     }
 
+    // Helper to check if URL or path is a video
+    function isVideoUrl(url) {
+        if (!url) return false;
+        var lower = url.toLowerCase();
+        return lower.endsWith(".mp4") || lower.endsWith(".mkv") || lower.endsWith(".webm") ||
+               lower.endsWith(".mov") || lower.endsWith(".avi") || lower.endsWith(".m4v") || lower.endsWith(".flv");
+    }
+
+    // Helper to resolve client-side random intensity when "any" is selected
+    function getEffectiveIntensity() {
+        if (root.selectedIntensity === "any") {
+            var tiers = ["mild", "medium", "heavy"];
+            return tiers[Math.floor(Math.random() * tiers.length)];
+        }
+        return root.selectedIntensity;
+    }
+
     // Helper for intensity label
     function intensityTitle(val) {
+        if (val === "off") return "🚫 Off (Disabled)";
         if (val === "mild") return "🌸 Low Stakes / Cozy";
         if (val === "medium") return "⚖️ Moderate Stakes";
         if (val === "heavy") return "🔥 High Stakes";
-        return "✨ Natural / Any";
+        return "✨ Any: Random (1 of 3)";
     }
 
     function intensityColor(val) {
+        if (val === "off") return "#64748b";
         if (val === "mild") return "#f472b6";
         if (val === "medium") return "#c084fc";
         if (val === "heavy") return "#f87171";
@@ -1308,6 +1350,28 @@ ApplicationWindow {
                                 Layout.fillWidth: true
                                 spacing: 4
 
+                                // Option 0: Off
+                                Rectangle {
+                                    Layout.fillWidth: true
+                                    height: 30
+                                    radius: 6
+                                    color: root.selectedIntensity === "off" ? "#334155" : "#1e293b"
+                                    border.color: root.selectedIntensity === "off" ? "#94a3b8" : "#475569"
+                                    border.width: root.selectedIntensity === "off" ? 2 : 1
+                                    Text {
+                                        anchors.centerIn: parent
+                                        text: "🚫 Off"
+                                        font.bold: root.selectedIntensity === "off"
+                                        font.pixelSize: 10
+                                        color: root.selectedIntensity === "off" ? "#ffffff" : "#94a3b8"
+                                    }
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: root.selectedIntensity = "off"
+                                    }
+                                }
+
                                 // Option 1: Any
                                 Rectangle {
                                     Layout.fillWidth: true
@@ -1974,10 +2038,10 @@ ApplicationWindow {
                                 }
                                 Item { Layout.fillWidth: true }
                                 Text {
-                                    text: root.selectedFocusMode.toUpperCase()
+                                    text: root.selectedFocusMode === "off" ? "OFF" : root.selectedFocusMode.toUpperCase()
                                     font.bold: true
                                     font.pixelSize: 10
-                                    color: "#c084fc"
+                                    color: root.selectedFocusMode === "off" ? "#64748b" : "#c084fc"
                                 }
                             }
 
@@ -1986,6 +2050,7 @@ ApplicationWindow {
                                 spacing: 5
                                 Repeater {
                                     model: [
+                                        { id: "off", label: "🚫 Off" },
                                         { id: "psychometric", label: "🧠 Psychometric" },
                                         { id: "domestic", label: "🏡 Domestic" },
                                         { id: "reluctant", label: "⛓️ Reluctant" },
@@ -2231,7 +2296,7 @@ ApplicationWindow {
                                             genreCombo.currentText,
                                             dynamicInput.text,
                                             seedArea.text,
-                                            root.selectedIntensity,
+                                            root.getEffectiveIntensity(),
                                             root.selectedCorrectionTier,
                                             root.selectedEra
                                         );
@@ -2279,7 +2344,7 @@ ApplicationWindow {
                                             p,
                                             3,
                                             genreCombo.currentText,
-                                            root.selectedIntensity,
+                                            root.getEffectiveIntensity(),
                                             root.selectedCorrectionTier,
                                             root.selectedEra
                                         );
@@ -2290,7 +2355,7 @@ ApplicationWindow {
                                             JSON.stringify(tropesList),
                                             seedArea.text,
                                             tempSlider.value,
-                                            root.selectedIntensity,
+                                            root.getEffectiveIntensity(),
                                             JSON.stringify(root.getActiveLocks()),
                                             JSON.stringify(root.activeIdea),
                                             root.selectedFocusMode,
@@ -2658,8 +2723,9 @@ ApplicationWindow {
                                     color: "#ffffff"
                                 }
                                 onClicked: {
-                                    if (root.activeIdea && root.activeIdea.premise) {
-                                        backend.copyToClipboard(root.activeIdea.premise);
+                                    if (root.activeIdea && typeof backend !== "undefined" && backend) {
+                                        var sauce = backend.formatConceptSauce(JSON.stringify(root.activeIdea));
+                                        backend.copyToClipboard(sauce || root.activeIdea.premise || "");
                                     }
                                 }
                             }
@@ -2802,6 +2868,25 @@ ApplicationWindow {
                                                 anchors.fill: parent
                                                 cursorShape: Qt.PointingHandCursor
                                                 onClicked: root.lockName = !root.lockName
+                                            }
+                                        }
+
+                                        // Age Badge
+                                        Rectangle {
+                                            visible: Boolean(root.activeIdea.age)
+                                            radius: 6
+                                            height: 24
+                                            implicitWidth: ageBadgeLabel.implicitWidth + 14
+                                            color: "#1e293b"
+                                            border.color: "#38bdf8"
+                                            border.width: 1
+                                            Text {
+                                                id: ageBadgeLabel
+                                                anchors.centerIn: parent
+                                                text: "🎂 " + (root.activeIdea.age || "")
+                                                font.pixelSize: 10
+                                                font.bold: true
+                                                color: "#38bdf8"
                                             }
                                         }
 
@@ -3542,6 +3627,187 @@ ApplicationWindow {
                                 }
                             }
 
+                            // Vision / Portrait Attachment Dropzone
+                            Rectangle {
+                                id: nlVisionDropzone
+                                Layout.fillWidth: true
+                                implicitHeight: root.nlAttachedVisionImage ? 76 : 42
+                                radius: 8
+                                color: nlVisionDropArea.containsDrag ? "#3b0764" : (root.nlAttachedVisionImage ? "#1e1b4b" : "#1e293b")
+                                border.color: root.nlAttachedVisionImage ? "#a855f7" : (nlVisionDropArea.containsDrag ? "#c084fc" : "#334155")
+                                border.width: root.nlAttachedVisionImage ? 1.5 : 1
+
+                                DropArea {
+                                    id: nlVisionDropArea
+                                    anchors.fill: parent
+                                    onDropped: function(drop) {
+                                        if (drop.hasUrls && drop.urls.length > 0) {
+                                            root.nlAttachedVisionImage = drop.urls[0];
+                                        }
+                                    }
+                                }
+
+                                RowLayout {
+                                    anchors.fill: parent
+                                    anchors.margins: 6
+                                    spacing: 10
+
+                                    // Preview thumbnail or icon
+                                    Rectangle {
+                                        id: nlThumbBox
+                                        width: root.nlAttachedVisionImage ? 64 : 28
+                                        height: root.nlAttachedVisionImage ? 64 : 28
+                                        radius: 6
+                                        color: "#0f172a"
+                                        clip: true
+                                        border.color: nlThumbMa.containsMouse ? "#c084fc" : (root.nlAttachedVisionImage ? "#a855f7" : "#334155")
+                                        border.width: nlThumbMa.containsMouse ? 2 : 1
+
+                                        Image {
+                                            anchors.fill: parent
+                                            source: root.nlAttachedVisionImage
+                                            fillMode: Image.PreserveAspectCrop
+                                            visible: root.nlAttachedVisionImage.length > 0
+                                        }
+
+                                        // Hover zoom icon indicator
+                                        Rectangle {
+                                            anchors.fill: parent
+                                            color: "#80000000"
+                                            visible: root.nlAttachedVisionImage.length > 0 && nlThumbMa.containsMouse
+                                            Text {
+                                                anchors.centerIn: parent
+                                                text: "🔍"
+                                                font.pixelSize: 16
+                                            }
+                                        }
+
+                                        Text {
+                                            anchors.centerIn: parent
+                                            text: "📷"
+                                            font.pixelSize: 14
+                                            visible: !root.nlAttachedVisionImage
+                                        }
+
+                                        MouseArea {
+                                            id: nlThumbMa
+                                            anchors.fill: parent
+                                            hoverEnabled: true
+                                            cursorShape: root.nlAttachedVisionImage ? Qt.PointingHandCursor : Qt.ArrowCursor
+                                            onClicked: {
+                                                if (root.nlAttachedVisionImage) {
+                                                    root.previewZoomImageUrl = root.nlAttachedVisionImage;
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    ColumnLayout {
+                                        Layout.fillWidth: true
+                                        spacing: 2
+
+                                        RowLayout {
+                                            spacing: 6
+                                            Text {
+                                                text: root.nlAttachedVisionImage ? (root.isVideoUrl(root.nlAttachedVisionImage) ? "🎬 Video Seed Attached (4 Frames)" : "👁️ Visual Seed Attached") : "Attach Media / Video Reference (Drop or Paste)"
+                                                font.bold: true
+                                                font.pixelSize: 11
+                                                color: root.nlAttachedVisionImage ? "#c084fc" : "#e2e8f0"
+                                            }
+                                        }
+
+                                        Text {
+                                            text: root.nlAttachedVisionImage ? (root.nlAttachedVisionImage.split("/").pop()) : "Drag & drop art/video here, paste with Ctrl+V, or browse"
+                                            font.pixelSize: 10
+                                            color: root.nlAttachedVisionImage ? "#38bdf8" : "#94a3b8"
+                                            elide: Text.ElideMiddle
+                                            Layout.fillWidth: true
+                                        }
+                                    }
+
+                                    // Paste from clipboard button
+                                    Button {
+                                        text: "📋 Paste"
+                                        implicitHeight: 28
+                                        background: Rectangle {
+                                            radius: 6
+                                            color: parent.hovered ? "#475569" : "#334155"
+                                        }
+                                        contentItem: Text {
+                                            text: parent.text
+                                            color: "#f8fafc"
+                                            font.pixelSize: 10
+                                            font.bold: true
+                                            horizontalAlignment: Text.AlignHCenter
+                                            verticalAlignment: Text.AlignVCenter
+                                        }
+                                        onClicked: {
+                                            if (typeof backend !== "undefined" && backend) {
+                                                var p = backend.pasteMediaFromClipboard();
+                                                if (p && p.length > 0) {
+                                                    root.nlAttachedVisionImage = p;
+                                                    root.toastText = "📋 Pasted media from clipboard!";
+                                                    toastAnim.restart();
+                                                } else {
+                                                    root.toastText = "⚠️ No image or video in clipboard.";
+                                                    toastAnim.restart();
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    // Browse button
+                                    Button {
+                                        text: root.nlAttachedVisionImage ? "Change" : "Browse"
+                                        implicitHeight: 28
+                                        background: Rectangle {
+                                            radius: 6
+                                            color: parent.hovered ? "#475569" : "#334155"
+                                        }
+                                        contentItem: Text {
+                                            text: parent.text
+                                            color: "#f8fafc"
+                                            font.pixelSize: 10
+                                            font.bold: true
+                                            horizontalAlignment: Text.AlignHCenter
+                                            verticalAlignment: Text.AlignVCenter
+                                        }
+                                        onClicked: nlVisionFileDialog.open()
+                                    }
+
+                                    // Remove button if attached
+                                    Button {
+                                        text: "✕"
+                                        visible: root.nlAttachedVisionImage.length > 0
+                                        implicitHeight: 28
+                                        implicitWidth: 28
+                                        background: Rectangle {
+                                            radius: 6
+                                            color: parent.hovered ? "#991b1b" : "#7f1d1d"
+                                        }
+                                        contentItem: Text {
+                                            text: parent.text
+                                            color: "#fecaca"
+                                            font.pixelSize: 11
+                                            font.bold: true
+                                            horizontalAlignment: Text.AlignHCenter
+                                            verticalAlignment: Text.AlignVCenter
+                                        }
+                                        onClicked: {
+                                            root.nlAttachedVisionImage = "";
+                                            root.nlAttachedVisionImageNotes = "";
+                                        }
+                                    }
+                                }
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    z: -1
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: if (!root.nlAttachedVisionImage) nlVisionFileDialog.open()
+                                }
+                            }
+
                             ScrollView {
                                 id: nlPromptScroll
                                 Layout.fillWidth: true
@@ -3771,10 +4037,10 @@ ApplicationWindow {
                                 }
                                 Item { Layout.fillWidth: true }
                                 Text {
-                                    text: root.selectedFocusMode.toUpperCase()
+                                    text: root.selectedFocusMode === "off" ? "OFF" : root.selectedFocusMode.toUpperCase()
                                     font.bold: true
                                     font.pixelSize: 10
-                                    color: "#c084fc"
+                                    color: root.selectedFocusMode === "off" ? "#64748b" : "#c084fc"
                                 }
                             }
 
@@ -3783,6 +4049,7 @@ ApplicationWindow {
                                 spacing: 5
                                 Repeater {
                                     model: [
+                                        { id: "off", label: "🚫 Off" },
                                         { id: "psychometric", label: "🧠 Psychometric" },
                                         { id: "domestic", label: "🏡 Domestic" },
                                         { id: "reluctant", label: "⛓️ Reluctant" },
@@ -3983,6 +4250,7 @@ ApplicationWindow {
 
                                 Repeater {
                                     model: [
+                                        { id: "off", label: "🚫 Off" },
                                         { id: "any", label: "✨ Any" },
                                         { id: "mild", label: "🌸 Mild" },
                                         { id: "medium", label: "⚖️ Med" },
@@ -4307,7 +4575,7 @@ ApplicationWindow {
                             id: nlForgeBtn
                             Layout.fillWidth: true
                             height: 48
-                            enabled: !root.isGenerating && nlPromptArea.text.trim().length > 0
+                            enabled: !root.isGenerating && (nlPromptArea.text.trim().length > 0 || root.nlAttachedVisionImage.length > 0)
 
                             background: Rectangle {
                                 radius: 8
@@ -4323,7 +4591,7 @@ ApplicationWindow {
                                 anchors.centerIn: parent
                                 spacing: 8
                                 Text {
-                                    text: root.isGenerating ? "⏳ Forging Concept from Prompt..." : "🧠 Forge Concept with AI (:5001)"
+                                    text: root.isGenerating ? "⏳ Forging Concept from Prompt & Vision..." : (root.nlAttachedVisionImage ? "👁️ Forge Concept from Vision & Prompt (:5001)" : "🧠 Forge Concept with AI (:5001)")
                                     font.bold: true
                                     font.pixelSize: 13
                                     color: "#ffffff"
@@ -4337,20 +4605,34 @@ ApplicationWindow {
                                             nlPromptArea.text.trim(),
                                             3,
                                             "Fantasy",
-                                            root.selectedIntensity,
+                                            root.getEffectiveIntensity(),
                                             root.selectedCorrectionTier,
                                             root.selectedEra
                                         );
                                     } else {
-                                        backend.brainstormNaturalLanguage(
-                                            nlPromptArea.text.trim(),
-                                            root.selectedFocusMode,
-                                            root.selectedIntensity,
-                                            nlTempSlider.value,
-                                            root.selectedCorrectionTier,
-                                            root.selectedEra,
-                                            root.selectedBotMode
-                                        );
+                                        if (root.nlAttachedVisionImage && root.nlAttachedVisionImage.length > 0) {
+                                            backend.brainstormNaturalLanguageWithVision(
+                                                nlPromptArea.text.trim(),
+                                                root.nlAttachedVisionImage,
+                                                root.selectedFocusMode,
+                                                root.getEffectiveIntensity(),
+                                                nlTempSlider.value,
+                                                root.selectedCorrectionTier,
+                                                root.selectedEra,
+                                                root.selectedBotMode,
+                                                root.nlAttachedVisionImageNotes.trim()
+                                            );
+                                        } else {
+                                            backend.brainstormNaturalLanguage(
+                                                nlPromptArea.text.trim(),
+                                                root.selectedFocusMode,
+                                                root.getEffectiveIntensity(),
+                                                nlTempSlider.value,
+                                                root.selectedCorrectionTier,
+                                                root.selectedEra,
+                                                root.selectedBotMode
+                                            );
+                                        }
                                     }
                                 }
                             }
@@ -4641,6 +4923,25 @@ ApplicationWindow {
                                         font.bold: true
                                         font.pixelSize: 26
                                         color: "#f8fafc"
+                                    }
+
+                                    // Age Badge
+                                    Rectangle {
+                                        visible: Boolean(root.naturalIdea && root.naturalIdea.age)
+                                        radius: 6
+                                        height: 24
+                                        implicitWidth: ageBadgeLabel2.implicitWidth + 14
+                                        color: "#1e293b"
+                                        border.color: "#38bdf8"
+                                        border.width: 1
+                                        Text {
+                                            id: ageBadgeLabel2
+                                            anchors.centerIn: parent
+                                            text: "🎂 " + (root.naturalIdea ? (root.naturalIdea.age || "") : "")
+                                            font.pixelSize: 10
+                                            font.bold: true
+                                            color: "#38bdf8"
+                                        }
                                     }
 
                                     // Source Label
@@ -5948,6 +6249,138 @@ ApplicationWindow {
                             }
                         }
 
+                        // Agent Media Attachment Strip (Image or Video)
+                        Rectangle {
+                            Layout.fillWidth: true
+                            height: root.agentAttachedVisionImage.length > 0 ? 54 : 34
+                            radius: 6
+                            color: agentDropArea.containsDrag ? "#3b0764" : (root.agentAttachedVisionImage ? "#1e1b4b" : "#0f172a")
+                            border.color: root.agentAttachedVisionImage ? "#818cf8" : (agentDropArea.containsDrag ? "#c084fc" : "#334155")
+                            border.width: root.agentAttachedVisionImage ? 1.5 : 1
+
+                            DropArea {
+                                id: agentDropArea
+                                anchors.fill: parent
+                                onDropped: function(drop) {
+                                    if (drop.hasUrls && drop.urls.length > 0) {
+                                        root.agentAttachedVisionImage = drop.urls[0];
+                                    }
+                                }
+                            }
+
+                            RowLayout {
+                                anchors.fill: parent
+                                anchors.margins: 6
+                                spacing: 8
+
+                                // Thumbnail preview if attached
+                                Rectangle {
+                                    visible: root.agentAttachedVisionImage.length > 0
+                                    width: 42
+                                    height: 42
+                                    radius: 4
+                                    color: "#030712"
+                                    clip: true
+                                    Image {
+                                        anchors.fill: parent
+                                        source: root.agentAttachedVisionImage
+                                        fillMode: Image.PreserveAspectCrop
+                                    }
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: root.previewZoomImageUrl = root.agentAttachedVisionImage
+                                    }
+                                }
+
+                                Text {
+                                    text: root.agentAttachedVisionImage.length > 0
+                                        ? (root.isVideoUrl(root.agentAttachedVisionImage) ? "🎬 Video Attached: " : "👁️ Media Attached: ") + root.agentAttachedVisionImage.split("/").pop()
+                                        : "📎 Attach or Paste Media Reference (Image/Video)"
+                                    font.pixelSize: 10
+                                    color: root.agentAttachedVisionImage ? "#38bdf8" : "#94a3b8"
+                                    Layout.fillWidth: true
+                                    elide: Text.ElideMiddle
+                                }
+
+                                // Paste Button
+                                Button {
+                                    text: "📋 Paste"
+                                    implicitHeight: 24
+                                    background: Rectangle {
+                                        radius: 4
+                                        color: parent.hovered ? "#475569" : "#1e293b"
+                                        border.color: "#334155"
+                                    }
+                                    contentItem: Text {
+                                        text: parent.text
+                                        color: "#f8fafc"
+                                        font.pixelSize: 10
+                                        font.bold: true
+                                        horizontalAlignment: Text.AlignHCenter
+                                        verticalAlignment: Text.AlignVCenter
+                                    }
+                                    onClicked: {
+                                        if (typeof backend !== "undefined" && backend) {
+                                            var p = backend.pasteMediaFromClipboard();
+                                            if (p && p.length > 0) {
+                                                root.agentAttachedVisionImage = p;
+                                                root.toastText = "📋 Pasted media into Agent!";
+                                                toastAnim.restart();
+                                            } else {
+                                                root.toastText = "⚠️ No image or video in clipboard.";
+                                                toastAnim.restart();
+                                            }
+                                        }
+                                    }
+                                }
+
+                                // Browse Button
+                                Button {
+                                    text: root.agentAttachedVisionImage ? "Change" : "Browse"
+                                    implicitHeight: 24
+                                    background: Rectangle {
+                                        radius: 4
+                                        color: parent.hovered ? "#475569" : "#1e293b"
+                                        border.color: "#334155"
+                                    }
+                                    contentItem: Text {
+                                        text: parent.text
+                                        color: "#f8fafc"
+                                        font.pixelSize: 10
+                                        font.bold: true
+                                        horizontalAlignment: Text.AlignHCenter
+                                        verticalAlignment: Text.AlignVCenter
+                                    }
+                                    onClicked: agentVisionFileDialog.open()
+                                }
+
+                                // Clear Button
+                                Button {
+                                    visible: root.agentAttachedVisionImage.length > 0
+                                    text: "✕"
+                                    implicitHeight: 24
+                                    implicitWidth: 24
+                                    background: Rectangle {
+                                        radius: 4
+                                        color: parent.hovered ? "#991b1b" : "#7f1d1d"
+                                    }
+                                    contentItem: Text {
+                                        text: parent.text
+                                        color: "#fecaca"
+                                        font.pixelSize: 10
+                                        font.bold: true
+                                        horizontalAlignment: Text.AlignHCenter
+                                        verticalAlignment: Text.AlignVCenter
+                                    }
+                                    onClicked: {
+                                        root.agentAttachedVisionImage = "";
+                                        root.agentAttachedVisionImageNotes = "";
+                                    }
+                                }
+                            }
+                        }
+
                         RowLayout {
                             Layout.fillWidth: true
                             spacing: 8
@@ -5974,7 +6407,7 @@ ApplicationWindow {
                                 id: sendAgentBtn
                                 height: 34
                                 implicitWidth: sendContent.implicitWidth + 24
-                                enabled: agentMsgInput.text.trim().length > 0
+                                enabled: agentMsgInput.text.trim().length > 0 || root.agentAttachedVisionImage.length > 0
 
                                 background: Rectangle {
                                     radius: 6
@@ -6001,7 +6434,7 @@ ApplicationWindow {
 
                                 onClicked: {
                                     var txt = agentMsgInput.text.trim();
-                                    if (txt.length > 0) {
+                                    if (txt.length > 0 || root.agentAttachedVisionImage.length > 0) {
                                         sendAgentChatMessage(txt);
                                         agentMsgInput.text = "";
                                     }
@@ -6270,7 +6703,8 @@ ApplicationWindow {
                                 }
                                 onClicked: {
                                     if (root.agentIdea && typeof backend !== "undefined" && backend) {
-                                        backend.copyToClipboard(root.agentIdea.premise || "");
+                                        var sauce = backend.formatConceptSauce(JSON.stringify(root.agentIdea));
+                                        backend.copyToClipboard(sauce || root.agentIdea.premise || "");
                                     }
                                 }
                             }
@@ -6495,6 +6929,25 @@ ApplicationWindow {
                                                     font.pixelSize: 10
                                                     font.bold: true
                                                     color: root.agentIdea ? root.intensityColor(root.agentIdea.intensity || "any") : "#cbd5e1"
+                                                }
+                                            }
+
+                                            // Agent Age Badge
+                                            Rectangle {
+                                                visible: Boolean(root.agentIdea && root.agentIdea.age)
+                                                height: 22
+                                                radius: 6
+                                                implicitWidth: agentAgeBadgeLabel.implicitWidth + 14
+                                                color: "#1e293b"
+                                                border.color: "#38bdf8"
+                                                border.width: 1
+                                                Text {
+                                                    id: agentAgeBadgeLabel
+                                                    anchors.centerIn: parent
+                                                    text: "🎂 " + (root.agentIdea ? (root.agentIdea.age || "") : "")
+                                                    font.pixelSize: 10
+                                                    font.bold: true
+                                                    color: "#38bdf8"
                                                 }
                                             }
                                         }
@@ -8067,6 +8520,26 @@ ApplicationWindow {
                                     Layout.fillWidth: true
                                 }
 
+                                // Grimoire Age Badge
+                                Rectangle {
+                                    height: 20
+                                    radius: 4
+                                    color: "#0f172a"
+                                    border.color: "#38bdf8"
+                                    border.width: 1
+                                    visible: Boolean(modelData.character && modelData.character.age)
+                                    implicitWidth: grimAgeLabel.implicitWidth + 10
+                                    Text {
+                                        id: grimAgeLabel
+                                        anchors.centerIn: parent
+                                        text: (modelData.character && modelData.character.age) ? ("🎂 " + modelData.character.age) : ""
+                                        font.pixelSize: 9
+                                        font.bold: true
+                                        color: "#38bdf8"
+                                        elide: Text.ElideRight
+                                    }
+                                }
+
                                 // Interactive Star Rating Widget (1 to 5)
                                 RowLayout {
                                     spacing: 2
@@ -9173,5 +9646,183 @@ ApplicationWindow {
         title: "Import Character Card into Agent"
         nameFilters: ["Character Cards (*.png *.json *.charx)", "All Files (*)"]
         onAccepted: if (typeof backend !== "undefined" && backend) backend.importCardIntoAgent(selectedFile.toString())
+    }
+
+    FileDialog {
+        id: nlVisionFileDialog
+        title: "Select Character Portrait, Concept Art, or Video"
+        nameFilters: ["Media Files (*.png *.jpg *.jpeg *.webp *.avif *.mp4 *.mkv *.webm *.mov *.avi)", "Images (*.png *.jpg *.jpeg *.webp *.avif)", "Videos (*.mp4 *.mkv *.webm *.mov *.avi)", "All Files (*)"]
+        onAccepted: {
+            root.nlAttachedVisionImage = selectedFile.toString();
+        }
+    }
+
+    FileDialog {
+        id: agentVisionFileDialog
+        title: "Select Media Reference for AI Agent"
+        nameFilters: ["Media Files (*.png *.jpg *.jpeg *.webp *.avif *.mp4 *.mkv *.webm *.mov *.avi)", "Images (*.png *.jpg *.jpeg *.webp *.avif)", "Videos (*.mp4 *.mkv *.webm *.mov *.avi)", "All Files (*)"]
+        onAccepted: {
+            root.agentAttachedVisionImage = selectedFile.toString();
+        }
+    }
+
+    // ==========================================
+    // FULLSCREEN IMAGE ZOOM & INSPECT MODAL
+    // ==========================================
+    Rectangle {
+        id: zoomPreviewModal
+        anchors.fill: parent
+        z: 9999
+        visible: root.previewZoomImageUrl.length > 0
+        color: "#d9000000" // 85% transparent dark backdrop
+
+        // Close on escape key
+        focus: visible
+        Keys.onEscapePressed: root.previewZoomImageUrl = ""
+
+        MouseArea {
+            anchors.fill: parent
+            onClicked: root.previewZoomImageUrl = ""
+        }
+
+        // Inner Image Card
+        Rectangle {
+            anchors.centerIn: parent
+            width: Math.min(parent.width - 60, Math.max(400, parent.width * 0.7))
+            height: Math.min(parent.height - 60, Math.max(400, parent.height * 0.85))
+            radius: 12
+            color: "#0f172a"
+            border.color: "#8b5cf6"
+            border.width: 1.5
+            clip: true
+
+            MouseArea {
+                // Prevent clicks on the card itself from closing the modal
+                anchors.fill: parent
+            }
+
+            ColumnLayout {
+                anchors.fill: parent
+                anchors.margins: 14
+                spacing: 10
+
+                // Header with filename and close button
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 8
+
+                    Text {
+                        text: "👁️ Visual Seed Inspection"
+                        font.bold: true
+                        font.pixelSize: 13
+                        color: "#c084fc"
+                    }
+
+                    Text {
+                        text: root.previewZoomImageUrl ? (root.previewZoomImageUrl.split("/").pop()) : ""
+                        font.pixelSize: 11
+                        color: "#94a3b8"
+                        elide: Text.ElideMiddle
+                        Layout.fillWidth: true
+                    }
+
+                    Button {
+                        text: "✕ Close (Esc)"
+                        implicitHeight: 28
+                        background: Rectangle {
+                            radius: 6
+                            color: parent.hovered ? "#475569" : "#1e293b"
+                            border.color: "#334155"
+                        }
+                        contentItem: Text {
+                            text: parent.text
+                            color: "#f8fafc"
+                            font.pixelSize: 11
+                            font.bold: true
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                        onClicked: root.previewZoomImageUrl = ""
+                    }
+                }
+
+                // Full Preview Image Viewport
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    radius: 8
+                    color: "#030712"
+                    border.color: "#1e293b"
+                    clip: true
+
+                    Image {
+                        id: zoomedImage
+                        anchors.fill: parent
+                        anchors.margins: 8
+                        source: root.previewZoomImageUrl
+                        fillMode: Image.PreserveAspectFit
+                        smooth: true
+                        mipmap: true
+                    }
+                }
+
+                // Additional Visual Seed Details & Context Notes
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 4
+                    visible: (root.nlAttachedVisionImage.length > 0 && root.previewZoomImageUrl === root.nlAttachedVisionImage) ||
+                             (root.agentAttachedVisionImage.length > 0 && root.previewZoomImageUrl === root.agentAttachedVisionImage)
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        Text {
+                            text: "📝 Additional Visual Seed Details / Lore Notes (Optional):"
+                            font.bold: true
+                            font.pixelSize: 11
+                            color: "#c084fc"
+                        }
+                        Item { Layout.fillWidth: true }
+                        Text {
+                            text: (root.previewZoomImageUrl === root.nlAttachedVisionImage ? root.nlAttachedVisionImageNotes : root.agentAttachedVisionImageNotes).trim().length > 0 ? "Saved with image" : "Unset"
+                            font.pixelSize: 10
+                            color: (root.previewZoomImageUrl === root.nlAttachedVisionImage ? root.nlAttachedVisionImageNotes : root.agentAttachedVisionImageNotes).trim().length > 0 ? "#34d399" : "#64748b"
+                        }
+                    }
+
+                    Rectangle {
+                        Layout.fillWidth: true
+                        height: 54
+                        radius: 6
+                        color: "#0f172a"
+                        border.color: imgNotesInput.activeFocus ? "#a855f7" : "#334155"
+                        border.width: 1
+
+                        ScrollView {
+                            anchors.fill: parent
+                            anchors.margins: 6
+                            clip: true
+
+                            TextArea {
+                                id: imgNotesInput
+                                text: root.previewZoomImageUrl === root.nlAttachedVisionImage ? root.nlAttachedVisionImageNotes : root.agentAttachedVisionImageNotes
+                                placeholderText: "Specify details about this media (e.g. artist source, specific species markers, hidden scars, era context, weapon names, alternate outfit cues)..."
+                                placeholderTextColor: "#64748b"
+                                color: "#f8fafc"
+                                font.pixelSize: 11
+                                wrapMode: TextArea.Wrap
+                                selectByMouse: true
+                                onTextChanged: {
+                                    if (root.previewZoomImageUrl === root.nlAttachedVisionImage) {
+                                        root.nlAttachedVisionImageNotes = text;
+                                    } else if (root.previewZoomImageUrl === root.agentAttachedVisionImage) {
+                                        root.agentAttachedVisionImageNotes = text;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

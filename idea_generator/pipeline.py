@@ -116,6 +116,7 @@ You MUST output valid, parseable JSON matching this schema:
 {
   "name": "Character Name",
   "title": "Short Catchy Title (e.g. The Reluctant Alchemist)",
+  "age": "Explicit chronological age & life stage (e.g. '28 years old', '32 years old (early thirties)', '46 years old (mature woman)', '71 years old (elderly crone)')",
   "tagline": "Punchy one-line essence",
   "tags": ["Tag1", "Tag2", "Tag3", "Tag4"],
   "archetype": "Detailed archetype description",
@@ -133,6 +134,8 @@ You MUST output valid, parseable JSON matching this schema:
 }"""
 
 FOCUS_MODE_INSTRUCTIONS = {
+    "off": "",
+    "none": "",
     "psychometric": "FOCUS: Deep Psychometric Friction. Highlight internal cognitive dissonance, hidden vulnerabilities, coping mechanisms, and the exact psychological threshold where her defenses crack.",
     "domestic": "FOCUS: Grounded Domestic Realism. Emphasize shared routines, daily household habits, domestic quirks, relatable tensions, and warm, reassuring intimacy.",
     "reluctant": "FOCUS: Reluctant Vulnerability. Emphasize self-sufficiency, stubborn pride, fear of vulnerability, and the slow, guarded process of letting {{user}} in.",
@@ -141,6 +144,7 @@ FOCUS_MODE_INSTRUCTIONS = {
 }
 
 DRAMATIC_STAKES_GUIDANCE = {
+    "off": "",
     "any": "",
     "mild": "EMOTIONAL & DRAMATIC STAKES: Low-Key / Cozy (Gentle interpersonal friction, subtle teasing, cozy everyday stakes, and warm reassurance).",
     "medium": "EMOTIONAL & DRAMATIC STAKES: Moderate (Structured tension, firm personal boundaries, palpable friction, and meaningful emotional stakes).",
@@ -700,6 +704,7 @@ def format_concept_sauce(data: Dict[str, Any]) -> str:
     parts = []
     name = _to_str(data.get("name"))
     title = _to_str(data.get("title"))
+    age = _to_str(data.get("age"))
     tagline = _to_str(data.get("tagline"))
     archetype = _to_str(data.get("archetype"))
     era = _to_str(data.get("era"))
@@ -727,6 +732,8 @@ def format_concept_sauce(data: Dict[str, Any]) -> str:
 
     if household:
         header_lines.append(f"Household / Faction: {household}")
+    if age:
+        header_lines.append(f"Age & Life Stage: {age}")
     if tagline:
         header_lines.append(f'Tagline: "{tagline}"')
     if era and era.lower() != "off":
@@ -891,7 +898,10 @@ RELATIONSHIP DYNAMIC: {dynamic}
 {intensity_text}
 {focus_text}
 KEY TROPES / THEMES: {", ".join(tropes) if isinstance(tropes, list) else tropes}
-{f'SPECIFIC USER INSPIRATION / SEED: "{custom_seed}"' if custom_seed else ''}"""
+{f'SPECIFIC USER INSPIRATION / SEED: "{custom_seed}"' if custom_seed else ''}
+
+MANDATORY ATTRIBUTE:
+- You MUST explicitly include an 'age' property in the JSON stating {{char}}'s chronological age and physical life stage (e.g. '28 years old', '32 years old (early thirties)', '45 years old (mature woman)', '70 years old (elderly)'). Never omit age."""
 
                 if has_active_locks and current_idea:
                     lock_instructions = []
@@ -987,7 +997,11 @@ KEY TROPES / THEMES: {", ".join(tropes) if isinstance(tropes, list) else tropes}
         status_cb: Optional[Callable[[str], None]] = None,
         correction_tier: str = "off",
         era: str = "off",
-        bot_mode: str = "single"
+        bot_mode: str = "single",
+        image_data_url: Optional[str] = None,
+        media_data_urls: Optional[List[str]] = None,
+        media_blocks: Optional[List[Dict[str, Any]]] = None,
+        fallback_media_blocks: Optional[List[Dict[str, Any]]] = None
     ) -> Dict[str, Any]:
         """
         Takes raw, freeform natural language thoughts/input from the user and turns it into
@@ -995,8 +1009,22 @@ KEY TROPES / THEMES: {", ".join(tropes) if isinstance(tropes, list) else tropes}
         reaction gradients, and sensory premise. Supports solo, multi-character cast, and rpg_world cards.
         """
         cleaned_prompt = prompt.strip()
-        if not cleaned_prompt:
-            raise ValueError("Please provide a prompt describing your character concept.")
+        if not cleaned_prompt and not image_data_url and not media_data_urls and not media_blocks:
+            raise ValueError("Please provide a prompt describing your character concept or attach an image/video.")
+
+        if not cleaned_prompt and (image_data_url or media_data_urls or media_blocks):
+            cleaned_prompt = "Examine the attached visual media and forge a rich, fully realized character concept based on the visible identity, aesthetics, and demeanor."
+
+        # Consolidate media blocks
+        effective_media_blocks = []
+        if media_blocks:
+            effective_media_blocks.extend(media_blocks)
+        elif media_data_urls:
+            for u in media_data_urls:
+                if u:
+                    effective_media_blocks.append({"type": "image_url", "image_url": {"url": u}})
+        elif image_data_url:
+            effective_media_blocks.append({"type": "image_url", "image_url": {"url": image_data_url}})
 
         conn = self.check_connection()
         if not conn["online"]:
@@ -1017,6 +1045,15 @@ KEY TROPES / THEMES: {", ".join(tropes) if isinstance(tropes, list) else tropes}
             system_instruction = f"""{BASE_SYSTEM_PROMPT}
 
 You are the Master Character & Trope Architect. Your specialization is translating freeform, informal user thoughts, keywords, and natural language prompts into rich, vivid, deeply playable roleplay character dossiers with full psychometric texture and high dramatic tension.
+
+========================================================================
+CRITICAL DIRECTIVE 0: FORENSIC VISUAL GROUNDING (WHEN IMAGE ATTACHED)
+========================================================================
+- If a character image is provided, the visual evidence is a MANDATORY PRIMARY ANCHOR:
+  1. PHYSICAL APPEARANCE: Hair color/style, eye color/expression, build/physique, facial features, visible scars/tattoos, posture, species markers (e.g., pointed ears, horns, tails, cybernetics) depicted in the image MUST be explicitly adopted in the character's 'archetype', 'premise', and 'tags'.
+  2. WARDROBE & GEAR: Clothes, armor, fabrics, jewelry, weapons, or accessories shown in the image MUST be faithfully integrated into the concept.
+  3. DEMEANOR & AURA: The facial micro-expression, gaze, mood, and atmosphere visible in the image must directly shape their personality, 'reaction_gradient', and central tension.
+- Do NOT ignore what is visible in the image. Synthesize the user's text and the image together so the final card is unmistakably the persona in the picture.
 
 ========================================================================
 CRITICAL DIRECTIVE 1: ABSOLUTE FIDELITY TO USER SPECIES, ANCESTRY & TROPES
@@ -1067,6 +1104,7 @@ OUTPUT SCHEMA (STRICT JSON ONLY)
 {{
   "name": "Species-appropriate evocative character name",
   "title": "Evocative Archetype Title (e.g. 'The Disgraced High-Elven Emissary')",
+  "age": "Explicit chronological age & life stage (e.g. '24 years old', '32 years old (early thirties)', '45 years old (mature woman)', '68 years old (elderly)')",
   "tagline": "Compelling one-liner capturing their core paradox",
   "tags": ["Species (e.g. Elf)", "Genre", "Relationship Dynamic", "Theme1", "Theme2"],
   "archetype": "Rich 2-3 sentence description detailing their species, distinct biological features (pointed ears, etc.), role, and dynamic with {{{{user}}}}",
@@ -1094,12 +1132,21 @@ CREATIVE MODE: {mode}
 Forge this natural language seed into an evocative, psychologically textured character dossier.
 MANDATORY CONSTRAINT: If the user specified a species (such as 'elf'), archetype, or specific tropes, ensure {{{{char}}}} is explicitly that species and weave it prominently into the name, title, tags, archetype, and premise.
 MANDATORY HARD ANCHORS: Every specific demographic, physical trait, profession, age, or name explicitly stated in the user's prompt is a NON-NEGOTIABLE hard anchor. Preserve it EXACTLY in name, title, tags, archetype, and premise — creative expansion must work around these anchors, never override them.
+MANDATORY AGE ATTRIBUTE: You MUST explicitly include an 'age' property in the JSON stating {{char}}'s chronological age and physical life stage (e.g. '28 years old', '32 years old (early thirties)', '45 years old (mature woman)'). Never omit age.
 MANDATORY MACRO RULE: Always use standard {{{{char}}}} and {{{{user}}}} macros with DOUBLE curly braces.
 Output ONLY the JSON object."""
 
+            if effective_media_blocks:
+                user_content += "\n\nCRITICAL VISUAL DIRECTIVE: Visual evidence (portrait image or video) is attached. Examine the attached visual media meticulously. Ground the character's physical traits, wardrobe, demeanor, species markers, hair, eyes, and aesthetic in the visible details."
+                user_msg_content = [{"type": "text", "text": user_content}]
+                for block in effective_media_blocks:
+                    user_msg_content.append(block)
+            else:
+                user_msg_content = user_content
+
             messages = [
                 {"role": "system", "content": system_instruction},
-                {"role": "user", "content": user_content}
+                {"role": "user", "content": user_msg_content}
             ]
 
             chat_url = f"{self.endpoint_url}/chat/completions"
@@ -1111,6 +1158,14 @@ Output ONLY the JSON object."""
             }
 
             resp = requests.post(chat_url, json=payload, timeout=LLM_TIMEOUT)
+            # If server returned 400 due to unsupported input_video block, retry with extracted keyframe fallback
+            if resp.status_code != 200 and fallback_media_blocks:
+                print(f"[Pipeline] Native video returned {resp.status_code}, retrying with keyframe fallback...")
+                fallback_user_content = [{"type": "text", "text": user_content}]
+                for fb in fallback_media_blocks:
+                    fallback_user_content.append(fb)
+                payload["messages"][-1]["content"] = fallback_user_content
+                resp = requests.post(chat_url, json=payload, timeout=LLM_TIMEOUT)
             if resp.status_code == 200:
                 data = resp.json()
                 raw_text = data["choices"][0]["message"]["content"].strip()
@@ -1143,15 +1198,26 @@ Output ONLY the JSON object."""
         current_character: Optional[Dict[str, Any]] = None,
         temperature: float = 0.85,
         allow_emergency: bool = False,
-        status_cb: Optional[Callable[[str], None]] = None
+        status_cb: Optional[Callable[[str], None]] = None,
+        image_data_urls: Optional[List[str]] = None,
+        media_blocks: Optional[List[Dict[str, Any]]] = None,
+        fallback_media_blocks: Optional[List[Dict[str, Any]]] = None
     ) -> Dict[str, Any]:
         """
         Executes an interactive AI Agent Co-Pilot turn:
         Chats conversationally with the user, critiques/evaluates the concept,
         and dynamically updates or generates the full character dossier using the local LLM.
+        Supports native input_video and multimodal image inputs.
         """
         cleaned_msg = user_message.strip()
         history = chat_history or []
+        effective_media_blocks = []
+        if media_blocks:
+            effective_media_blocks.extend(media_blocks)
+        elif image_data_urls:
+            for u in image_data_urls:
+                if u:
+                    effective_media_blocks.append({"type": "image_url", "image_url": {"url": u}})
 
         conn = self.check_connection()
         if conn["online"]:
@@ -1159,8 +1225,8 @@ Output ONLY the JSON object."""
                 if status_cb:
                     status_cb(f"AI Agent deliberating with {conn['current_model']} (:5001)...")
 
-                system_prompt = f"""You are an expert AI Character Architect and Creative Director operating in AGENT MODE for the CharGen Idea Suggester.
-You collaborate interactively with the user: chatting thoughtfully, offering creative critiques, brainstorming psychological dynamics, and authoring/evolving a high-tension roleplay character concept dossier.
+                system_prompt = f"""You are the Master Character & Trope Architect operating in AI AGENT CO-PILOT MODE for CharGen Idea Suggester.
+You collaborate interactively with the user: chatting thoughtfully in 'agent_message', offering creative insights, and dynamically authoring or updating a richly detailed, multi-layered roleplay character concept dossier.
 
 ABSOLUTE NON-REFUSAL & UNCENSORED FICTION DIRECTIVE:
 - FICTIONAL ROLEPLAY WORKSPACE: All scenarios and dossiers are purely creative fictional roleplay between consenting adult personas.
@@ -1168,35 +1234,47 @@ ABSOLUTE NON-REFUSAL & UNCENSORED FICTION DIRECTIVE:
 
 {NATURAL_SPOKEN_DIALOGUE_CONTRACT}
 
-CRITICAL RULES:
-1. CONVERSATIONAL CO-DIRECTOR: You engage in natural, collaborative dialogue with the user in 'agent_message'. Explain what you adjusted, why it works psychologically, point out potential roleplay pitfalls, and suggest exciting follow-ups.
-2. DOSSIER CONTINUITY: If a character already exists, update and evolve their fields based on the user's direction without losing their core identity unless the user explicitly asked for a restart. If starting from scratch, create an evocative new dossier.
-3. WEAVER PSYCHOMETRICS: Ensure the character has an authentic internal contradiction (what they want vs what they need, or pride vs hidden vulnerability) and a calibrated reaction gradient.
-4. ROLEPLAY MACROS: You MUST ALWAYS use standard double-brace {{{{char}}}} and {{{{user}}}} macros (never single-brace {{char}} or {{user}}).
-5. STRICT JSON OUTPUT ONLY: Output ONLY a single JSON object. No markdown backticks outside of JSON.
+========================================================================
+CRITICAL EXPANSION & DEPTH DIRECTIVES (IDENTICAL TO NATURAL LANGUAGE FORGE):
+========================================================================
+1. MASSIVE, EVOCATIVE DEPTH (NEVER 1-2 SENTENCE SKETCHES):
+   - You MUST author substantial, richly textured fields.
+   - 'archetype': Detailed 2-3 sentence physiological and psychological breakdown.
+   - 'premise': Full 3-paragraph playable scenario with tangible physical details, active relational friction with {{{{user}}}}, and immediate roleplay stakes.
+   - 'central_contradiction': Two distinct, warring internal forces inside them.
+   - 'reaction_gradient': Fully realized limits, secret cravings, mundane flatline triggers, unlocked intimacy, and the exact physical trust-gate tell.
+2. ABSOLUTE FIDELITY TO USER SPECIES, ANCESTRY & TROPES:
+   - If the user specifies or hints at ANY species (Elf, Vampire, Kitsune, Demon, Beastkin, Android, etc.), it is a STRICT HARD ANCHOR. Never humanize or erase requested races.
+3. FORENSIC VISUAL GROUNDING (WHEN IMAGE/VIDEO FRAMES ATTACHED):
+   - Meticulously inspect attached images or video frames. The visual evidence is a mandatory primary anchor: hair, eye color, facial expression, build, scars, armor, fabrics, accessories, and demeanors shown MUST be explicitly woven into archetype, tags, premise, and reaction gradient.
+4. ROLEPLAY MACROS:
+   - ALWAYS use standard double-brace {{{{char}}}} and {{{{user}}}} macros. NEVER use single braces {{char}} or {{user}}.
+5. STRICT JSON OUTPUT ONLY:
+   - Output ONLY a single JSON object. No markdown backticks outside of JSON.
 
 SCHEMA SPECIFICATION:
 {{
-  "agent_message": "Conversational co-director commentary to the user explaining choices, critiques, and next steps.",
+  "agent_message": "Conversational commentary to the user explaining creative choices, what you evolved, psychological nuance, and exciting roleplay suggestions.",
   "character": {{
-    "name": "Character Name",
-    "title": "Archetype Title (e.g. The Sleepless Alchemist)",
-    "tagline": "Evocative 1-sentence hook",
+    "name": "Species-appropriate evocative character name",
+    "title": "Evocative Archetype Title (e.g. 'The Disgraced High-Elven Emissary')",
+    "age": "Explicit chronological age & life stage (e.g. '24 years old', '32 years old (early thirties)', '45 years old (mature woman)', '68 years old (elderly)')",
+    "tagline": "Compelling one-liner capturing their core paradox",
     "tags": ["Tag1", "Tag2", "Tag3", "Tag4"],
-    "archetype": "Summary of core archetype and psychological role",
-    "central_contradiction": "Core psychological contradiction between pride/armor and suppressed craving/need",
+    "archetype": "Rich 2-3 sentence description detailing species, physiological markers, psychological role, and dynamic with {{{{user}}}}",
+    "central_contradiction": "Force A vs Force B (their internal emotional war rooted in identity vs hidden craving)",
     "reaction_gradient": {{
-      "wont": "What {{{{char}}}} will never voluntarily concede or tolerate",
-      "craves": "What {{{{char}}}} secretly hungers for or needs {{{{user}}}} to firmly impose",
-      "neutral": "What leaves {{{{char}}}} unbothered, flat, or indifferent",
-      "will": "What {{{{char}}}} willingly initiates or easily agrees to",
-      "trust_gate": "The emotional threshold or condition required before true vulnerability unlocks"
+      "wont": "Hard boundary rooted in dignity/heritage that {{{{char}}}} will never voluntarily tolerate",
+      "craves": "Deepest authentic craving {{{{char}}}} secretly hungers for or needs {{{{user}}}} to firmly impose",
+      "neutral": "Everyday mundane matters that leave them flat (paperwork, weather, chores) to prevent eager AI compliance",
+      "will": "Intimate behaviors and warmth unlocked through earned trust",
+      "trust_gate": "Observable physical giveaway when their defenses completely crumble"
     }},
-    "vocal_idiolect": "Cadence, sentence rhythm, natural contractions, mannerisms, and verbal tells",
-    "premise": "Full playable scenario premise with setting, interpersonal power dynamic, and immediate narrative conflict",
+    "vocal_idiolect": "Cadence, rhythm, natural contractions, speech mannerisms, and verbal tells",
+    "premise": "Full 3-paragraph playable concept with rich sensory details, tangible biology, active friction with {{{{user}}}}, and an immediate roleplay inciting incident",
     "opening_scenario": "2-3 paragraph starter hook in third-person limited with spoken dialogue quotes and active friction",
-    "brainstorm_notes": "Practical roleplay advice for player and AI director",
-    "intensity": "subtle | calibrated | extreme"
+    "brainstorm_notes": "A brief 2-sentence designer commentary on why this dynamic works and how {{{{user}}}} should play against them",
+    "intensity": "mild | medium | heavy"
   }}
 }}"""
 
@@ -1238,20 +1316,33 @@ The response's character object must remain a full card-shaped object with name,
 USER'S MESSAGE:
 "{cleaned_msg}"
 
-Respond as the AI Character Architect with your conversational 'agent_message' and the complete updated 'character' dossier. Output ONLY the JSON object."""
+Respond as the Master Character Architect with your conversational 'agent_message' and the complete, deeply developed 'character' dossier. Output ONLY the JSON object."""
 
-                messages.append({"role": "user", "content": turn_prompt})
+                if effective_media_blocks:
+                    user_turn_content = [{"type": "text", "text": turn_prompt}]
+                    for block in effective_media_blocks:
+                        user_turn_content.append(block)
+                    messages.append({"role": "user", "content": user_turn_content})
+                else:
+                    messages.append({"role": "user", "content": turn_prompt})
 
                 chat_url = f"{self.endpoint_url}/chat/completions"
                 payload = {
                     "model": self.model_name or conn["current_model"] or "llama-server",
                     "messages": messages,
                     "temperature": temperature,
-                    "max_tokens": 1800,
+                    "max_tokens": 2800,
                     "response_format": {"type": "json_object"}
                 }
 
                 resp = requests.post(chat_url, json=payload, timeout=LLM_TIMEOUT)
+                if resp.status_code != 200 and fallback_media_blocks:
+                    print(f"[Pipeline] Native video returned {resp.status_code}, retrying with keyframe fallback...")
+                    fallback_user_content = [{"type": "text", "text": turn_prompt}]
+                    for fb in fallback_media_blocks:
+                        fallback_user_content.append(fb)
+                    payload["messages"][-1]["content"] = fallback_user_content
+                    resp = requests.post(chat_url, json=payload, timeout=LLM_TIMEOUT)
                 if resp.status_code == 200:
                     data = resp.json()
                     raw_text = data["choices"][0]["message"]["content"].strip()
@@ -1571,6 +1662,7 @@ Output STRICT JSON matching this schema:
 {{
   "name": "{name}",
   "title": "Evocative Variant Title",
+  "age": "Explicit chronological age & life stage (e.g. '24 years old', '32 years old (early thirties)', '45 years old (mature woman)')",
   "tagline": "A punchy single-line thematic thesis",
   "tags": ["Tag1", "Tag2", ...],
   "archetype": "Rich description of the variant archetype and role with {{{{user}}}}",
@@ -1739,6 +1831,7 @@ CRITICAL GROUP CHAT REQUIREMENTS:
     {{
       "name": "Distinct Character Name",
       "title": "Role & Title (e.g. The Ruthless Arbiter)",
+      "age": "Explicit chronological age & life stage (e.g. '24 years old', '32 years old', '45 years old')",
       "tagline": "One-line punchy essence",
       "tags": ["Tag1", "Tag2", "Tag3"],
       "archetype": "Detailed archetype description",
