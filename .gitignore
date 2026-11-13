@@ -57,3 +57,4 @@ ERA_AUTHORING_SPEC.md
 *-backup
 config/*.local*.json
 config/prompts.default.json
+desktop/qml.old/
