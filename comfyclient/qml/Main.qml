@@ -44,6 +44,8 @@ ApplicationWindow {
     property bool statusError: false
 
     property string comfyUrl: "http://127.0.0.1:8188"
+    property string engineMode: "comfy" // "comfy" or "sdcpp" (lite mode)
+    property string sdcppUrl: "http://127.0.0.1:1234"
     property string outputFormat: "png"
     property var defaultWorkflow: ({})
     property string defaultCheckpoint: ""
@@ -53,8 +55,8 @@ ApplicationWindow {
     property var defaultsByPurpose: ({})
     property var checkpoints: []
     property var loras: []
-    property var samplers: ["euler", "euler_ancestral", "dpmpp_2m", "dpmpp_2m_sde", "dpmpp_3m_sde", "ddim", "uni_pc"]
-    property var schedulers: ["normal", "karras", "exponential", "sgm_uniform", "simple", "ddim_uniform", "beta"]
+    property var samplers: []
+    property var schedulers: []
 
     property int pendingCount: 0
     property int runningCount: 0
@@ -75,6 +77,8 @@ ApplicationWindow {
         rpc("get_settings", {}, function(s) {
             s = s || {}
             root.comfyUrl = s.comfyUrl || "http://127.0.0.1:8188"
+            root.engineMode = s.engine_mode || "comfy"
+            root.sdcppUrl = s.sdcppUrl || "http://127.0.0.1:1234"
             root.outputFormat = s.output_format || "png"
             root.defaultWorkflow = s.default_workflow || {}
             root.defaultCheckpoint = s.default_checkpoint || ""
@@ -565,7 +569,13 @@ ApplicationWindow {
 
     function imageUrl(o) {
         if (!o) return ""
+        if (typeof o === "object" && o.filepath) {
+            return "file://" + o.filepath
+        }
         var fn = (typeof o === "string") ? o : (o.filename || "")
+        if (fn.startsWith("sdcpp_")) {
+            return "image://localfile/" + encodeURIComponent(fn)
+        }
         var sub = (typeof o === "object" && o.subfolder) ? o.subfolder : ""
         var t = (typeof o === "object" && o.type) ? o.type : "output"
         return root.comfyUrl.replace(/\/+$/, "") + "/view?filename=" + encodeURIComponent(fn)
@@ -1098,7 +1108,7 @@ ApplicationWindow {
         title: "ComfyClient & Generation Settings"
         modal: true
         anchors.centerIn: Overlay.overlay
-        width: 540
+        width: Math.min(parent.width - 40, 680)
         standardButtons: Dialog.Save | Dialog.Cancel
 
         property var settingPurposes: ["avatar", "greeting", "greeting_bg", "default"]
@@ -1140,8 +1150,13 @@ ApplicationWindow {
 
         onAboutToShow: {
             urlField.text = root.comfyUrl
+            sdcppUrlField.text = root.sdcppUrl
+            engineBox.currentIndex = (root.engineMode === "sdcpp") ? 1 : 0
             root.loadModels()
             rpc("get_settings", {}, function(s) {
+                engineBox.currentIndex = (s.engine_mode === "sdcpp") ? 1 : 0
+                sdcppUrlField.text = s.sdcppUrl || "http://127.0.0.1:1234"
+                urlField.text = s.comfyUrl || "http://127.0.0.1:8188"
                 timeoutField.text = String(s.timeout || 0)
                 formatBox.currentIndex = (s.output_format === "webp") ? 1 : 0
                 dialogDefaults = JSON.parse(JSON.stringify(s.defaults_by_purpose || {}))
@@ -1172,7 +1187,9 @@ ApplicationWindow {
             var t = parseInt(timeoutField.text)
             var av = dialogDefaults["avatar"] || dialogDefaults["default"] || {}
             var payload = {
+                engine_mode: (engineBox.currentIndex === 1) ? "sdcpp" : "comfy",
                 comfyUrl: urlField.text.trim(),
+                sdcppUrl: sdcppUrlField.text.trim(),
                 timeout: isNaN(t) ? 0 : t,
                 output_format: (formatBox.currentIndex === 1) ? "webp" : "png",
                 defaults_by_purpose: dialogDefaults,
@@ -1186,6 +1203,8 @@ ApplicationWindow {
                 }
             }
             rpc("set_settings", payload, function(s) {
+                root.engineMode = s.engine_mode || ((engineBox.currentIndex === 1) ? "sdcpp" : "comfy")
+                root.sdcppUrl = s.sdcppUrl || sdcppUrlField.text.trim()
                 root.comfyUrl = s.comfyUrl || urlField.text.trim()
                 root.outputFormat = s.output_format || "png"
                 root.defaultsByPurpose = s.defaults_by_purpose || dialogDefaults
@@ -1194,7 +1213,7 @@ ApplicationWindow {
                 root.defaultHeight = s.default_height || av.height || 1216
                 root.defaultAspectRatio = s.default_aspect_ratio || "2:3"
                 root.loadModels()
-                setStatus("Defaults per image type saved", false)
+                setStatus("Defaults & engine mode (" + root.engineMode + ") saved", false)
             })
         }
 
@@ -1203,14 +1222,52 @@ ApplicationWindow {
             spacing: 10
 
             // Server connection
-            Label { text: "Server Connection"; color: root.muted; font.bold: true }
+            Label { text: "Backend Engine & Server Connection"; color: root.muted; font.bold: true }
+
             RowLayout {
                 Layout.fillWidth: true
                 spacing: 8
-                Label { text: "URL:"; color: root.muted }
+                Label { text: "Engine Mode:"; color: root.muted }
+                ComboBox {
+                    id: engineBox
+                    Layout.fillWidth: true
+                    model: ["ComfyUI (Standard Graph Workflow)", "sd.cpp / Lite Server (Fast GGUF / sd-server)"]
+                    onCurrentIndexChanged: {
+                        if (currentIndex === 1) {
+                            comfyUrlRow.visible = false
+                            sdcppUrlRow.visible = true
+                        } else {
+                            comfyUrlRow.visible = true
+                            sdcppUrlRow.visible = false
+                        }
+                    }
+                }
+            }
+
+            RowLayout {
+                id: comfyUrlRow
+                Layout.fillWidth: true
+                spacing: 8
+                visible: engineBox.currentIndex === 0
+                Label { text: "ComfyUI URL:"; color: root.muted }
                 TextField { id: urlField; Layout.fillWidth: true; placeholderText: "http://127.0.0.1:8188" }
-                Label { text: "Timeout (s):"; color: root.muted }
-                TextField { id: timeoutField; Layout.preferredWidth: 70; validator: IntValidator { bottom: 0 } }
+            }
+
+            RowLayout {
+                id: sdcppUrlRow
+                Layout.fillWidth: true
+                spacing: 8
+                visible: engineBox.currentIndex === 1
+                Label { text: "sd.cpp Server URL:"; color: root.muted }
+                TextField { id: sdcppUrlField; Layout.fillWidth: true; placeholderText: "http://127.0.0.1:1234" }
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 8
+                Label { text: "Timeout (s, 0=none):"; color: root.muted }
+                TextField { id: timeoutField; Layout.preferredWidth: 80; validator: IntValidator { bottom: 0 } }
+                Item { Layout.fillWidth: true }
             }
 
             RowLayout {
@@ -1242,7 +1299,11 @@ ApplicationWindow {
 
                 Repeater {
                     model: settingsDialog.settingPurposeLabels
-                    TabButton { text: modelData; font.pixelSize: 11 }
+                    TabButton {
+                        text: modelData
+                        font.pixelSize: 11
+                        implicitWidth: Math.floor(settingsDialog.width / 4.2)
+                    }
                 }
             }
 
@@ -1498,7 +1559,25 @@ ApplicationWindow {
                         Layout.fillWidth: true
                         ColumnLayout {
                             spacing: 0
-                            Label { text: "Prompt Queue"; font.pixelSize: 18; font.weight: Font.DemiBold }
+                            RowLayout {
+                                spacing: 6
+                                Label { text: "Prompt Queue"; font.pixelSize: 18; font.weight: Font.DemiBold }
+                                Rectangle {
+                                    visible: root.engineMode === "sdcpp"
+                                    width: liteLabel.implicitWidth + 8
+                                    height: 18
+                                    radius: 4
+                                    color: "#22c55e"
+                                    Label {
+                                        id: liteLabel
+                                        anchors.centerIn: parent
+                                        text: "LITE (sd.cpp)"
+                                        color: "#000000"
+                                        font.pixelSize: 9
+                                        font.bold: true
+                                    }
+                                }
+                            }
                             Label {
                                 text: root.runningCount + " running · " + root.pendingCount + " pending"
                                 color: root.muted

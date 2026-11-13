@@ -6,6 +6,7 @@ ComfyClient Server — Unix Domain Socket host for prompt queue + JSON-RPC IPC.
 import os
 import sys
 import json
+import time
 import socket
 import threading
 import argparse
@@ -13,6 +14,7 @@ from typing import Any, Callable, Dict, List, Optional
 
 from .config import PromptQueue, Settings
 from .runner import JobRunner, fetch_models, apply_params
+from .sdcpp_util import build_sdcpp_payload
 from .protocol import (
     BUILTIN_METHODS,
     ComfyClientError,
@@ -308,7 +310,7 @@ class ComfyClientServer:
         return {"ok": ok, "key": key, "filename": filename}
 
     def method_dry_run_prompt(self, params: Dict) -> Dict:
-        """Generates the exact ComfyUI API payload JSON for a prompt without executing it."""
+        """Generates the exact ComfyUI or sd.cpp API payload JSON for a prompt without executing it."""
         key = params.get("id") or params.get("name")
         item = self.queue.get(key) if key else None
 
@@ -323,6 +325,42 @@ class ComfyClientServer:
                 if k in params:
                     merged_params[k] = params[k]
 
+        s_data = self.settings.get()
+        engine_mode = s_data.get("engine_mode", "comfy")
+
+        purpose = params.get("imagePurpose") or (item.get("imagePurpose") if item else None) or "default"
+        defs_by_purpose = s_data.get("defaults_by_purpose", {})
+        p_defs = defs_by_purpose.get(purpose) or defs_by_purpose.get("default") or {}
+
+        raw_params = dict(merged_params)
+        if "lora" not in raw_params and item and item.get("lora"):
+            raw_params["lora"] = item.get("lora")
+        if not raw_params.get("width") or int(raw_params.get("width", 0)) <= 0:
+            raw_params["width"] = p_defs.get("width") or s_data.get("default_width") or 832
+        if not raw_params.get("height") or int(raw_params.get("height", 0)) <= 0:
+            raw_params["height"] = p_defs.get("height") or s_data.get("default_height") or 1216
+        if not raw_params.get("checkpoint"):
+            raw_params["checkpoint"] = p_defs.get("checkpoint") or s_data.get("default_checkpoint") or ""
+
+        if engine_mode == "sdcpp":
+            output_format = s_data.get("output_format", "png").lower()
+            sd_payload = build_sdcpp_payload(
+                raw_params,
+                lora_spec=raw_params.get("lora"),
+                seed=raw_params.get("seed"),
+                output_format=output_format,
+            )
+            json_str = json.dumps(sd_payload, indent=2, ensure_ascii=False)
+            return {
+                "key": key,
+                "engine": "sdcpp",
+                "seed": sd_payload.get("seed"),
+                "params": raw_params,
+                "payload": sd_payload,
+                "json_str": json_str,
+                "node_count": len(sd_payload.get("lora", [])),
+            }
+
         # Determine workflow template
         wf_template = params.get("workflow")
         if isinstance(wf_template, str) and wf_template.strip():
@@ -333,23 +371,7 @@ class ComfyClientServer:
         if not wf_template or not isinstance(wf_template, dict):
             wf_template = (item.get("workflow") if item else None) or {}
         if not wf_template or not isinstance(wf_template, dict) or len(wf_template) == 0:
-            wf_template = self.settings.get().get("default_workflow") or {}
-
-        # Fallback to default params by purpose
-        s_data = self.settings.get()
-        purpose = params.get("imagePurpose") or (item.get("imagePurpose") if item else None) or "default"
-        defs_by_purpose = s_data.get("defaults_by_purpose", {})
-        p_defs = defs_by_purpose.get(purpose) or defs_by_purpose.get("default") or {}
-
-        raw_params = dict(merged_params)
-        if "lora" not in raw_params and item.get("lora"):
-            raw_params["lora"] = item.get("lora")
-        if not raw_params.get("width") or int(raw_params.get("width", 0)) <= 0:
-            raw_params["width"] = p_defs.get("width") or s_data.get("default_width") or 832
-        if not raw_params.get("height") or int(raw_params.get("height", 0)) <= 0:
-            raw_params["height"] = p_defs.get("height") or s_data.get("default_height") or 1216
-        if not raw_params.get("checkpoint"):
-            raw_params["checkpoint"] = p_defs.get("checkpoint") or s_data.get("default_checkpoint") or ""
+            wf_template = s_data.get("default_workflow") or {}
 
         patched_wf, seed = apply_params(wf_template, raw_params, settings=s_data)
 
@@ -358,6 +380,7 @@ class ComfyClientServer:
 
         return {
             "key": key,
+            "engine": "comfy",
             "seed": seed,
             "params": raw_params,
             "payload": payload,
@@ -400,7 +423,10 @@ class ComfyClientServer:
         return self.settings.update(params)
 
     def method_list_models(self, params: Dict) -> Dict:
-        return fetch_models(self.settings.get()["comfyUrl"].rstrip("/"))
+        s = self.settings.get()
+        engine_mode = s.get("engine_mode", "comfy")
+        sdcpp_url = s.get("sdcppUrl", "http://127.0.0.1:1234")
+        return fetch_models(s["comfyUrl"].rstrip("/"), engine_mode=engine_mode, sdcpp_url=sdcpp_url)
 
     def method_get_status(self, params: Dict) -> Dict:
         return {

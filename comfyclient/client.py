@@ -167,7 +167,21 @@ class CharGenImageClient:
         if not os.path.exists(self.socket_path):
             return None
 
-        data_url = image_b64 if image_b64.startswith("data:image") else f"data:{mime_type};base64,{image_b64}"
+        # Auto-convert to AVIF if input is PNG or other format
+        try:
+            from PIL import Image
+            import io
+            import base64
+            clean_b64 = image_b64.split(",", 1)[1] if "," in image_b64 else image_b64
+            raw_bytes = base64.b64decode(clean_b64)
+            pil_img = Image.open(io.BytesIO(raw_bytes))
+            avif_io = io.BytesIO()
+            pil_img.save(avif_io, format="AVIF", quality=85)
+            avif_b64 = base64.b64encode(avif_io.getvalue()).decode("ascii")
+            data_url = f"data:image/avif;base64,{avif_b64}"
+        except Exception:
+            data_url = image_b64 if image_b64.startswith("data:image") else f"data:{mime_type};base64,{image_b64}"
+
         payload_data = {
             "id": prompt_name,
             "queueId": prompt_name,

@@ -16,8 +16,9 @@ def run_editor(server, gui_path: str) -> int:
     """Host the QML editor in this process; calls server._route directly."""
     try:
         from PySide6.QtCore import QObject, Property, Slot, Signal, QUrl
-        from PySide6.QtGui import QGuiApplication
+        from PySide6.QtGui import QGuiApplication, QImage
         from PySide6.QtQml import QQmlApplicationEngine
+        from PySide6.QtQuick import QQuickImageProvider
         from PySide6.QtQuickControls2 import QQuickStyle
     except ImportError:
         print("[comfyclient] PySide6 not installed: pip install PySide6")
@@ -27,6 +28,19 @@ def run_editor(server, gui_path: str) -> int:
                 time.sleep(1)
         except KeyboardInterrupt:
             return 0
+
+    class LocalImageProvider(QQuickImageProvider):
+        def __init__(self, outputs_dir: str):
+            super().__init__(QQuickImageProvider.ImageType.Image)
+            self.outputs_dir = outputs_dir
+
+        def requestImage(self, id_str, size, requestedSize):
+            filename = id_str.split("?")[0]
+            path = os.path.join(self.outputs_dir, filename)
+            if os.path.exists(path):
+                img = QImage(path)
+                return img
+            return QImage()
 
     class Backend(QObject):
         queueChanged = Signal()
@@ -52,9 +66,21 @@ def run_editor(server, gui_path: str) -> int:
 
     QQuickStyle.setStyle("Material")
     app = QGuiApplication(sys.argv[:1])
+
+    # Hard-cap Qt Pixmap Cache to 32MB
+    try:
+        from PySide6.QtGui import QPixmapCache
+        QPixmapCache.setCacheLimit(32 * 1024)
+    except Exception:
+        pass
     engine = QQmlApplicationEngine()
     backend = Backend()
     server.on_change = lambda: backend.queueChanged.emit()
+
+    outputs_dir = os.path.join(os.path.dirname(server.queue.path), "outputs")
+    os.makedirs(outputs_dir, exist_ok=True)
+    engine.addImageProvider("localfile", LocalImageProvider(outputs_dir))
+
     engine.rootContext().setContextProperty("backend", backend)
     engine.load(QUrl.fromLocalFile(gui_path))
     if not engine.rootObjects():

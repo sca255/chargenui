@@ -28,7 +28,9 @@ RUNTIME_KEYS = (
 )
 
 DEFAULT_SETTINGS = {
+    "engine_mode": "comfy",  # "comfy" or "sdcpp" (lite mode)
     "comfyUrl": "http://127.0.0.1:8188",
+    "sdcppUrl": "http://127.0.0.1:1234",
     "timeout": 0,  # 0 = wait forever
     "output_format": "png",  # "png" or "webp"
     "default_workflow": {},

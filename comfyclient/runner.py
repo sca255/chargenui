@@ -23,6 +23,8 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from .config import PromptQueue, Settings
 from .client import CharGenImageClient
+from .sdcpp_client import SdCppClient
+from .sdcpp_util import build_sdcpp_payload
 
 PARAM_DEFAULTS = {
     "checkpoint": "",
@@ -448,8 +450,12 @@ def http_json(url: str, data: Optional[dict] = None, timeout: float = 30) -> Dic
         raise RuntimeError(f"HTTP {exc.code}: {msg}")
 
 
-def fetch_models(comfy_url: str) -> Dict[str, Any]:
-    """Queries ComfyUI for installed UNETs, checkpoints, samplers, schedulers, and LoRAs."""
+def fetch_models(comfy_url: str, engine_mode: str = "comfy", sdcpp_url: str = "http://127.0.0.1:1234") -> Dict[str, Any]:
+    """Queries ComfyUI or sd.cpp server for installed models, samplers, schedulers, and LoRAs."""
+    if engine_mode == "sdcpp":
+        client = SdCppClient(base_url=sdcpp_url)
+        return client.fetch_models()
+
     res = {
         "unets": [],
         "standard_checkpoints": [],
@@ -582,10 +588,20 @@ class JobRunner:
                 return True
             if item_id == self._current:
                 self._cancel.set()
-                try:
-                    http_json(self._base() + "/interrupt", data={}, timeout=5)
-                except Exception:
-                    pass
+                s_data = self.settings.get()
+                if s_data.get("engine_mode") == "sdcpp":
+                    pid = item.get("promptId") if item else None
+                    if pid:
+                        try:
+                            sd_client = SdCppClient(base_url=self._sdcpp_base())
+                            sd_client.cancel_job(str(pid))
+                        except Exception:
+                            pass
+                else:
+                    try:
+                        http_json(self._base() + "/interrupt", data={}, timeout=5)
+                    except Exception:
+                        pass
                 self.notify_change()
                 return True
         return False
@@ -604,6 +620,14 @@ class JobRunner:
 
     def _base(self) -> str:
         return self.settings.get()["comfyUrl"].rstrip("/")
+
+    def _sdcpp_base(self) -> str:
+        return self.settings.get().get("sdcppUrl", "http://127.0.0.1:1234").rstrip("/")
+
+    def _output_dir(self) -> str:
+        out_dir = os.path.join(os.path.dirname(self.queue.path), "outputs")
+        os.makedirs(out_dir, exist_ok=True)
+        return out_dir
 
     def _ensure_thread(self):
         if not self._thread or not self._thread.is_alive():
@@ -632,6 +656,183 @@ class JobRunner:
         item = self.queue.get(key)
         if not item:
             return
+        s_data = self.settings.get()
+        engine_mode = s_data.get("engine_mode", "comfy")
+        if engine_mode == "sdcpp":
+            self._run_sdcpp(item, count=count)
+        else:
+            self._run_comfy(item, count=count)
+
+    def _run_sdcpp(self, item: Dict[str, Any], count: int = 1):
+        item_id = item.get("id") or item.get("name")
+        gallery = list(item.get("gallery") or [])
+        known_filenames = {g.get("filename") for g in gallery if isinstance(g, dict)}
+        latest_outputs = list(item.get("outputs") or [])
+
+        s_data = self.settings.get()
+        sdcpp_url = self._sdcpp_base()
+        sd_client = SdCppClient(base_url=sdcpp_url)
+        output_format = s_data.get("output_format", "png").lower()
+        if output_format not in ("png", "jpeg", "webp"):
+            output_format = "png"
+
+        purpose = item.get("imagePurpose") or "default"
+        defs_by_purpose = s_data.get("defaults_by_purpose", {})
+        p_defs = defs_by_purpose.get(purpose) or defs_by_purpose.get("default") or {}
+
+        for run_idx in range(count):
+            if self._cancel.is_set():
+                self.queue.set_runtime(item_id, status="cancelled", repeatCount=0, repeatTotal=0)
+                self.notify_change()
+                return
+
+            self.queue.set_runtime(
+                item_id,
+                status="running",
+                error="",
+                repeatCount=run_idx + 1,
+                repeatTotal=count,
+            )
+            self.notify_change()
+
+            try:
+                raw_params = dict(item.get("params", {}))
+                if "lora" not in raw_params and item.get("lora"):
+                    raw_params["lora"] = item.get("lora")
+                if not raw_params.get("width") or int(raw_params.get("width", 0)) <= 0:
+                    raw_params["width"] = p_defs.get("width") or s_data.get("default_width") or 832
+                if not raw_params.get("height") or int(raw_params.get("height", 0)) <= 0:
+                    raw_params["height"] = p_defs.get("height") or s_data.get("default_height") or 1216
+
+                seed = random.randint(0, 2**32 - 1) if run_idx > 0 else int(raw_params.get("seed", -1))
+                if seed < 0:
+                    seed = random.randint(0, 2**32 - 1)
+
+                payload = build_sdcpp_payload(
+                    raw_params,
+                    lora_spec=raw_params.get("lora"),
+                    seed=seed,
+                    output_format=output_format,
+                )
+
+                job_id = sd_client.submit_img_gen(payload)
+                self.queue.set_runtime(item_id, promptId=job_id, seed=seed)
+                self.notify_change()
+
+                timeout = float(s_data.get("timeout") or 0)
+                deadline = time.time() + timeout if timeout > 0 else None
+
+                run_finished = False
+                while not run_finished:
+                    if self._cancel.is_set():
+                        sd_client.cancel_job(job_id)
+                        raise Cancelled()
+
+                    job_info = sd_client.get_job(job_id)
+                    status = job_info.get("status")
+                    if status == "completed":
+                        result = job_info.get("result") or {}
+                        images = result.get("images") or []
+                        if not images:
+                            raise RuntimeError("sd.cpp server finished but returned no images")
+
+                        outputs = []
+                        out_dir = self._output_dir()
+                        ext = output_format if output_format != "jpeg" else "jpg"
+
+                        for img_obj in images:
+                            b64_data = img_obj.get("b64_json", "")
+                            if not b64_data:
+                                continue
+                            img_bytes = base64.b64decode(b64_data)
+                            ts = int(time.time())
+                            safe_name = re.sub(r"[^\w\-]", "_", str(item_id))[:30]
+                            filename = f"sdcpp_{safe_name}_{seed}_{ts}.{ext}"
+                            file_path = os.path.join(out_dir, filename)
+                            with open(file_path, "wb") as f:
+                                f.write(img_bytes)
+
+                            outputs.append({
+                                "filename": filename,
+                                "filepath": file_path,
+                                "b64_bytes": img_bytes,
+                                "subfolder": "",
+                                "type": "output",
+                            })
+
+                        if not outputs:
+                            raise RuntimeError("Failed to decode images from sd.cpp response")
+
+                        latest_outputs = outputs
+                        for out in outputs:
+                            fn = out["filename"]
+                            if fn not in known_filenames:
+                                gallery.append({
+                                    "filename": fn,
+                                    "filepath": out.get("filepath", ""),
+                                    "subfolder": "",
+                                    "type": "output",
+                                    "seed": seed,
+                                    "timestamp": int(time.time()),
+                                    "promptId": job_id,
+                                })
+                                known_filenames.add(fn)
+
+                        is_last = (run_idx == count - 1)
+                        self.queue.set_runtime(
+                            item_id,
+                            status="done" if is_last else "running",
+                            outputs=latest_outputs,
+                            gallery=gallery,
+                            seed=seed,
+                            error="",
+                            repeatCount=run_idx + 1 if not is_last else 0,
+                            repeatTotal=count if not is_last else 0,
+                        )
+                        self.notify_change()
+
+                        # Auto-push generated image back to CharGenUI over IPC
+                        self._push_bytes_to_chargenui(item, outputs[0]["b64_bytes"], output_format)
+                        run_finished = True
+                        break
+
+                    elif status == "failed":
+                        err_obj = job_info.get("error") or {}
+                        msg = err_obj.get("message") or "sd.cpp generation failed"
+                        raise RuntimeError(msg)
+
+                    elif status == "cancelled":
+                        raise Cancelled()
+
+                    if deadline and time.time() > deadline:
+                        sd_client.cancel_job(job_id)
+                        raise TimeoutError(f"Timed out after {timeout}s waiting for sd.cpp server")
+
+                    self._cancel.wait(0.5)
+
+            except Cancelled:
+                self.queue.set_runtime(item_id, status="cancelled", repeatCount=0, repeatTotal=0)
+                self.notify_change()
+                return
+            except Exception as exc:
+                if self._cancel.is_set():
+                    self.queue.set_runtime(item_id, status="cancelled", repeatCount=0, repeatTotal=0)
+                else:
+                    self.queue.set_runtime(item_id, status="failed", error=str(exc), repeatCount=0, repeatTotal=0)
+                self.notify_change()
+                return
+
+        self.queue.set_runtime(
+            item_id,
+            status="done",
+            outputs=latest_outputs,
+            gallery=gallery,
+            repeatCount=0,
+            repeatTotal=0,
+        )
+        self.notify_change()
+
+    def _run_comfy(self, item: Dict[str, Any], count: int = 1):
         item_id = item.get("id") or item.get("name")
 
         gallery = list(item.get("gallery") or [])
@@ -777,6 +978,13 @@ class JobRunner:
                 im_bytes = r.read()
 
             output_format = self.settings.get().get("output_format", "png").lower()
+            self._push_bytes_to_chargenui(item, im_bytes, output_format)
+        except Exception:
+            pass
+
+    def _push_bytes_to_chargenui(self, item: Dict[str, Any], im_bytes: bytes, output_format: str):
+        """Sends raw image bytes back to CharGenUI via IPC socket."""
+        try:
             purpose = item.get("imagePurpose", "avatar")
             mime_type = "image/png"
 
@@ -807,7 +1015,7 @@ class JobRunner:
             )
             if reply:
                 self.queue.mark_complete(prompt_key)
-        except Exception as e:
+        except Exception:
             # Non-fatal if CharGenUI IPC is currently offline
             pass
 
