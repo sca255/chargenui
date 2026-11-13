@@ -8,7 +8,7 @@ description: Comprehensive skill for designing and validating paired eras (Multi
 Use this skill whenever you need to create, expand, or validate worldbuilding ERAS for the CharGenUI ecosystem.
 
 ## ⚠️ Important Path Rules
-- Project root is `/mnt/d/projects/chargenui`.
+- Project root is the current repository root directory.
 - ❌ Do NOT use leading slashes like `/data/...` (it will try to access the Linux root `/data` and fail).
 - ✅ Always use relative paths: `data/eras_extensions/<name>.json`.
 - ❌ Do NOT read `data/eras_db.json` directly (it is 200KB).

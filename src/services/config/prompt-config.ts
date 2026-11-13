@@ -19,7 +19,7 @@ NEGATIVE TAGS RULES:
 - Always include core quality negatives: worst quality, low quality, bad quality, jpeg artifacts, blurry.
 - Include anatomy negatives: bad anatomy, bad hands, extra fingers, missing fingers, deformed, malformed, mutated limbs.
 - Include artifact negatives: watermark, signature, text, border, censored, artist name.
-- For default character avatars: always protect against unwanted bondage or restraint tags (bondage, bound, rope, restraints, gag, handcuffs, collar, chained).`,
+- Standard default negative prompt: "worst quality, low quality, bad quality, jpeg artifacts, blurry, bad anatomy, bad hands, extra fingers, missing fingers, deformed, malformed, mutated, watermark, signature, text, artist name".`,
   models: {
     illustrious: {
       guidance: `TARGET MODEL: ILLUSTRIOUS-XL / ANIMAGINE XL / NOOBAI (BOORU TAG SYSTEM)

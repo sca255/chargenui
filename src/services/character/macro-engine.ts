@@ -11,7 +11,7 @@ export interface MacroReplaceOptions {
 /**
  * Normalizes legacy, case-variant, or malformed macro tags into standard {{user}} and {{char}}
  */
-export function normalizeRpMacros(text: string, charName?: string): string {
+export function normalizeRpMacros(text: string, charName?: string, nickname?: string): string {
   if (!text) return "";
 
   let result = text;
@@ -35,9 +35,10 @@ export function normalizeRpMacros(text: string, charName?: string): string {
   // e.g. "User: ", "user: ", "<user>: ", "You: " -> "{{user}}: "
   result = result.replace(/(?:^|\n)\s*(?:User|user|You|you|\{\{user\}\}):\s*/gm, (m) => m.startsWith("\n") ? "\n{{user}}: " : "{{user}}: ");
 
-  // If character name is known, convert hardcoded turn headers "CharName:" -> "{{char}}:"
-  if (charName && charName.trim().length > 1) {
-    const escapedName = charName.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  // If character nickname or name is known, convert hardcoded turn headers "Name:" / "Nickname:" -> "{{char}}:"
+  const namesToCheck = [nickname, charName].filter((n): n is string => !!n && n.trim().length > 1);
+  for (const name of namesToCheck) {
+    const escapedName = name.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const charTurnRegex = new RegExp(`(?:^|\\n)\\s*(?:${escapedName}|\\{\\{char\\}\\}):\\s*`, "gm");
     result = result.replace(charTurnRegex, (m) => m.startsWith("\n") ? "\n{{char}}: " : "{{char}}: ");
   }

@@ -8,6 +8,7 @@ import { generateCharacterCard } from "../generator/quick-spark";
 import { getSavedCard, saveCardRecord } from "../character/card-storage";
 import { attachImageToQueueItem } from "../image/prompt-queue";
 import { resolveEraInfo, formatEraPromptSnippet } from "../eras/eras-service";
+import { convertDataUrlToAvif } from "../image/avif-converter";
 
 export const PRESET_THEMES = [
   "Dominant / Submissive",
@@ -341,7 +342,7 @@ class ServerIpcManager {
         case "image:attach":
         case "attach_generated_image": {
           const queueId = payload.queueId || payload.id || payload.name;
-          const imgData = payload.imageDataUrl || payload.dataUrl || payload.avatarDataUrl || payload.image;
+          let imgData = payload.imageDataUrl || payload.dataUrl || payload.avatarDataUrl || payload.image;
           const imgType = payload.imageType || payload.imagePurpose || (payload.purpose === "greeting_bg" ? "greeting_bg" : payload.purpose === "greeting" ? "greeting" : "avatar");
           const targetCharId = payload.characterId;
           let greetingIndex = typeof payload.greetingIndex === "number" ? payload.greetingIndex : undefined;
@@ -349,6 +350,13 @@ class ServerIpcManager {
           if (!imgData) {
             reply("image:attach_error", { error: "Missing imageDataUrl / image payload" });
             break;
+          }
+
+          // Auto-convert any incoming PNG or WebP into AVIF (Zero-PNG mandate)
+          try {
+            imgData = await convertDataUrlToAvif(imgData);
+          } catch (e) {
+            console.warn("[IPC] AVIF conversion error; keeping dataUrl:", e);
           }
 
           let attached = null;
@@ -451,15 +459,58 @@ class ServerIpcManager {
                   createdAt: new Date().toISOString(),
                 });
               }
+            } else if (imgType === "expression" || imgType === "emotion") {
+              // Expression Forge or ComfyClient expression sprite sheet / emotion sprite
+              const exprKey = (queueId || payload.name || "expression")
+                .toString()
+                .toLowerCase()
+                .replace(/^expression[_-]/i, "")
+                .replace(/^emotion[_-]/i, "")
+                .trim() || "neutral";
+
+              if (!this.activeCharacter.extensions.expressions) {
+                this.activeCharacter.extensions.expressions = {};
+              }
+              this.activeCharacter.extensions.expressions[exprKey] = imgData;
+
+              // Store classifier metadata if provided
+              if (!this.activeCharacter.extensions.expressions_meta) {
+                this.activeCharacter.extensions.expressions_meta = {};
+              }
+              const exprMeta = payload.meta || payload.metadata || {};
+              this.activeCharacter.extensions.expressions_meta[exprKey] = {
+                label: exprMeta.label || payload.label || exprKey,
+                description: exprMeta.description || `Emotional sprite representing ${exprKey}`,
+                intensityTier: exprMeta.intensityTier || (exprKey.endsWith("_2") ? 2 : 1),
+                category: exprMeta.category || "emotion",
+              };
+
+              // Register in card assets manifest
+              const assets = Array.isArray(this.activeCharacter.assets) ? [...this.activeCharacter.assets] : [];
+              const exprUri = `embedded://assets/expressions/${exprKey}.avif`;
+              // Remove old entry for this expression key if exists
+              const existingIdx = assets.findIndex((a) => a.name === exprKey && (a.type === "expression" || a.type === "emotion" || a.type === "icon"));
+              const assetEntry = {
+                type: "expression",
+                name: exprKey,
+                uri: exprUri,
+                ext: "avif",
+              };
+              if (existingIdx >= 0) {
+                assets[existingIdx] = assetEntry;
+              } else {
+                assets.push(assetEntry);
+              }
+              this.activeCharacter.assets = assets;
             } else {
               this.activeCharacter.avatar = imgData;
               const assets = Array.isArray(this.activeCharacter.assets) ? [...this.activeCharacter.assets] : [];
-              if (!assets.some((a) => a.uri === "embedded://assets/icon/image/main.png" || a.type === "icon")) {
+              if (!assets.some((a) => a.uri === "embedded://assets/icon/image/main.avif" || a.type === "icon")) {
                 assets.unshift({
                   type: "icon",
                   name: "main",
-                  uri: "embedded://assets/icon/image/main.png",
-                  ext: "png",
+                  uri: "embedded://assets/icon/image/main.avif",
+                  ext: "avif",
                 });
               }
               this.activeCharacter.assets = assets;

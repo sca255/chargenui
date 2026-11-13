@@ -9,7 +9,7 @@ export interface GenerateCharacterRequest {
   nsfw?: boolean; // Enable explicit mature/NSFW details
   intensity?: "subtle" | "balanced" | "extreme" | "unhinged";
   tone?: string; // e.g. "gritty psychological", "flirty teasing", "cold yandere", "morally gray anti-hero"
-  format?: "prose" | "boostyle" | "wxx" | "markdown";
+  format?: "prose" | "boostyle" | "wxx" | "markdown" | "bbcode";
   retrievedLore?: string; // Injected web search / canon fandom research
   enableWebSearch?: boolean; // Automatically query web/fandom before generating
   searchQuery?: string; // Custom search query

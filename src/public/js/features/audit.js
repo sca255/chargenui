@@ -143,6 +143,35 @@ export function runLocalAudit() {
     score -= 10;
   }
 
+  // 9. Historical Era & Voice Vocabulary Audit
+  const allCardDialogue = `${firstMes} ${ex} ${(c.alternate_greetings || []).join(" ")}`.toLowerCase();
+  const isHistoricalOrFantasy = /medieval|fantasy|ancient|feudal|victorian|renaissance|18\d\d|17\d\d|16\d\d|swords|sorcery/i.test(`${desc} ${c.scenario || ""}`);
+  if (isHistoricalOrFantasy) {
+    const modernAnachronisms = [
+      "smartphone", "cell phone", "internet", "website", "okay", "ok", "cool", "genetics",
+      "dna", "neurotic", "psychology", "calories", "glitch", "algorithm", "microscopic"
+    ];
+    const foundAnachronisms = modernAnachronisms.filter((word) => {
+      const rx = new RegExp(`\\b${word}\\b`, "i");
+      return rx.test(allCardDialogue);
+    });
+    if (foundAnachronisms.length > 0) {
+      issues.push(`Era voice mismatch: Modern anachronisms in historical/fantasy dialogue (${foundAnachronisms.map(w => `"${w}"`).join(", ")}).`);
+      score -= 8;
+    }
+  }
+
+  // 10. CCv3 Multi-Emotion Sprite Coverage Check
+  const exprs = c.extensions?.expressions || {};
+  const exprCount = Object.keys(exprs).length;
+  if (exprCount >= 28) {
+    strengths.push(`Full 28-emotion canonical sprite coverage (${exprCount} sprites).`);
+  } else if (exprCount >= 8) {
+    strengths.push(`Core emotion sprite coverage (${exprCount} sprites).`);
+  } else if (exprCount > 0) {
+    issues.push(`Limited emotion sprites (${exprCount}/28). Generate additional expressions in Asset Pipeline.`);
+  }
+
   score = Math.max(0, Math.min(100, score));
   if (score <= 5) {
     el.cardScoreNum.textContent = "BS";

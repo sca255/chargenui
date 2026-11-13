@@ -716,6 +716,8 @@ export async function sendAgentChatMessage(customPrompt) {
   }
 }
 
+let reimagineMode = "redesign";
+
 export async function runReimagine() {
   if (!assertProviderConfigured()) return;
   syncUIToState();
@@ -728,11 +730,18 @@ export async function runReimagine() {
     button.disabled = true;
     button.textContent = "⏳ Agent is reimagining...";
   }
+  const storyArcInput = document.getElementById("reimagine-story-arc");
+  const eraSelect = document.getElementById("reimagine-era-select");
+  const formatSelect = document.getElementById("reimagine-format");
+
   try {
     const res = await apiPost("/api/agent/reimagine", {
       character: state.character,
       mode: reimagineMode,
       prompt: el.reimaginePrompt?.value || "",
+      storyArc: storyArcInput ? storyArcInput.value.trim() : "",
+      format: formatSelect ? formatSelect.value : "bbcode",
+      eraPromptSnippet: eraSelect && eraSelect.value ? eraSelect.value : undefined,
       chatHistory: state.agentChatHistory.filter((m) => !m.isPending),
       provider: state.provider,
     });
@@ -758,6 +767,110 @@ export async function runReimagine() {
     }
   }
 }
+
+// Story Arc Generator Button in Reimagine / Inspire
+document.getElementById("btn-generate-story-arc")?.addEventListener("click", async () => {
+  const btn = document.getElementById("btn-generate-story-arc");
+  const storyArcInput = document.getElementById("reimagine-story-arc");
+  const guidanceInput = document.getElementById("reimagine-arc-guidance");
+  const actsInput = document.getElementById("reimagine-arc-acts");
+
+  if (!state.character?.name && !state.character?.description) {
+    alert("Please load or create a character first!");
+    return;
+  }
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = "⏳ Drafting...";
+  }
+  try {
+    const hint = (guidanceInput?.value?.trim()) || (el.reimaginePrompt ? el.reimaginePrompt.value.trim() : "");
+    const requestedActs = actsInput ? (parseInt(actsInput.value, 10) || 3) : 3;
+    const res = await apiPost("/api/story-arc/generate", {
+      character: state.character,
+      roughStoryHint: hint,
+      minActs: Math.max(1, requestedActs),
+      mode: reimagineMode,
+      provider: state.provider
+    });
+    if (res.storyArc && storyArcInput) {
+      storyArcInput.value = res.storyArc;
+    }
+  } catch (e) {
+    alert("Story arc error: " + e.message);
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = "⚡ Generate Arc";
+    }
+  }
+});
+
+// Story Arc Generator Button in Spark Generator Tab
+document.getElementById("btn-spark-generate-story-arc")?.addEventListener("click", async () => {
+  const btn = document.getElementById("btn-spark-generate-story-arc");
+  const storyArcInput = document.getElementById("gen-story-arc");
+  const guidanceInput = document.getElementById("spark-arc-guidance");
+  const actsInput = document.getElementById("spark-arc-acts");
+
+  const conceptText = el.genConcept?.value?.trim() || "";
+  const genreText = el.genGenre?.value?.trim() || "";
+  const toneText = el.genTone?.value?.trim() || "";
+  const eraText = el.genEra?.value?.trim() || "";
+  const themesText = (state.selectedThemes && state.selectedThemes.length) ? state.selectedThemes.join(", ") : "";
+
+  // If Spark has a concept/seed in the textarea, extract or construct character seed
+  let charName = state.character?.name || "Character";
+  let desc = conceptText;
+  if (genreText || toneText || themesText) {
+    const metaParts = [];
+    if (genreText) metaParts.push(`Genre: ${genreText}`);
+    if (toneText) metaParts.push(`Tone: ${toneText}`);
+    if (themesText) metaParts.push(`Themes/Tropes: ${themesText}`);
+    desc = desc ? `${desc}\n\n[Setting & Context]:\n${metaParts.join(" | ")}` : metaParts.join(" | ");
+  }
+
+  // Attempt to parse character name from concept sauce (e.g. "Character: Sarah — Title")
+  const charMatch = conceptText.match(/^Character:\s*([^—\n]+)/m);
+  if (charMatch && charMatch[1]) {
+    charName = charMatch[1].trim();
+  }
+
+  const charPayload = {
+    ...state.character,
+    name: charName,
+    description: desc || state.character?.description || "A dynamic character",
+    personality: state.character?.personality || "",
+    scenario: state.character?.scenario || "",
+  };
+
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = "⏳ Drafting...";
+  }
+  try {
+    const hint = (guidanceInput?.value?.trim()) || "";
+    const requestedActs = actsInput ? (parseInt(actsInput.value, 10) || 3) : 3;
+    const res = await apiPost("/api/story-arc/generate", {
+      character: charPayload,
+      roughStoryHint: hint,
+      eraPromptSnippet: eraText,
+      minActs: Math.max(1, requestedActs),
+      mode: "spark",
+      provider: state.provider
+    });
+    if (res.storyArc && storyArcInput) {
+      storyArcInput.value = res.storyArc;
+    }
+  } catch (e) {
+    alert("Story arc error: " + e.message);
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = "⚡ Generate Arc";
+    }
+  }
+});
 
 document.querySelectorAll(".reimagine-mode").forEach((button) => {
   button.addEventListener("click", () => {

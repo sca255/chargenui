@@ -83,7 +83,8 @@ export async function listSavedCards(): Promise<SavedCardMeta[]> {
           score,
           tokenCount,
           hasAvatar: !!record.avatarBase64,
-          avatarBase64: record.avatarBase64,
+          // Strip heavy base64 strings from in-memory deck listings; frontend/client reads /api/cards/:id/avatar on-demand
+          avatarBase64: "",
         };
 
         memoryCardMetaCache.set(file, { mtimeMs: stat.mtimeMs, meta });

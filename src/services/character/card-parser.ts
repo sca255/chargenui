@@ -158,9 +158,10 @@ export function characterToCardV3(char: RoleplayCharacter): TavernCardV3 {
 export function cardV3ToCharacter(card: TavernCardV3, avatarDataUrl?: string): RoleplayCharacter {
   const data = card.data;
   const name = data.name || "Unnamed";
+  const nickname = data.nickname || undefined;
 
-  let postHistory = normalizeRpMacros(data.post_history_instructions || "", name);
-  const incomingSystemPrompt = normalizeRpMacros(data.system_prompt || "", name);
+  let postHistory = normalizeRpMacros(data.post_history_instructions || "", name, nickname);
+  const incomingSystemPrompt = normalizeRpMacros(data.system_prompt || "", name, nickname);
   if (incomingSystemPrompt && !postHistory) {
     postHistory = incomingSystemPrompt;
   }
@@ -168,18 +169,18 @@ export function cardV3ToCharacter(card: TavernCardV3, avatarDataUrl?: string): R
   return {
     id: "char_" + Math.random().toString(36).substring(2, 10),
     name,
-    nickname: data.nickname,
+    nickname,
     avatar: avatarDataUrl,
-    description: normalizeRpMacros(data.description || "", name),
-    personality: normalizeRpMacros(data.personality || "", name),
-    scenario: normalizeRpMacros(data.scenario || "", name),
-    first_mes: normalizeRpMacros(data.first_mes || "", name),
-    mes_example: normalizeRpMacros(data.mes_example || "", name),
+    description: normalizeRpMacros(data.description || "", name, nickname),
+    personality: normalizeRpMacros(data.personality || "", name, nickname),
+    scenario: normalizeRpMacros(data.scenario || "", name, nickname),
+    first_mes: normalizeRpMacros(data.first_mes || "", name, nickname),
+    mes_example: normalizeRpMacros(data.mes_example || "", name, nickname),
     alternate_greetings: Array.isArray(data.alternate_greetings)
-      ? data.alternate_greetings.map((g) => normalizeRpMacros(g, name))
+      ? data.alternate_greetings.map((g) => normalizeRpMacros(g, name, nickname))
       : [],
     group_only_greetings: Array.isArray(data.group_only_greetings)
-      ? data.group_only_greetings.map((g) => normalizeRpMacros(g, name))
+      ? data.group_only_greetings.map((g) => normalizeRpMacros(g, name, nickname))
       : [],
     system_prompt: "", // STRICTLY BANNED
     post_history_instructions: postHistory,

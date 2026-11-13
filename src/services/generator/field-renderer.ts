@@ -14,7 +14,7 @@ import { getGenreFidelityDirective } from "../character/genre-helper";
  */
 export async function renderDescriptionField(
   spine: AuthoringSpine,
-  format: "prose" | "boostyle" | "wxx" | "markdown",
+  format: "prose" | "boostyle" | "wxx" | "markdown" | "bbcode",
   provider: ProviderConfig,
   botMode: "single" | "multi_character" | "rpg_world" = "single"
 ): Promise<string> {
@@ -52,6 +52,15 @@ Ensure each tag is concrete, sensory, and actionable. Strictly avoid unescaped d
 [character("${charName}"){archetype("${cleanQuotes(spine?.archetype || "")}")+contradiction("${cleanQuotes(spine?.central_contradiction || "")}")+build("${cleanQuotes(spine?.form || "")}")+limits("${cleanQuotes(rg.wont || "")}")+cravings("${cleanQuotes(rg.craves || "")}")+speech("${cleanQuotes(v.cadence || "")}")}]`;
   } else if (format === "markdown") {
     formatInstructions = `Output in structured, categorized Markdown with bold section headers (### Appearance & Physical Embodiment, ### Psychological Profile & Contradiction, ### Formative Backstory, ### Behavioral Reactions & Boundaries).`;
+  } else if (format === "bbcode") {
+    formatInstructions = `Output in clean, structured BBCode tags:
+[b]Core Concept:[/b] ...
+[b]Appearance & Build:[/b] ...
+[b]Personality & Mindset:[/b] ...
+[b]Psychological Contradiction:[/b] ...
+[b]Backstory & Origins:[/b] ...
+[b]Boundaries & Limits:[/b] ...
+Keep all section headers bolded with [b]...[/b], bullet lists formatted with [*], and categories clearly delineated. Avoid messy unstructured paragraphs.`;
   } else {
     // Prose format (Weaver-grade tagged bundle or evocative prose from config)
     formatInstructions = cfg.fieldRenderers?.description?.proseGuidance || "Write a deep, evocative, multi-paragraph prose persona description.";
@@ -222,7 +231,7 @@ THE AUTHORING SPINE:
   * Location & Setting: ${sf.setting || "Unspecified setting"}
   * Atmosphere: ${sf.atmosphere || "Tense and charged"}
   * Scene-Objective: ${sf.scene_objective || "Evaluate {{user}}"}
-${storyArc ? `\nSTORY ARC & NARRATIVE TRAJECTORY (MANDATORY - SCENARIO AND FIRST MESSAGE MUST ADHERE TO THIS):\n${storyArc}\n\nCRITICAL INSTRUCTION: The scenario and first message MUST serve as the inciting incident / entry point of THIS SPECIFIC story arc. Do NOT write a generic opening. The scene must:\n- Establish the opening stakes, tension, or catalyst that launches this arc\n- Position {{char}} and {{user}} in the correct relationship dynamic for the arc's beginning\n- Set up the central conflict or question the arc will explore\n- NEVER ignore or contradict the declared story arc\n` : ""}
+${storyArc ? `\nSTORY ARC & NARRATIVE TRAJECTORY (MANDATORY - SCENARIO AND FIRST MESSAGE MUST ADHERE TO THIS):\n${storyArc}\n\nCRITICAL INSTRUCTION: The scenario and first message MUST serve as the inciting incident / entry point of ACT 1 of THIS SPECIFIC story arc. Do NOT write a generic opening. The scene must:\n- Specifically embody Act 1 (the initial situation, stakes, or catalyst that launches this arc trajectory)\n- Position {{char}} and {{user}} in the correct relationship dynamic for Act 1's beginning\n- Set up the central conflict or question that the subsequent acts will explore\n- NEVER skip ahead to subsequent acts (Act 2, Act 3, etc. are reserved for alternate greetings and roleplay progression)\n- NEVER ignore or contradict the declared story arc\n` : ""}
 
 REQUIREMENTS:
 ${
@@ -312,7 +321,22 @@ THE AUTHORING SPINE:
 - Signature Lexicon: ${(v.signature_lexicon || []).join(", ") || "None"}
 - Forbidden Words: ${(v.forbidden_words || []).join(", ") || "None"}
 - Quirks: ${(v.quirks || []).join(", ") || "None"}
-${storyArc ? `\nSTORY ARC & NARRATIVE TRAJECTORY (MANDATORY - EVERY ALTERNATE GREETING MUST ADHERE TO THIS):\n${storyArc}\n\nCRITICAL INSTRUCTION: Each of the ${targetAltCount} alternate greetings MUST be a distinct entry point into THIS SPECIFIC story arc. Do NOT generate generic/random openings.\n\nENFORCEMENT RULES:\n1. EXPLICIT PHASE MAPPING: For EACH greeting, you MUST internally identify which specific phase/turning point/branch of the story arc it represents (e.g., "Inciting Incident", "First Confrontation", "Midpoint Reveal", "Crisis Point", "Climax", "Alternative Timeline: Betrayal", etc.).\n2. SCENE CONTEXT FIDELITY: The setting, stakes, character emotional state, and {{user}} relationship dynamic in each greeting MUST logically derive from that arc phase.\n3. NO GENERIC OPENINGS: BANNED - "sitting on edge of bed", "walking into tavern", "waking up in morning", "training in courtyard" unless the STORY ARC explicitly takes place there at that phase.\n4. CHARACTER CONSISTENCY: {{char}}'s voice, defenses, vocabulary, and stance toward {{user}} must match the arc phase's emotional stakes.\n5. NEVER IGNORE OR CONTRADICT the declared story arc.\n\nVALIDATION CHECKLIST (apply to each greeting before output):\n- [ ] Does this greeting map to a DISTINCT phase/turning point of the declared arc?\n- [ ] Does the scene setting match that arc phase's location/context?\n- [ ] Are the emotional stakes appropriate for that arc phase?\n- [ ] Is {{char}}'s behavior consistent with their arc-phase mindset?\n- [ ] Would this greeting make sense as an entry point for a player joining at that story moment?\n` : ""}
+${storyArc ? `\nSTORY ARC & NARRATIVE TRAJECTORY (MANDATORY - EVERY ALTERNATE GREETING MUST ADHERE TO THIS):\n${storyArc}\n\nCRITICAL INSTRUCTION: The main first_mes already represents ACT 1 of the story arc. Each of the ${targetAltCount} alternate greetings MUST be a distinct entry point representing SUBSEQUENT ACTS or branching escalations (Act 2, Act 3, Act 4, etc., or crisis/turning points) of THIS SPECIFIC story arc. Do NOT duplicate Act 1's initial meeting.
+
+ENFORCEMENT RULES:
+1. SEQUENTIAL ACT & PHASE MAPPING: Since the main first_mes covers Act 1, Alternate Greeting 1 corresponds to Act 2, Alternate Greeting 2 corresponds to Act 3, and so on, continuing through the arc's acts and climax/epilogue turning points. For EACH greeting, you MUST identify which specific act or turning point it represents.
+2. SCENE CONTEXT FIDELITY: The setting, stakes, character emotional state, and {{user}} relationship dynamic in each greeting MUST logically derive from that specific subsequent arc phase.
+3. NO GENERIC OPENINGS: BANNED - "sitting on edge of bed", "walking into tavern", "waking up in morning", "training in courtyard" unless the STORY ARC explicitly takes place there at that phase.
+4. CHARACTER CONSISTENCY: {{char}}'s voice, defenses, vocabulary, and stance toward {{user}} must match the arc phase's emotional stakes.
+5. NEVER IGNORE OR CONTRADICT the declared story arc.
+
+VALIDATION CHECKLIST (apply to each greeting before output):
+- [ ] Does this greeting map to a subsequent phase or distinct act (Act 2+, turning point, or branch) of the declared arc?
+- [ ] Does the scene setting match that arc phase's location/context?
+- [ ] Are the emotional stakes appropriate for that arc phase?
+- [ ] Is {{char}}'s behavior consistent with their arc-phase mindset?
+- [ ] Would this greeting make sense as an entry point for a player joining at that story moment?
+` : ""}
 REQUIREMENTS:
 ${
   botMode === "multi_character"

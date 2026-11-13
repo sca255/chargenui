@@ -83,8 +83,9 @@ export function renderLibraryGrid() {
     const isBs = c.score === 0;
     const scoreColor = isBs ? "#ef4444" : c.score >= 80 ? "#10b981" : "#f59e0b";
     const scoreText = isBs ? "BS / 100" : `${c.score} / 100`;
-    const avatarHtml = c.avatarBase64
-      ? `<img src="${c.avatarBase64}" alt="${escapeHtml(c.name)}">`
+    const avatarSrc = c.hasAvatar ? `/api/cards/${encodeURIComponent(c.id)}/avatar` : (c.avatarBase64 || "");
+    const avatarHtml = avatarSrc
+      ? `<img src="${avatarSrc}" loading="lazy" alt="${escapeHtml(c.name)}">`
       : `<span style="font-size: 20px; color: var(--text-dim);">👤</span>`;
     const tagsText = (c.tags || []).join(", ") || "No tags";
     const isActive = state.activeCardId === c.id;

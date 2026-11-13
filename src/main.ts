@@ -29,6 +29,7 @@ import { findRoute } from "./utils/router";
 import { withCors, handleCors, errorWithCors, notFoundWithCors } from "./middleware/cors";
 import { serverIpc } from "./services/ipc/server-ipc";
 import { PORT, PUBLIC_DIR, CHARGEN_IPC_SOCKET } from "./config/constants";
+import { startAvifPrewarmJob } from "./services/image/avif-cache";
 
 const allRoutes = [
   ...healthRoutes,
@@ -128,3 +129,6 @@ process.on("SIGINT", handleShutdown);
 process.on("SIGTERM", handleShutdown);
 
 console.log(`🔌 Dual-bind IPC active: HTTP/WS on :${server.port} + Unix Socket at: ${serverIpc.getSocketPath()}`);
+
+// Start low-priority background AVIF prewarm job for top 200 images
+startAvifPrewarmJob();

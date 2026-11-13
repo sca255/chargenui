@@ -52,6 +52,7 @@ export function syncStateToUI() {
   }
 
   if (el.charName) el.charName.value = c.name || "";
+  if (el.charNickname) el.charNickname.value = c.nickname || "";
   if (el.enhanceSearchQuery && (!el.enhanceSearchQuery.value || el.enhanceSearchQuery.dataset.autoSync === "true")) {
     if (c.name) {
       el.enhanceSearchQuery.value = c.name;
@@ -107,6 +108,7 @@ export function syncUIToState() {
   const c = state.character;
   if (!c) return;
   if (el.charName) c.name = el.charName.value.trim();
+  if (el.charNickname) c.nickname = el.charNickname.value.trim();
   if (el.charTags) c.tags = el.charTags.value.split(",").map(t => t.trim()).filter(Boolean);
 
   if (el.fieldDesc) c.description = el.fieldDesc.value;

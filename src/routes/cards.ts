@@ -16,8 +16,41 @@ import {
   buildCharacterDnaText,
   type SemanticSearchResult,
 } from "../services/character/embeddings";
+import { getAvifImage, getCachedAvifPath } from "../services/image/avif-cache";
 
 export const cardsRoutes: RequestHandler[] = [
+  {
+    method: "GET",
+    path: "/api/cards/:id/avatar",
+    handler: async (req, params) => {
+      // 1. Try prewarmed AVIF disk cache
+      const avifBuf = await getAvifImage(params.id);
+      if (avifBuf) {
+        return new Response(avifBuf, {
+          headers: {
+            "Content-Type": "image/avif",
+            "Cache-Control": "public, max-age=86400, stale-while-revalidate=3600"
+          }
+        });
+      }
+
+      // 2. On-demand read from saved card
+      const record = await getSavedCard(params.id);
+      const b64 = record?.avatarBase64 || record?.character?.avatar;
+      if (!b64 || typeof b64 !== "string") {
+        return new Response("Not found", { status: 404 });
+      }
+
+      const clean = b64.includes(",") ? b64.split(",", 1)[1] : b64;
+      const rawBuf = Buffer.from(clean, "base64");
+      return new Response(rawBuf, {
+        headers: {
+          "Content-Type": "image/png",
+          "Cache-Control": "public, max-age=3600"
+        }
+      });
+    }
+  },
   {
     method: "GET",
     path: "/api/cards",

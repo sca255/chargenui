@@ -45,48 +45,51 @@ export function getWorkflowTemplateForAsset(
   };
 }
 
+import { selectPersonalityExpressions, CANONICAL_28_EXPRESSIONS } from "../../services/image/expression-synthesizer";
+
 /**
- * Expression Sheet Plugin (8 canonical facial expressions)
+ * Expression Sheet Plugin (Full 28 Canonical RP Palette + Personality-Driven Selection)
  */
 export const expressionSheetPlugin: CharGenPlugin = {
   meta: {
     id: "builtin_asset_expression_sheet",
     name: "Expression Sheet Generator",
-    version: "1.0.0",
-    description: "Generates prompt items & ComfyUI templates for 8 canonical character expressions (neutral, joy, anger, sorrow, disgust, fear, blush/smug, shock).",
+    version: "2.0.0",
+    description: "Generates prompt items & ComfyUI img2img templates for up to 28 canonical character expressions with neutral-anchored identity consistency.",
     author: "CharGen Core",
     type: "asset_generator",
     language: "typescript",
     enabled: true,
     isBuiltin: true,
   },
-  onGenerateAssets: (char: RoleplayCharacter, opts = {}) => {
-    const expressions = [
-      { name: "neutral", label: "Neutral / Composed", modifier: "calm neutral expression, direct eye contact" },
-      { name: "joy", label: "Joy / Warm Smile", modifier: "warm genuine smile, soft squinting eyes, joyful relaxed look" },
-      { name: "anger", label: "Anger / Scowl", modifier: "furrowed brow, sharp intense glare, irritated grimace" },
-      { name: "sorrow", label: "Sorrow / Melancholy", modifier: "downcast gaze, glistening eyes, sorrowful vulnerable expression" },
-      { name: "disgust", label: "Disgust / Contempt", modifier: "curled upper lip, slight side-eye, disdainful contemptuous sneer" },
-      { name: "fear", label: "Fear / Apprehension", modifier: "wide startled pupils, slightly parted lips, tense guarded expression" },
-      { name: "smug_blush", label: "Smug / Flustered Blush", modifier: "smug playful smirk, faint rosy blush on cheeks, teasing side glance" },
-      { name: "shock", label: "Shock / Stunned Disbelief", modifier: "stunned disbelief, wide shocked eyes, frozen breath" },
-    ];
+  onGenerateAssets: (char: RoleplayCharacter, opts: { count?: number; personalityOnly?: boolean } = {}) => {
+    const count = opts.count ?? 28;
+    const selectedExpressions = opts.personalityOnly
+      ? selectPersonalityExpressions(char, count)
+      : Object.values(CANONICAL_28_EXPRESSIONS).slice(0, count);
 
     const baseTags = (char.tags || []).slice(0, 8).join(", ");
     const charName = char.name || "Character";
-    const assets: GeneratedAssetPrompt[] = expressions.map((exp) => {
-      const prompt = `character portrait of ${charName}, ${exp.modifier}, ${baseTags}, masterpiece, expressive character sprite sheet face, high fidelity`;
+    const assets: GeneratedAssetPrompt[] = selectedExpressions.map((exp) => {
+      const prompt = `character portrait of ${charName}, ${exp.positiveDelta}, ${baseTags}, masterpiece, expressive character sprite face, high fidelity`;
+      const negativePrompt = `monochrome, lowres, distorted face, multiple heads, poorly drawn eyes, ${exp.negativeDelta}`;
       return {
-        id: `asset_exp_${char.id || "c"}_${exp.name}`,
+        id: `asset_exp_${char.id || "c"}_${exp.key}`,
         name: `${charName} - Expression: ${exp.label}`,
         assetType: "expression_sheet",
         label: exp.label,
         prompt,
-        negativePrompt: "monochrome, lowres, distorted face, multiple heads, poorly drawn eyes",
+        negativePrompt,
         aspectRatio: "1:1",
         dimensions: { width: 1024, height: 1024 },
         workflowTemplate: getWorkflowTemplateForAsset("expression_sheet", prompt, "1:1"),
-        metadata: { expressionKey: exp.name },
+        metadata: {
+          expressionKey: exp.key,
+          category: exp.category,
+          description: exp.description,
+          denoise: exp.denoise,
+          intensityTier: exp.intensityTier || 1,
+        },
       };
     });
 

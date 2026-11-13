@@ -145,39 +145,100 @@ export function createCharxArchive(
   const files: ZipFileEntry[] = [];
 
   // 1. Primary avatar
-  let primaryPngData: Buffer | null = null;
+  let primaryAvatarData: Buffer | null = null;
+  let primaryAvatarExt = "avif";
   if (avatarPngBytes && avatarPngBytes.length > 0) {
-    primaryPngData = Buffer.from(avatarPngBytes);
+    primaryAvatarData = Buffer.from(avatarPngBytes);
+    // Detect PNG header (0x89 0x50 0x4E 0x47)
+    if (primaryAvatarData[0] === 0x89 && primaryAvatarData[1] === 0x50) {
+      primaryAvatarExt = "png";
+    }
   } else if (character.avatar && character.avatar.startsWith("data:image/")) {
+    const mimeMatch = character.avatar.match(/^data:image\/([a-zA-Z0-9.-]+);base64,/);
+    if (mimeMatch) {
+      primaryAvatarExt = mimeMatch[1].replace("jpeg", "jpg");
+    }
     const rawB64 = character.avatar.replace(/^data:image\/[a-zA-Z0-9.-]+;base64,/, "");
-    primaryPngData = Buffer.from(rawB64, "base64");
+    primaryAvatarData = Buffer.from(rawB64, "base64");
   }
 
   // Ensure assets array exists
   const existingAssets = Array.isArray(cardV3.data.assets) ? [...cardV3.data.assets] : [];
 
-  // Add primary icon conforming to Lumiverse / CCv3: assets/icon/image/main.png
-  if (primaryPngData && primaryPngData.length > 0) {
+  // Add primary icon conforming to Lumiverse / CCv3: assets/icon/image/main.<ext>
+  if (primaryAvatarData && primaryAvatarData.length > 0) {
+    const iconPath = `assets/icon/image/main.${primaryAvatarExt}`;
     files.push({
-      name: "assets/icon/image/main.png",
-      data: primaryPngData,
+      name: iconPath,
+      data: primaryAvatarData,
     });
-    if (!existingAssets.some((a) => a.uri === "embedded://assets/icon/image/main.png" || a.type === "icon")) {
+    if (!existingAssets.some((a) => a.uri === `embedded://${iconPath}` || a.type === "icon")) {
       existingAssets.unshift({
         type: "icon",
         name: "main",
-        uri: "embedded://assets/icon/image/main.png",
-        ext: "png",
+        uri: `embedded://${iconPath}`,
+        ext: primaryAvatarExt,
       });
     }
   }
 
-  // 2. Extensions & Gallery Asset Tracking
+  // 2. Multi-Emotion Expression Sprites (assets/expressions/<key>.<ext>)
   const ext = (character.extensions || {}) as Record<string, any>;
   if (!cardV3.data.extensions) {
     cardV3.data.extensions = {};
   }
   const targetExt = cardV3.data.extensions as Record<string, any>;
+
+  const expressionsDict = ext.expressions || (character as any).expressions;
+  const expressionsMeta = ext.expressions_meta || (character as any).expressions_meta || {};
+  if (expressionsDict && typeof expressionsDict === "object") {
+    if (!targetExt.expressions) targetExt.expressions = {};
+    if (!targetExt.expressions_meta) targetExt.expressions_meta = {};
+    for (const [key, dataUrlOrPath] of Object.entries(expressionsDict)) {
+      if (typeof dataUrlOrPath === "string" && dataUrlOrPath.startsWith("data:image/")) {
+        const mimeMatch = dataUrlOrPath.match(/^data:image\/([a-zA-Z0-9.-]+);base64,/);
+        const expExt = (mimeMatch ? mimeMatch[1] : "avif").replace("jpeg", "jpg");
+        const rawB64 = dataUrlOrPath.replace(/^data:image\/[a-zA-Z0-9.-]+;base64,/, "");
+        const expBuf = Buffer.from(rawB64, "base64");
+
+        const expFilePath = `assets/expressions/${key}.${expExt}`;
+        files.push({
+          name: expFilePath,
+          data: expBuf,
+        });
+
+        const expUri = `embedded://${expFilePath}`;
+        targetExt.expressions[key] = expUri;
+
+        // Propagate / inject classifier label descriptions
+        const meta = expressionsMeta[key] || {};
+        targetExt.expressions_meta[key] = {
+          label: meta.label || key,
+          description: meta.description || `Emotional sprite representing ${key}`,
+          intensityTier: meta.intensityTier || (key.endsWith("_2") ? 2 : 1),
+          uri: expUri,
+        };
+
+        // Register in CCv3 asset manifest
+        const existingIdx = existingAssets.findIndex(
+          (a) => a.name === key && (a.type === "expression" || a.type === "emotion" || a.type === "icon")
+        );
+        const assetEntry = {
+          type: "expression",
+          name: key,
+          uri: expUri,
+          ext: expExt,
+        };
+        if (existingIdx >= 0) {
+          existingAssets[existingIdx] = assetEntry;
+        } else {
+          existingAssets.push(assetEntry);
+        }
+      }
+    }
+  }
+
+  // 3. Extensions & Gallery Asset Tracking
   if (!targetExt.greeting_backgrounds) {
     targetExt.greeting_backgrounds = { ...(ext.greeting_backgrounds || {}) };
   }
@@ -311,11 +372,17 @@ export function parseCharxArchive(zipBytes: Uint8Array): {
   // Locate avatar image from assets
   let avatarDataUrl: string | undefined;
 
-  // Try finding assets/icon/image/main.png, assets/icon.png, or any image in assets/icon
+  // Try finding assets/icon/image/main.*, assets/icon.*, or any image in assets/icon
   const iconKey = Object.keys(files).find(
-    (k) => k === "assets/icon/image/main.png" || k === "assets/icon.png" || (k.startsWith("assets/icon/") && (k.endsWith(".png") || k.endsWith(".jpg") || k.endsWith(".webp")))
+    (k) =>
+      k === "assets/icon/image/main.avif" ||
+      k === "assets/icon/image/main.png" ||
+      k === "assets/icon.avif" ||
+      k === "assets/icon.png" ||
+      (k.startsWith("assets/icon/") &&
+        (k.endsWith(".avif") || k.endsWith(".png") || k.endsWith(".jpg") || k.endsWith(".webp")))
   ) || Object.keys(files).find(
-    (k) => k.startsWith("assets/") && (k.endsWith(".png") || k.endsWith(".jpg") || k.endsWith(".webp"))
+    (k) => k.startsWith("assets/") && (k.endsWith(".avif") || k.endsWith(".png") || k.endsWith(".jpg") || k.endsWith(".webp"))
   );
 
   if (iconKey && files[iconKey]) {
@@ -323,6 +390,8 @@ export function parseCharxArchive(zipBytes: Uint8Array): {
       ? "image/jpeg"
       : iconKey.endsWith(".webp")
       ? "image/webp"
+      : iconKey.endsWith(".avif")
+      ? "image/avif"
       : "image/png";
     avatarDataUrl = `data:${mime};base64,${files[iconKey].toString("base64")}`;
   }
@@ -342,8 +411,9 @@ export function parseCharxArchive(zipBytes: Uint8Array): {
     throw new Error("Invalid character card schema inside .charx archive.");
   }
 
-  // Extract gallery images from CharX assets
+  // Extract expressions and gallery images from CharX assets
   if (!character.extensions) character.extensions = {};
+  if (!character.extensions.expressions) character.extensions.expressions = {};
   if (!Array.isArray(character.extensions.gallery)) character.extensions.gallery = [];
 
   for (const [key, buf] of Object.entries(files)) {
@@ -363,6 +433,14 @@ export function parseCharxArchive(zipBytes: Uint8Array): {
         : "image/png";
       const b64 = `data:${mime};base64,${buf.toString("base64")}`;
       const baseName = key.split("/").pop()?.replace(/\.[^.]+$/, "") || "image";
+
+      // Check if this is an expression sprite (e.g. assets/expressions/<emotion>.<ext>)
+      if (key.startsWith("assets/expressions/")) {
+        const exprKey = baseName.toLowerCase();
+        character.extensions.expressions[exprKey] = b64;
+        continue;
+      }
+
       const isBg = key.includes("/background/") || baseName.includes("background") || baseName.includes("chat_bg");
 
       if (!character.extensions.gallery.some((g: any) => g.dataUrl === b64)) {

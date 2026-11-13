@@ -1,17 +1,66 @@
 <div class="tab-content hidden" id="tab-reimagine" style="display: flex; flex-direction: column; gap: 10px;">
 <div class="agent-reimagine-header">
 <div>
-<strong>✨ Reimagine the current card</strong>
-<div class="muted">Send the active RoleplayCharacter to the same agent service for a cohesive redesign or a fresh inspired direction.</div>
+<strong>✨ Reimagine & Inspire Suite</strong>
+<div class="muted">Redesign the active card or spin off fresh inspired interpretations with full Spark feature parity (Eras, Story Arcs, Themes & Vision).</div>
 </div>
 <span class="status-badge" id="reimagine-card-name">No card</span>
 </div>
+
+<!-- Mode Selector (Redesign vs Inspire) -->
 <div class="reimagine-mode-row">
-<button class="btn btn-sm reimagine-mode active" data-mode="redesign" type="button">🛠️ Redesign</button>
-<button class="btn btn-sm reimagine-mode" data-mode="inspire" type="button">💡 Inspire</button>
+<button class="btn btn-sm reimagine-mode active" data-mode="redesign" type="button">🛠️ Redesign (Preserve Identity)</button>
+<button class="btn btn-sm reimagine-mode" data-mode="inspire" type="button">💡 Inspire (Fresh Direction & Hooks)</button>
 </div>
-<textarea class="form-textarea" id="reimagine-prompt" placeholder="Optional direction: preserve her voice, move the conflict to a haunted lighthouse, make the opening more immediate..." rows="3"></textarea>
-<button class="btn btn-primary" id="btn-run-reimagine" type="button">✨ Reimagine Current Card</button>
+
+<!-- Direction / Prompt -->
+<div class="form-group" style="margin-bottom: 6px;">
+<label class="form-label">Creative Direction / Modifications</label>
+<textarea class="form-textarea" id="reimagine-prompt" placeholder="Optional direction: preserve her voice, move conflict to a haunted lighthouse, make opening immediate..." rows="3"></textarea>
+</div>
+
+<!-- Story Arc Section & Generator -->
+<div class="form-group" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 10px; margin-bottom: 6px;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+  <label class="form-label" style="margin-bottom: 0; font-weight: 700; color: var(--accent-purple);">📜 Narrative Story Arc</label>
+  <button class="btn btn-sm btn-ghost" id="btn-generate-story-arc" style="font-size: 11px; padding: 2px 8px; color: var(--accent-cyan); border: 1px solid rgba(6, 182, 212, 0.4);" type="button">⚡ Generate Arc</button>
+</div>
+<div style="display: flex; gap: 6px; margin-bottom: 6px; align-items: center;">
+  <input class="form-input" id="reimagine-arc-guidance" placeholder="Optional story guidance / plot beat..." style="font-size: 11px; flex: 1; padding: 4px 8px;" type="text"/>
+  <div style="display: flex; align-items: center; gap: 4px; white-space: nowrap;">
+    <span style="font-size: 10px; color: var(--text-muted);">Acts:</span>
+    <input class="form-input" id="reimagine-arc-acts" min="1" placeholder="Acts" style="font-size: 11px; width: 55px; text-align: center; padding: 4px;" type="number" value="3"/>
+  </div>
+</div>
+<textarea class="form-textarea" id="reimagine-story-arc" placeholder="Act 1: Setup...\nAct 2: Complication...\nAct 3: Climax..." rows="3" style="font-size: 11px;"></textarea>
+</div>
+
+<!-- Era Selector & Historical Setting (Spark Parity) -->
+<div class="form-group" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 10px; margin-bottom: 6px;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+  <label class="form-label" style="margin-bottom: 0; font-weight: 700; color: #38bdf8;">🏛️ Setting / Era Directive</label>
+  <span style="font-size: 10px; color: var(--text-muted);">Optional era framing</span>
+</div>
+<select class="form-select" id="reimagine-era-select" style="font-size: 12px; margin-bottom: 6px;">
+  <option value="">None (Keep existing card world / setting)</option>
+</select>
+<div class="hidden" id="reimagine-era-preview" style="font-size: 10px; color: var(--text-muted); background: rgba(0,0,0,0.2); padding: 6px; border-radius: 4px;"></div>
+</div>
+
+<!-- Card Format Preference -->
+<div class="form-group" style="margin-bottom: 8px;">
+<label class="form-label" style="font-weight: 600;">Text / Description Format</label>
+<select class="form-select" id="reimagine-format" style="font-size: 12px;">
+  <option value="bbcode" selected>BBCode Tags [b]...[/b] (Categorized &amp; Structured)</option>
+  <option value="prose">Weaver Tagged Bundle / Natural Prose ([CORE], [ARC], [FORM]...)</option>
+  <option value="boostyle">Boostyle Pseudocode [Character("Name"){...}]</option>
+  <option value="wxx">W++ Format [character("Name"){...}]</option>
+  <option value="markdown">Dense Structured Markdown (### Headers)</option>
+</select>
+</div>
+
+<!-- Action Trigger -->
+<button class="btn btn-primary" id="btn-run-reimagine" style="width: 100%; justify-content: center; font-weight: 700; padding: 10px 14px;" type="button">✨ Reimagine Current Card</button>
 <div class="agent-reimagine-result hidden" id="reimagine-result"></div>
 </div>
 <!-- TAB: Lorebook Companion Creator -->

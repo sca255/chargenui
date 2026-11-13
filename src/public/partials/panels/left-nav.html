@@ -4,17 +4,32 @@
 <span id="active-tool-indicator" style="font-size: 11px; color: var(--accent-cyan); font-weight: 600;">NEW CARD</span>
 </div>
 <div class="panel-body">
-<!-- Navigation Tabs -->
-<div class="nav-tabs">
-<button class="nav-tab active" data-tab="tab-generate">🔮 Spark New</button>
-<button class="nav-tab" data-tab="tab-enhance">⚡ Enhancer</button>
-<button class="nav-tab" data-tab="tab-agent">🤖 Agent Mode</button>
-<button class="nav-tab" data-tab="tab-reimagine">✨ Reimagine</button>
-<button class="nav-tab" data-tab="tab-companion">📖 Lore Companion</button>
-<button class="nav-tab" data-tab="tab-eras">📜 Era Forge</button>
-<button class="nav-tab" data-tab="tab-evolution">🧬 Evolution</button>
-<button class="nav-tab" data-tab="tab-timeline">⏳ Timeline</button>
-<button class="nav-tab" data-tab="tab-branches">🌿 Branches</button>
-<button class="nav-tab" data-tab="tab-assets">📦 Assets</button>
+<!-- Tier 1: Category Mode Bar -->
+<div class="workspace-modes" id="workspace-mode-selector">
+  <button class="workspace-mode-btn active" data-category="create">🔮 Create</button>
+  <button class="workspace-mode-btn" data-category="refine">⚡ Refine</button>
+  <button class="workspace-mode-btn" data-category="lore">📦 Lore & Assets</button>
+</div>
+
+<!-- Tier 2 Sub-tabs for Create -->
+<div class="nav-tabs subtab-group" id="subtabs-create">
+  <button class="nav-tab active" data-tab="tab-generate">🔮 Spark New</button>
+  <button class="nav-tab" data-tab="tab-eras">📜 Era Forge</button>
+  <button class="nav-tab" data-tab="tab-reimagine">✨ Reimagine</button>
+</div>
+
+<!-- Tier 2 Sub-tabs for Refine (hidden by default) -->
+<div class="nav-tabs subtab-group hidden" id="subtabs-refine">
+  <button class="nav-tab" data-tab="tab-enhance">⚡ Enhancer</button>
+  <button class="nav-tab" data-tab="tab-agent">🤖 Agent Mode</button>
+  <button class="nav-tab" data-tab="tab-evolution">🧬 Evolution</button>
+  <button class="nav-tab" data-tab="tab-timeline">⏳ Timeline</button>
+  <button class="nav-tab" data-tab="tab-branches">🌿 Branches</button>
+</div>
+
+<!-- Tier 2 Sub-tabs for Lore & Assets (hidden by default) -->
+<div class="nav-tabs subtab-group hidden" id="subtabs-lore">
+  <button class="nav-tab" data-tab="tab-assets">📦 Assets</button>
+  <button class="nav-tab" data-tab="tab-companion">📖 Lore Companion</button>
 </div>
 <!-- TAB 1: Generate from Spark / Concept -->

@@ -149,14 +149,21 @@ function extractDeterministicTags(desc: string, name: string): ExtractedVisualTa
       ageProse = `a mature middle-aged woman${ageNumStr}`;
     }
   } else if (numericalAge !== undefined && numericalAge >= 20) {
-    ageTag = isMale ? "young_man" : "young_woman";
-    ageLabel = `Young adult (${numericalAge} years old)`;
-    ageProse = isMale ? `a young man (${numericalAge}yo)` : `a young woman (${numericalAge}yo)`;
+    if (numericalAge >= 28) {
+      ageTag = isMale ? "adult_male, 30yo" : "adult_woman, 30yo";
+      ageLabel = `Adult (${numericalAge} years old)`;
+      ageProse = isMale ? `a ${numericalAge}-year-old adult man` : `a ${numericalAge}-year-old adult woman`;
+    } else {
+      ageTag = isMale ? "young_man, 20yo" : "young_woman, 20yo";
+      ageLabel = `Young adult (${numericalAge} years old)`;
+      ageProse = isMale ? `a young man (${numericalAge}yo)` : `a young woman (${numericalAge}yo)`;
+    }
   } else if (numericalAge !== undefined) {
     ageTag = isMale ? "young_man, 18yo" : "young_woman, 18yo";
     ageLabel = `Young adult (${numericalAge} years old)`;
     ageProse = isMale ? `an 18-year-old young man` : `an 18-year-old young woman`;
   }
+  // If no age is explicitly stated or detected, leave ageTag/ageLabel empty rather than inventing one.
 
   const hairTags: string[] = [];
   const hairColors = [
@@ -544,7 +551,7 @@ ${extVisual.age ? `- Apparent Age & Life Stage: ${extVisual.age} (CRITICAL: Pres
     lockedIdentityBlock = `
 CORE CHARACTER VISUAL IDENTITY (MANDATORY CONSISTENCY ANCHOR — MUST BE PRESERVED ACROSS ALL IMAGES):
 - Gender / Subject: ${visualTags.genderTag}, solo
-${visualTags.ageLabel ? `- Apparent Age & Life Stage: ${visualTags.ageLabel} (CRITICAL: Do NOT de-age an old or mature character into a 20-something!)` : "- Age / Life Stage: Adult"}
+${visualTags.ageLabel ? `- Apparent Age & Life Stage: ${visualTags.ageLabel} (CRITICAL: Do NOT alter or de-age!)` : ""}
 - Hair (Color & Style): ${visualTags.hairTags.map((t) => t.replace(/_/g, " ")).join(", ") || "as described in physical form"}
 - Eyes (Color): ${visualTags.eyeTags.map((t) => t.replace(/_/g, " ")).join(", ") || "as described"}
 - Body Build / Shape: ${visualTags.buildTags.map((t) => t.replace(/_/g, " ")).join(", ") || "as described"}
@@ -678,25 +685,6 @@ INSTRUCTIONS:
         ? raw.negativePrompt.trim()
         : modelConfig?.defaultNegative || undefined;
 
-    // For standard avatars in booru/SDXL models, protect against unwanted bondage contamination
-    if (
-      imagePurpose === "avatar" &&
-      portraitIntent === "standard_avatar" &&
-      (targetModel === "pony" || targetModel === "illustrious" || targetModel === "sdxl")
-    ) {
-      const antiBondageTags = "bondage, bound, rope, restraints, gag, handcuffs, collar, chained, crying";
-      if (negativePrompt) {
-        if (!negativePrompt.includes("bondage")) {
-          negativePrompt = `${negativePrompt}, ${antiBondageTags}`;
-        }
-      } else {
-        negativePrompt =
-          targetModel === "pony"
-            ? `score_6, score_5, score_4, source_pony, deformed, bad anatomy, bad hands, text, watermark, ${antiBondageTags}`
-            : antiBondageTags;
-      }
-    }
-
     return {
       characterId: request.characterId,
       characterName: charName,
@@ -715,20 +703,7 @@ INSTRUCTIONS:
   } catch (err: any) {
     console.warn("AI image prompt generation failed, using structured algorithmic fallback:", err?.message);
     const generatedPrompt = fallbackPrompt(request, targetModel, artStyle, shotType, portraitIntent, imagePurpose);
-    const antiBondageTags = "bondage, bound, rope, restraints, gag, handcuffs, collar, chained";
     let negativePrompt = modelConfig?.defaultNegative || undefined;
-
-    if (
-      imagePurpose === "avatar" &&
-      portraitIntent === "standard_avatar" &&
-      (targetModel === "pony" || targetModel === "illustrious" || targetModel === "sdxl")
-    ) {
-      if (negativePrompt) {
-        if (!negativePrompt.includes("bondage")) negativePrompt = `${negativePrompt}, ${antiBondageTags}`;
-      } else {
-        negativePrompt = antiBondageTags;
-      }
-    }
 
     return {
       characterId: request.characterId,

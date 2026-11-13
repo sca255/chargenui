@@ -81,12 +81,48 @@ export function renderLorebook() {
 
 
 // Navigation Tabs Handlers
+const modeBtns = document.querySelectorAll(".workspace-mode-btn");
+const subtabGroups = {
+  create: document.getElementById("subtabs-create"),
+  refine: document.getElementById("subtabs-refine"),
+  lore: document.getElementById("subtabs-lore")
+};
+
+modeBtns.forEach(btn => {
+  btn.addEventListener("click", () => {
+    const cat = btn.dataset.category;
+    if (!cat) return;
+    modeBtns.forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+
+    Object.entries(subtabGroups).forEach(([key, groupEl]) => {
+      if (groupEl) groupEl.classList.toggle("hidden", key !== cat);
+    });
+
+    const activeGroup = subtabGroups[cat];
+    if (activeGroup) {
+      const firstTab = activeGroup.querySelector(".nav-tab");
+      if (firstTab) firstTab.click();
+    }
+  });
+});
+
 el.tabs.forEach(tab => {
   tab.addEventListener("click", () => {
     const target = tab.dataset.tab;
     if (!target) return; // Guard: Ignore tabs without data-tab
     const targetEl = document.getElementById(target);
     if (!targetEl) return; // Guard: Don't hide tabs if target element does not exist
+
+    // Ensure parent category group is visible if tab was clicked programmatically
+    const parentGroup = tab.closest(".subtab-group");
+    if (parentGroup && parentGroup.id) {
+      const cat = parentGroup.id.replace("subtabs-", "");
+      modeBtns.forEach(b => b.classList.toggle("active", b.dataset.category === cat));
+      Object.entries(subtabGroups).forEach(([key, groupEl]) => {
+        if (groupEl) groupEl.classList.toggle("hidden", key !== cat);
+      });
+    }
 
     el.tabs.forEach(t => t.classList.remove("active"));
     tab.classList.add("active");

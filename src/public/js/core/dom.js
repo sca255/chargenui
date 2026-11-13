@@ -68,6 +68,7 @@ export const el = {
 
   // Form Fields & Active Card Link
   charName: document.getElementById("char-name"),
+  charNickname: document.getElementById("char-nickname"),
   activeCardPill: document.getElementById("active-card-pill"),
   activeCardNameLabel: document.getElementById("active-card-name-label"),
   btnUnlinkCard: document.getElementById("btn-unlink-card"),
@@ -276,6 +277,7 @@ export const el = {
   btnExportPng: document.getElementById("btn-export-png"),
   btnExportCharx: document.getElementById("btn-export-charx"),
   btnExportJson: document.getElementById("btn-export-json"),
+  btnExportLegacyJson: document.getElementById("btn-export-legacy-json"),
   btnCopyPrompt: document.getElementById("btn-copy-prompt"),
   btnViewRawJson: document.getElementById("btn-view-raw-json"),
 

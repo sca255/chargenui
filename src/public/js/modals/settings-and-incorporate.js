@@ -202,28 +202,79 @@ el.btnExportCharx?.addEventListener("click", async () => {
   }
 });
 
-// Export JSON Card
+// Export JSON Card (Character Card V3 standard)
 el.btnExportJson?.addEventListener("click", () => {
   syncUIToState();
+  const now = new Date().toISOString();
+  const c = state.character;
+  const cardV3 = {
+    spec: "chara_card_v3",
+    spec_version: "3.0",
+    data: {
+      name: c.name,
+      description: c.description,
+      personality: c.personality,
+      scenario: c.scenario,
+      first_mes: c.first_mes,
+      mes_example: c.mes_example,
+      creator_notes: c.creator_notes ?? "",
+      system_prompt: "", // Strictly empty
+      post_history_instructions: c.post_history_instructions || "",
+      alternate_greetings: c.alternate_greetings || [],
+      group_only_greetings: c.group_only_greetings || [],
+      tags: c.tags || [],
+      character_book: c.character_book,
+      creator: "CharGen Harness",
+      character_version: "1.0",
+      nickname: c.nickname || c.name,
+      creation_date: now,
+      modification_date: now,
+      assets: Array.isArray(c.assets) && c.assets.length > 0 ? c.assets : [
+        {
+          type: "icon",
+          uri: "embedded://assets/icon.png",
+          name: "main",
+          ext: "png"
+        }
+      ],
+      extensions: c.extensions || {}
+    }
+  };
+  const jsonStr = JSON.stringify(cardV3, null, 2);
+  const blob = new Blob([jsonStr], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${c.name || "character"}.v3.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+
+// Export Legacy JSON Card (Character Card V2 for Chub / Botbooru)
+el.btnExportLegacyJson?.addEventListener("click", () => {
+  syncUIToState();
+  const c = state.character;
   const cardV2 = {
     spec: "chara_card_v2",
     spec_version: "2.0",
     data: {
-      name: state.character.name,
-      description: state.character.description,
-      personality: state.character.personality,
-      scenario: state.character.scenario,
-      first_mes: state.character.first_mes,
-      mes_example: state.character.mes_example,
-      creator_notes: state.character.creator_notes,
+      name: c.name,
+      description: c.description,
+      personality: c.personality,
+      scenario: c.scenario,
+      first_mes: c.first_mes,
+      mes_example: c.mes_example,
+      creator_notes: c.creator_notes,
       system_prompt: "", // Strictly empty so SillyTavern presets are preserved
-      post_history_instructions: state.character.post_history_instructions,
-      alternate_greetings: state.character.alternate_greetings,
-      tags: state.character.tags,
-      character_book: state.character.character_book,
+      post_history_instructions: c.post_history_instructions,
+      alternate_greetings: c.alternate_greetings,
+      tags: c.tags,
+      character_book: c.character_book,
       creator: "CharGen Harness",
       character_version: "1.0",
-      extensions: state.character.extensions || {},
+      extensions: c.extensions || {},
     }
   };
   const jsonStr = JSON.stringify(cardV2, null, 2);
@@ -231,7 +282,7 @@ el.btnExportJson?.addEventListener("click", () => {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `${state.character.name || "character"}.json`;
+  a.download = `${c.name || "character"}.v2.json`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -262,17 +313,38 @@ ${c.mes_example ? `[Example Dialogues:\n${c.mes_example}]` : ""}`;
   setTimeout(() => el.btnCopyPrompt.textContent = "📋 Copy Character Prompt to Clipboard", 2000);
 });
 
-// Raw JSON View
+// Raw JSON View (Character Card V3)
 el.btnViewRawJson?.addEventListener("click", () => {
   syncUIToState();
-  const cardV2 = {
-    spec: "chara_card_v2",
-    spec_version: "2.0",
+  const now = new Date().toISOString();
+  const c = state.character;
+  const cardV3 = {
+    spec: "chara_card_v3",
+    spec_version: "3.0",
     data: {
-      ...state.character,
+      name: c.name,
+      description: c.description,
+      personality: c.personality,
+      scenario: c.scenario,
+      first_mes: c.first_mes,
+      mes_example: c.mes_example,
+      creator_notes: c.creator_notes ?? "",
+      system_prompt: "",
+      post_history_instructions: c.post_history_instructions || "",
+      alternate_greetings: c.alternate_greetings || [],
+      group_only_greetings: c.group_only_greetings || [],
+      tags: c.tags || [],
+      character_book: c.character_book,
+      creator: "CharGen Harness",
+      character_version: "1.0",
+      nickname: c.nickname || c.name,
+      creation_date: now,
+      modification_date: now,
+      assets: c.assets || [],
+      extensions: c.extensions || {}
     }
   };
-  el.rawJsonTextarea.value = JSON.stringify(cardV2, null, 2);
+  el.rawJsonTextarea.value = JSON.stringify(cardV3, null, 2);
   el.modalJson.classList.remove("hidden");
 });
 

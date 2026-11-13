@@ -8,7 +8,7 @@ export function escapeHtml(str) {
     .replace(/'/g, "&#039;");
 }
 
-export function normalizeRpMacros(text, charName) {
+export function normalizeRpMacros(text, charName, nickname) {
   if (!text) return "";
   let result = text;
   result = result.replace(/\{\{\s*user\s*\}\}/gi, "___RP_USER___");
@@ -19,17 +19,18 @@ export function normalizeRpMacros(text, charName) {
   result = result.replace(/___RP_CHAR___/g, "{{char}}");
   result = result.replace(/(?:<start>|<Start>|\[START\]|\[start\])/g, "<START>");
   result = result.replace(/(?:^|\n)\s*(?:User|user|You|you|\{\{user\}\}):\s*/gm, m => m.startsWith("\n") ? "\n{{user}}: " : "{{user}}: ");
-  if (charName && charName.trim().length > 1) {
-    const escaped = charName.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const namesToCheck = [nickname, charName].filter(n => !!n && n.trim().length > 1);
+  for (const name of namesToCheck) {
+    const escaped = name.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     result = result.replace(new RegExp(`(?:^|\\n)\\s*(?:${escaped}|\\{\\{char\\}\\}):\\s*`, "gm"), m => m.startsWith("\n") ? "\n{{char}}: " : "{{char}}: ");
   }
   return result;
 }
 
-export function interpolateRpMacros(text, userName, charName) {
+export function interpolateRpMacros(text, userName, charName, nickname) {
   if (!text) return "";
   const u = userName || "Anon";
-  const c = charName || "Character";
+  const c = nickname || charName || "Character";
   return text
     .replace(/\{\{\s*user\s*\}\}/gi, u)
     .replace(/<USER>/gi, u)

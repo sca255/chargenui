@@ -3,8 +3,25 @@ import type { AgentModifyRequest, AgentCompactRequest } from "../services/agent/
 import type { ReimagineRequest } from "../services/agent/reimagine";
 import { executeAgentModify, executeAgentCompact } from "../services/agent/agent-harness";
 import { executeReimagine } from "../services/agent/reimagine";
+import { generateStoryArc, type StoryArcRequest } from "../services/character/story-arc-generator";
 
 export const agentRoutes: RequestHandler[] = [
+  {
+    method: "POST",
+    path: "/api/story-arc/generate",
+    handler: async (req) => {
+      const body = (await req.json().catch(() => ({}))) as StoryArcRequest;
+      if (!body.character || !body.provider) {
+        return Response.json({ error: "character and provider are required" }, { status: 400 });
+      }
+      try {
+        const result = await generateStoryArc(body);
+        return Response.json(result);
+      } catch (err: any) {
+        return Response.json({ error: err.message || "Story arc generation failed" }, { status: 500 });
+      }
+    },
+  },
   {
     method: "POST",
     path: "/api/agent/modify",
