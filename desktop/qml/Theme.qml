@@ -10,6 +10,8 @@ QtObject {
     readonly property color bgCard: "#151d2d"
     readonly property color bgInput: "#0d131f"
     readonly property color bgHover: "#1e293b"
+    readonly property color bgCardHover: "#1e293b"
+    readonly property color bgElevated: "#1e293b"
 
     // Borders
     readonly property color borderMain: "#243048"

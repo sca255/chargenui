@@ -3,7 +3,6 @@ import QtQuick.Controls 6.5
 import QtQuick.Layouts 6.5
 import QtQuick.Dialogs 6.5
 
-import "VisionScanView.qml" as VisionScanView
 ApplicationWindow {
     id: window
     visible: true
@@ -24,17 +23,17 @@ ApplicationWindow {
 
     function openToolTab(tabIndex, param = "") {
         currentToolTab = tabIndex
-        if (tabIndex === 2 && param) {
+        if (tabIndex === 1 && param) {
             agentView.sendPresetInstruction(param)
-        } else if (tabIndex === 5) {
+        } else if (tabIndex === 4) {
             multiverseView.refresh()
-        } else if (tabIndex === 6) {
+        } else if (tabIndex === 5) {
             householdView.refresh()
-        } else if (tabIndex === 7) {
+        } else if (tabIndex === 6) {
             cardAuditView.refresh()
-        } else if (tabIndex === 8 && param) {
+        } else if (tabIndex === 7 && param) {
             loreSearchView.setQueryAndSearch(param || "")
-        } else if (tabIndex === 9 && param) {
+        } else if (tabIndex === 8 && param) {
             loreCompanionView.setLoreText(param || "")
         }
     }
@@ -144,13 +143,13 @@ ApplicationWindow {
             onTriggerImport: importFileDialog.open()
             onTriggerExport: exportFileDialog.open()
             onTriggerExportCharx: exportCharxFileDialog.open()
-            onOpenMultiverse: window.openToolTab(5)
-            onOpenAudit: window.openToolTab(7)
-            onOpenLoreSearch: window.openToolTab(8, (bridge.card && bridge.card.name !== "New Character") ? bridge.card.name : "")
-            onOpenAgent: window.openToolTab(2)
-            onOpenReimagine: window.openToolTab(3)
-            onOpenScenarioMatrix: window.openToolTab(4)
-            onOpenHouseholds: window.openToolTab(6)
+            onOpenAgent: window.openToolTab(1)
+            onOpenReimagine: window.openToolTab(2)
+            onOpenScenarioMatrix: window.openToolTab(3)
+            onOpenMultiverse: window.openToolTab(4)
+            onOpenHouseholds: window.openToolTab(5)
+            onOpenAudit: window.openToolTab(6)
+            onOpenLoreSearch: window.openToolTab(7, (bridge.card && bridge.card.name !== "New Character") ? bridge.card.name : "")
         }
 
         // Central Split View: Left (Workspace Toolbox with Tabs) & Right (Card Editor)
@@ -205,28 +204,26 @@ ApplicationWindow {
                                 radius: theme.radiusSm
                                 color: {
                                     if (window.currentToolTab === 0) return theme.withAlpha(theme.accentCyan, 0.2)
-                                    if (window.currentToolTab === 1) return theme.withAlpha("#06b6d4", 0.25)
+                                    if (window.currentToolTab === 1) return theme.withAlpha(theme.accentPurple, 0.25)
                                     if (window.currentToolTab === 2) return theme.withAlpha(theme.accentPurple, 0.25)
-                                    if (window.currentToolTab === 3) return theme.withAlpha(theme.accentPurple, 0.25)
-                                    if (window.currentToolTab === 4) return theme.withAlpha(theme.accentAmber, 0.25)
-                                    if (window.currentToolTab === 5) return theme.withAlpha(theme.accentBlue, 0.25)
-                                    if (window.currentToolTab === 6) return theme.withAlpha(theme.accentPink, 0.25)
-                                    if (window.currentToolTab === 7) return theme.withAlpha(theme.accentEmerald, 0.25)
-                                    if (window.currentToolTab === 8) return theme.withAlpha(theme.accentCyan, 0.25)
-                                    if (window.currentToolTab === 9) return theme.withAlpha(theme.accentGreen, 0.25)
+                                    if (window.currentToolTab === 3) return theme.withAlpha(theme.accentAmber, 0.25)
+                                    if (window.currentToolTab === 4) return theme.withAlpha(theme.accentBlue, 0.25)
+                                    if (window.currentToolTab === 5) return theme.withAlpha(theme.accentPink, 0.25)
+                                    if (window.currentToolTab === 6) return theme.withAlpha(theme.accentEmerald, 0.25)
+                                    if (window.currentToolTab === 7) return theme.withAlpha(theme.accentCyan, 0.25)
+                                    if (window.currentToolTab === 8) return theme.withAlpha(theme.accentGreen, 0.25)
                                     return "transparent"
                                 }
                                 border.color: {
                                     if (window.currentToolTab === 0) return theme.accentCyan
-                                    if (window.currentToolTab === 1) return "#06b6d4"
+                                    if (window.currentToolTab === 1) return theme.accentPurple
                                     if (window.currentToolTab === 2) return theme.accentPurple
-                                    if (window.currentToolTab === 3) return theme.accentPurple
-                                    if (window.currentToolTab === 4) return theme.accentAmber
-                                    if (window.currentToolTab === 5) return theme.accentBlue
-                                    if (window.currentToolTab === 6) return theme.accentPink
-                                    if (window.currentToolTab === 7) return theme.accentEmerald
-                                    if (window.currentToolTab === 8) return theme.accentCyan
-                                    if (window.currentToolTab === 9) return theme.accentGreen
+                                    if (window.currentToolTab === 3) return theme.accentAmber
+                                    if (window.currentToolTab === 4) return theme.accentBlue
+                                    if (window.currentToolTab === 5) return theme.accentPink
+                                    if (window.currentToolTab === 6) return theme.accentEmerald
+                                    if (window.currentToolTab === 7) return theme.accentCyan
+                                    if (window.currentToolTab === 8) return theme.accentGreen
                                     return "transparent"
                                 }
                                 border.width: 1
@@ -252,15 +249,14 @@ ApplicationWindow {
                                     }
                                     color: {
                                         if (window.currentToolTab === 0) return theme.accentCyan
-                                        if (window.currentToolTab === 1) return "#06b6d4"
+                                        if (window.currentToolTab === 1) return "#d8b4fe"
                                         if (window.currentToolTab === 2) return "#d8b4fe"
-                                        if (window.currentToolTab === 3) return "#d8b4fe"
-                                        if (window.currentToolTab === 4) return "#fde68a"
-                                        if (window.currentToolTab === 5) return "#7dd3fc"
-                                        if (window.currentToolTab === 6) return "#fbcfe8"
-                                        if (window.currentToolTab === 7) return "#6ee7b7"
-                                        if (window.currentToolTab === 8) return theme.accentCyan
-                                        if (window.currentToolTab === 9) return "#6ee7b7"
+                                        if (window.currentToolTab === 3) return "#fde68a"
+                                        if (window.currentToolTab === 4) return "#7dd3fc"
+                                        if (window.currentToolTab === 5) return "#fbcfe8"
+                                        if (window.currentToolTab === 6) return "#6ee7b7"
+                                        if (window.currentToolTab === 7) return theme.accentCyan
+                                        if (window.currentToolTab === 8) return "#6ee7b7"
                                         return "#ffffff"
                                     }
                                     font.pixelSize: 9
@@ -331,53 +327,11 @@ ApplicationWindow {
                                     }
                                 }
 
-                                // Tab 1: Vision (NEW)
-                                Button {
-                                    Layout.fillWidth: true
-                                    implicitHeight: 28
-                                    onClicked: window.openToolTab(1)
-                                    background: Rectangle {
-                                        radius: theme.radiusSm
-                                        color: window.currentToolTab === 1 ? theme.withAlpha("#06b6d4", 0.28) : (parent.hovered ? theme.bgHover : theme.bgCard)
-                                        border.color: window.currentToolTab === 1 ? "#06b6d4" : theme.borderMain
-                                        border.width: window.currentToolTab === 1 ? 1.5 : 1
-                                    }
-                                    contentItem: Text {
-                                        text: "👁️ Vision"
-                                        color: window.currentToolTab === 1 ? "#ffffff" : theme.textMuted
-                                        font.pixelSize: 11
-                                        font.bold: window.currentToolTab === 1
-                                        horizontalAlignment: Text.AlignHCenter
-                                        verticalAlignment: Text.AlignVCenter
-                                    }
-                                }
-
-                                // Tab 2: Agent (was 1)
+                                // Tab 2: Reimagine
                                 Button {
                                     Layout.fillWidth: true
                                     implicitHeight: 28
                                     onClicked: window.openToolTab(2)
-                                    background: Rectangle {
-                                        radius: theme.radiusSm
-                                        color: window.currentToolTab === 2 ? theme.withAlpha(theme.accentPurple, 0.28) : (parent.hovered ? theme.bgHover : theme.bgCard)
-                                        border.color: window.currentToolTab === 2 ? theme.accentPurple : theme.borderMain
-                                        border.width: window.currentToolTab === 2 ? 1.5 : 1
-                                    }
-                                    contentItem: Text {
-                                        text: "🤖 Agent"
-                                        color: window.currentToolTab === 2 ? "#ffffff" : theme.textMuted
-                                        font.pixelSize: 11
-                                        font.bold: window.currentToolTab === 2
-                                        horizontalAlignment: Text.AlignHCenter
-                                        verticalAlignment: Text.AlignVCenter
-                                    }
-                                }
-
-                                // Tab 3: Reimagine (was 2)
-                                Button {
-                                    Layout.fillWidth: true
-                                    implicitHeight: 28
-                                    onClicked: window.openToolTab(3)
                                     background: Rectangle {
                                         radius: theme.radiusSm
                                         color: window.currentToolTab === 2 ? theme.withAlpha(theme.accentPurple, 0.28) : (parent.hovered ? theme.bgHover : theme.bgCard)
@@ -400,64 +354,64 @@ ApplicationWindow {
                                 Layout.fillWidth: true
                                 spacing: 4
 
-                                // Tab 4: Matrix (was 3)
+                                // Tab 3: Matrix
+                                Button {
+                                    Layout.fillWidth: true
+                                    implicitHeight: 28
+                                    onClicked: window.openToolTab(3)
+                                    background: Rectangle {
+                                        radius: theme.radiusSm
+                                        color: window.currentToolTab === 3 ? theme.withAlpha(theme.accentAmber, 0.25) : (parent.hovered ? theme.bgHover : theme.bgCard)
+                                        border.color: window.currentToolTab === 3 ? theme.accentAmber : theme.borderMain
+                                        border.width: window.currentToolTab === 3 ? 1.5 : 1
+                                    }
+                                    contentItem: Text {
+                                        text: "🎲 Matrix"
+                                        color: window.currentToolTab === 3 ? "#ffffff" : theme.textMuted
+                                        font.pixelSize: 11
+                                        font.bold: window.currentToolTab === 3
+                                        horizontalAlignment: Text.AlignHCenter
+                                        verticalAlignment: Text.AlignVCenter
+                                    }
+                                }
+
+                                // Tab 4: AU Fork
                                 Button {
                                     Layout.fillWidth: true
                                     implicitHeight: 28
                                     onClicked: window.openToolTab(4)
                                     background: Rectangle {
                                         radius: theme.radiusSm
-                                        color: window.currentToolTab === 4 ? theme.withAlpha(theme.accentAmber, 0.25) : (parent.hovered ? theme.bgHover : theme.bgCard)
-                                        border.color: window.currentToolTab === 4 ? theme.accentAmber : theme.borderMain
-                                        border.width: window.currentToolTab === 3 ? 1.5 : 1
+                                        color: window.currentToolTab === 4 ? theme.withAlpha(theme.accentBlue, 0.25) : (parent.hovered ? theme.bgHover : theme.bgCard)
+                                        border.color: window.currentToolTab === 4 ? theme.accentBlue : theme.borderMain
+                                        border.width: window.currentToolTab === 4 ? 1.5 : 1
                                     }
                                     contentItem: Text {
-                                        text: "🎲 Matrix"
-                                        color: window.currentToolTab === 9 ? "#ffffff" : theme.textMuted
+                                        text: "🌌 AU Fork"
+                                        color: window.currentToolTab === 4 ? "#ffffff" : theme.textMuted
                                         font.pixelSize: 11
-                                        font.bold: window.currentToolTab === 9
+                                        font.bold: window.currentToolTab === 4
                                         horizontalAlignment: Text.AlignHCenter
                                         verticalAlignment: Text.AlignVCenter
                                     }
                                 }
 
-                                // Tab 5: AU Fork (was 4)
+                                // Tab 5: Households
                                 Button {
                                     Layout.fillWidth: true
                                     implicitHeight: 28
                                     onClicked: window.openToolTab(5)
                                     background: Rectangle {
                                         radius: theme.radiusSm
-                                        color: window.currentToolTab === 5 ? theme.withAlpha(theme.accentBlue, 0.25) : (parent.hovered ? theme.bgHover : theme.bgCard)
-                                        border.color: window.currentToolTab === 5 ? theme.accentBlue : theme.borderMain
-                                        border.width: window.currentToolTab === 4 ? 1.5 : 1
-                                    }
-                                    contentItem: Text {
-                                        text: "🌌 AU Fork"
-                                        color: window.currentToolTab === 9 ? "#ffffff" : theme.textMuted
-                                        font.pixelSize: 11
-                                        font.bold: window.currentToolTab === 9
-                                        horizontalAlignment: Text.AlignHCenter
-                                        verticalAlignment: Text.AlignVCenter
-                                    }
-                                }
-
-                                // Tab 6: Households (was 5)
-                                Button {
-                                    Layout.fillWidth: true
-                                    implicitHeight: 28
-                                    onClicked: window.openToolTab(6)
-                                    background: Rectangle {
-                                        radius: theme.radiusSm
-                                        color: window.currentToolTab === 6 ? theme.withAlpha(theme.accentPink, 0.25) : (parent.hovered ? theme.bgHover : theme.bgCard)
-                                        border.color: window.currentToolTab === 6 ? theme.accentPink : theme.borderMain
+                                        color: window.currentToolTab === 5 ? theme.withAlpha(theme.accentPink, 0.25) : (parent.hovered ? theme.bgHover : theme.bgCard)
+                                        border.color: window.currentToolTab === 5 ? theme.accentPink : theme.borderMain
                                         border.width: window.currentToolTab === 5 ? 1.5 : 1
                                     }
                                     contentItem: Text {
                                         text: "👑 House"
-                                        color: window.currentToolTab === 9 ? "#ffffff" : theme.textMuted
+                                        color: window.currentToolTab === 5 ? "#ffffff" : theme.textMuted
                                         font.pixelSize: 11
-                                        font.bold: window.currentToolTab === 9
+                                        font.bold: window.currentToolTab === 5
                                         horizontalAlignment: Text.AlignHCenter
                                         verticalAlignment: Text.AlignVCenter
                                     }
@@ -469,64 +423,64 @@ ApplicationWindow {
                                 Layout.fillWidth: true
                                 spacing: 4
 
-                                // Tab 7: Audit (was 6)
+                                // Tab 6: Audit
+                                Button {
+                                    Layout.fillWidth: true
+                                    implicitHeight: 28
+                                    onClicked: window.openToolTab(6)
+                                    background: Rectangle {
+                                        radius: theme.radiusSm
+                                        color: window.currentToolTab === 6 ? theme.withAlpha(theme.accentEmerald, 0.25) : (parent.hovered ? theme.bgHover : theme.bgCard)
+                                        border.color: window.currentToolTab === 6 ? theme.accentEmerald : theme.borderMain
+                                        border.width: window.currentToolTab === 6 ? 1.5 : 1
+                                    }
+                                    contentItem: Text {
+                                        text: "📊 Audit"
+                                        color: window.currentToolTab === 6 ? "#ffffff" : theme.textMuted
+                                        font.pixelSize: 11
+                                        font.bold: window.currentToolTab === 6
+                                        horizontalAlignment: Text.AlignHCenter
+                                        verticalAlignment: Text.AlignVCenter
+                                    }
+                                }
+
+                                // Tab 7: Lore
                                 Button {
                                     Layout.fillWidth: true
                                     implicitHeight: 28
                                     onClicked: window.openToolTab(7)
                                     background: Rectangle {
                                         radius: theme.radiusSm
-                                        color: window.currentToolTab === 7 ? theme.withAlpha(theme.accentEmerald, 0.25) : (parent.hovered ? theme.bgHover : theme.bgCard)
-                                        border.color: window.currentToolTab === 7 ? theme.accentEmerald : theme.borderMain
-                                        border.width: window.currentToolTab === 6 ? 1.5 : 1
+                                        color: window.currentToolTab === 7 ? theme.withAlpha(theme.accentCyan, 0.25) : (parent.hovered ? theme.bgHover : theme.bgCard)
+                                        border.color: window.currentToolTab === 7 ? theme.accentCyan : theme.borderMain
+                                        border.width: window.currentToolTab === 7 ? 1.5 : 1
                                     }
                                     contentItem: Text {
-                                        text: "📊 Audit"
-                                        color: window.currentToolTab === 9 ? "#ffffff" : theme.textMuted
+                                        text: "🔎 Lore"
+                                        color: window.currentToolTab === 7 ? "#ffffff" : theme.textMuted
                                         font.pixelSize: 11
-                                        font.bold: window.currentToolTab === 9
+                                        font.bold: window.currentToolTab === 7
                                         horizontalAlignment: Text.AlignHCenter
                                         verticalAlignment: Text.AlignVCenter
                                     }
                                 }
 
-                                // Tab 8: Lore (was 7)
+                                // Tab 8: Companion
                                 Button {
                                     Layout.fillWidth: true
                                     implicitHeight: 28
                                     onClicked: window.openToolTab(8)
                                     background: Rectangle {
                                         radius: theme.radiusSm
-                                        color: window.currentToolTab === 8 ? theme.withAlpha(theme.accentCyan, 0.25) : (parent.hovered ? theme.bgHover : theme.bgCard)
-                                        border.color: window.currentToolTab === 8 ? theme.accentCyan : theme.borderMain
-                                        border.width: window.currentToolTab === 7 ? 1.5 : 1
-                                    }
-                                    contentItem: Text {
-                                        text: "🔎 Lore"
-                                        color: window.currentToolTab === 9 ? "#ffffff" : theme.textMuted
-                                        font.pixelSize: 11
-                                        font.bold: window.currentToolTab === 9
-                                        horizontalAlignment: Text.AlignHCenter
-                                        verticalAlignment: Text.AlignVCenter
-                                    }
-                                }
-
-                                // Tab 9: Companion (was 8)
-                                Button {
-                                    Layout.fillWidth: true
-                                    implicitHeight: 28
-                                    onClicked: window.openToolTab(9)
-                                    background: Rectangle {
-                                        radius: theme.radiusSm
-                                        color: window.currentToolTab === 9 ? theme.withAlpha(theme.accentGreen, 0.25) : (parent.hovered ? theme.bgHover : theme.bgCard)
-                                        border.color: window.currentToolTab === 9 ? theme.accentGreen : theme.borderMain
+                                        color: window.currentToolTab === 8 ? theme.withAlpha(theme.accentGreen, 0.25) : (parent.hovered ? theme.bgHover : theme.bgCard)
+                                        border.color: window.currentToolTab === 8 ? theme.accentGreen : theme.borderMain
                                         border.width: window.currentToolTab === 8 ? 1.5 : 1
                                     }
                                     contentItem: Text {
                                         text: "📖 Companion"
-                                        color: window.currentToolTab === 9 ? "#ffffff" : theme.textMuted
+                                        color: window.currentToolTab === 8 ? "#ffffff" : theme.textMuted
                                         font.pixelSize: 11
-                                        font.bold: window.currentToolTab === 9
+                                        font.bold: window.currentToolTab === 8
                                         horizontalAlignment: Text.AlignHCenter
                                         verticalAlignment: Text.AlignVCenter
                                     }
@@ -560,71 +514,59 @@ ApplicationWindow {
                                 )
                             }
                             onOpenLoreSearchRequested: (defaultQ) => {
-                                window.openToolTab(8, defaultQ)
+                                window.openToolTab(7, defaultQ)
                             }
                             onOpenEraPickerRequested: (category) => {
                                 eraPickerModal.openModal(category || "All", "", false, sparkGen.selectedEra)
                             }
                         }
 
-                        // 1: Vision Scanner (NEW)
-                        VisionScanView {
-                            id: visionScanView
-                            Layout.fillWidth: true
-                            Layout.fillHeight: true
-                            onRequestForgeFromScan: (characterData) => {
-                                // Switch to Spark tab and forge from scan
-                                window.openToolTab(0)
-                                // Could populate sparkGen with characterData here
-                            }
-                        }
-
-                        // 2: Agent Doctor
+                        // 1: Agent Doctor
                         AgentView {
                             id: agentView
                             Layout.fillWidth: true
                             Layout.fillHeight: true
                         }
 
-                        // 3: Reimagine
+                        // 2: Reimagine
                         ReimagineView {
                             id: reimagineView
                             Layout.fillWidth: true
                             Layout.fillHeight: true
                         }
 
-                        // 4: Scenario Matrix
+                        // 3: Scenario Matrix
                         ScenarioMatrixView {
                             id: scenarioMatrixView
                             Layout.fillWidth: true
                             Layout.fillHeight: true
                         }
 
-                        // 5: Multiverse AU Fork
+                        // 4: Multiverse AU Fork
                         MultiverseView {
                             id: multiverseView
                             Layout.fillWidth: true
                             Layout.fillHeight: true
                         }
 
-                        // 6: Household Binder
+                        // 5: Household Binder
                         HouseholdView {
                             id: householdView
                             Layout.fillWidth: true
                             Layout.fillHeight: true
                         }
 
-                        // 7: Health & Psychometric Audit
+                        // 6: Health & Psychometric Audit
                         CardAuditView {
                             id: cardAuditView
                             Layout.fillWidth: true
                             Layout.fillHeight: true
                             onPrescribeToDoctorRequested: (instruction) => {
-                                window.openToolTab(2, instruction)
+                                window.openToolTab(1, instruction)
                             }
                         }
 
-                        // 8: Fandom Lore Researcher
+                        // 7: Fandom Lore Researcher
                         LoreSearchView {
                             id: loreSearchView
                             Layout.fillWidth: true
@@ -639,7 +581,7 @@ ApplicationWindow {
                             }
                         }
 
-                        // 9: Lore Companion
+                        // 8: Lore Companion
                         LoreCompanionView {
                             id: loreCompanionView
                             Layout.fillWidth: true

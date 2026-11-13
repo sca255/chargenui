@@ -20,6 +20,11 @@ ScrollView {
                 resultCharName.text = data.character.name
             }
         }
+        function onStoryArcReady(data) {
+            if (data.storyArc) {
+                arcField.text = data.storyArc
+            }
+        }
     }
 
     ColumnLayout {
@@ -160,7 +165,7 @@ ScrollView {
             spacing: 4
 
             Text {
-                text: "Optional creative prompt or custom direction:"
+                text: "Creative prompt or custom direction:"
                 color: theme.textMuted
                 font.pixelSize: 11
                 font.bold: true
@@ -169,9 +174,9 @@ ScrollView {
             TextArea {
                 id: promptField
                 Layout.fillWidth: true
-                implicitHeight: 110
+                implicitHeight: 90
                 wrapMode: TextArea.Wrap
-                placeholderText: "e.g. Preserve voice and cynical wit, but place the character in an isolated outpost during an incoming storm..."
+                placeholderText: "e.g. Preserve voice and cynical wit, but place the character in an isolated outpost..."
                 font.pixelSize: 11
                 color: theme.textMain
                 placeholderTextColor: theme.textDim
@@ -183,6 +188,119 @@ ScrollView {
             }
         }
 
+        // Story Arc Trajectory Section & Generator
+        Rectangle {
+            Layout.fillWidth: true
+            implicitHeight: arcCol.implicitHeight + 16
+            color: theme.bgCard
+            border.color: theme.borderMain
+            radius: theme.radiusSm
+
+            ColumnLayout {
+                id: arcCol
+                anchors.fill: parent
+                anchors.margins: 8
+                spacing: 6
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    Text {
+                        text: "📜 Narrative Story Arc"
+                        color: theme.accentCyan
+                        font.pixelSize: 11
+                        font.bold: true
+                    }
+                    Item { Layout.fillWidth: true }
+                    Button {
+                        text: "⚡ Generate Arc"
+                        font.pixelSize: 10
+                        onClicked: {
+                            var hint = arcGuidanceField.text.trim() || promptField.text.trim()
+                            var acts = parseInt(actsField.text) || 3
+                            bridge.generateStoryArcForReimagine(hint, acts, root.mode)
+                        }
+                        background: Rectangle { radius: 4; color: theme.bgInput; border.color: theme.accentCyan }
+                        contentItem: Text { text: parent.text; color: theme.accentCyan; font.pixelSize: 10; font.bold: true }
+                    }
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 6
+                    TextField {
+                        id: arcGuidanceField
+                        Layout.fillWidth: true
+                        placeholderText: "Optional story guidance / plot beat..."
+                        font.pixelSize: 11
+                        color: theme.textMain
+                        background: Rectangle { color: theme.bgInput; radius: theme.radiusSm; border.color: theme.borderMain }
+                    }
+                    Text {
+                        text: "Acts:"
+                        font.pixelSize: 10
+                        color: theme.textMuted
+                    }
+                    TextField {
+                        id: actsField
+                        implicitWidth: 44
+                        text: "3"
+                        font.pixelSize: 11
+                        horizontalAlignment: TextInput.AlignHCenter
+                        color: theme.textMain
+                        background: Rectangle { color: theme.bgInput; radius: theme.radiusSm; border.color: theme.borderMain }
+                    }
+                }
+
+                TextArea {
+                    id: arcField
+                    Layout.fillWidth: true
+                    implicitHeight: 70
+                    wrapMode: TextArea.Wrap
+                    placeholderText: "Act 1: Setup...\nAct 2: Complication...\nAct 3: Climax..."
+                    font.pixelSize: 11
+                    color: theme.textMain
+                    background: Rectangle { color: theme.bgInput; radius: theme.radiusSm; border.color: theme.borderMain }
+                }
+            }
+        }
+
+        // Format Selector (BBCode, Prose, Boostyle, W++, Markdown)
+        Rectangle {
+            Layout.fillWidth: true
+            implicitHeight: 46
+            color: theme.bgCard
+            border.color: theme.borderMain
+            radius: theme.radiusSm
+
+            RowLayout {
+                anchors.fill: parent
+                anchors.margins: 8
+                spacing: 8
+
+                Text {
+                    text: "📝 Format:"
+                    color: theme.accentCyan
+                    font.pixelSize: 11
+                    font.bold: true
+                }
+
+                ComboBox {
+                    id: formatBox
+                    Layout.fillWidth: true
+                    model: [
+                        { text: "BBCode Tags [b]...[/b] (Categorized & Structured)", value: "bbcode" },
+                        { text: "Weaver Tagged Bundle / Natural Prose ([CORE], [ARC]...)", value: "prose" },
+                        { text: "Boostyle Pseudocode [Character(\"Name\"){...}]", value: "boostyle" },
+                        { text: "W++ Format [character(\"Name\"){...}]", value: "wxx" },
+                        { text: "Dense Structured Markdown (### Headers)", value: "markdown" }
+                    ]
+                    textRole: "text"
+                    currentIndex: 0
+                    font.pixelSize: 11
+                }
+            }
+        }
+
         // Action Run Button
         Button {
             id: btnRun
@@ -190,7 +308,10 @@ ScrollView {
             implicitHeight: 40
             enabled: !bridge.isBusy
             text: bridge.isBusy && bridge.taskType === "reimagine" ? "✨ Reimagining Character Card..." : "✨ Reimagine Current Card"
-            onClicked: bridge.reimagineCard(root.mode, promptField.text)
+            onClicked: {
+                var selectedFormat = formatBox.model[formatBox.currentIndex].value || "bbcode"
+                bridge.reimagineCard(root.mode, promptField.text, arcField.text, selectedFormat)
+            }
             background: Rectangle {
                 radius: theme.radiusSm
                 color: parent.hovered ? "#7c3aed" : "#6d28d9"

@@ -46,27 +46,15 @@ ScrollView {
             Layout.fillWidth: true
             implicitHeight: 200
             radius: theme.radiusMd
-            border.color: selectedImageUrl ? theme.accentCyan : (containsMouse ? theme.accentCyan : theme.borderMain)
-            border.width: selectedImageUrl || containsMouse ? 2 : 1
-            border.style: selectedImageUrl ? Qt.SolidLine : Qt.DashLine
-            color: selectedImageUrl ? theme.bgCardHover : (containsMouse ? theme.bgHover : theme.bgCard)
+            border.color: selectedImageUrl ? theme.accentCyan : (dropArea.containsMouse ? theme.accentCyan : theme.borderMain)
+            border.width: selectedImageUrl || dropArea.containsMouse ? 2 : 1
+            color: selectedImageUrl ? theme.bgCardHover : (dropArea.containsMouse ? theme.bgHover : theme.bgCard)
 
             MouseArea {
+                id: dropArea
                 anchors.fill: parent
                 hoverEnabled: true
-                onEntered: containsMouse = true
-                onExited: containsMouse = false
                 onClicked: fileDialog.open()
-                onDropped: {
-                    if (drop.urls.length > 0) {
-                        var url = drop.urls[0]
-                        if (url.isLocalFile || url.scheme === "file") {
-                            root.selectedImageUrl = url.toLocalFile()
-                        } else {
-                            root.selectedImageUrl = url.toString()
-                        }
-                    }
-                }
             }
 
             DropArea {
@@ -179,7 +167,7 @@ ScrollView {
 
             background: Rectangle {
                 radius: theme.radiusSm
-                color: scanBtn.hovered && scanBtn.enabled ? "#2563eb" : (scanBtn.enabled ? "#1d4ed8" : theme.bgDisabled)
+                color: scanBtn.hovered && scanBtn.enabled ? "#2563eb" : (scanBtn.enabled ? "#1d4ed8" : "#334155")
                 border.color: theme.accentBlue
             }
 

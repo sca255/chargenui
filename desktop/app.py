@@ -191,34 +191,50 @@ class AvatarImageProvider(QQuickImageProvider):
         self._bridge = bridge
 
     def requestImage(self, id_str, size, requested_size):
-        b64 = ""
         clean_id = id_str.split("?")[0]
+
+        # 1. Check active card in bridge
         if clean_id == "active":
             b64 = self._bridge._card.get("avatar") or ""
+            if b64:
+                return self._decode_b64(b64)
+
+        # 2. Check on-demand avatar fetch from local backend (avoids keeping all avatars in memory)
         elif clean_id.startswith("card_"):
             cid = clean_id[5:]
-            for c in self._bridge._library:
-                if c.get("id") == cid:
-                    b64 = c.get("avatarBase64") or ""
-                    break
+            try:
+                backend_url = getattr(self._bridge, "_backend_url", "http://127.0.0.1:3333")
+                resp = requests.get(f"{backend_url}/api/cards/{cid}/avatar", timeout=3)
+                if resp.status_code == 200 and resp.content:
+                    img = QImage()
+                    if img.loadFromData(resp.content):
+                        return img
+            except Exception:
+                pass
+
         elif clean_id.startswith("queue_"):
             qid = clean_id[6:]
             for item in self._bridge._image_queue:
                 if item.get("id") == qid:
                     b64 = item.get("avatarDataUrl") or ""
+                    if b64:
+                        return self._decode_b64(b64)
                     break
 
-        if b64:
-            if "," in b64:
-                b64 = b64.split(",", 1)[1]
-            try:
-                raw = base64.b64decode(b64)
-                img = QImage()
-                if img.loadFromData(raw):
-                    return img
-            except Exception as e:
-                Log.debug("AvatarProvider", f"Failed decoding avatar: {e}")
+        empty = QImage(1, 1, QImage.Format_ARGB32)
+        empty.fill(0)
+        return empty
 
+    def _decode_b64(self, b64: str) -> QImage:
+        if "," in b64:
+            b64 = b64.split(",", 1)[1]
+        try:
+            raw = base64.b64decode(b64)
+            img = QImage()
+            if img.loadFromData(raw):
+                return img
+        except Exception:
+            pass
         empty = QImage(1, 1, QImage.Format_ARGB32)
         empty.fill(0)
         return empty
@@ -249,6 +265,7 @@ class BackendBridge(QObject):
     loreSearchStarted = Signal(str)
     loreSearchFinished = Signal(dict)
     reimagineFinished = Signal(dict)
+    storyArcReady = Signal(dict)
     activeLoreChanged = Signal(str)
     avatarTimestampChanged = Signal()
     promptProfilesChanged = Signal()
@@ -276,6 +293,7 @@ class BackendBridge(QObject):
 
         default_card = {
             "name": "New Character",
+            "nickname": "",
             "tags": [],
             "description": "",
             "personality": "",
@@ -323,11 +341,28 @@ class BackendBridge(QObject):
         self._backend_timer.timeout.connect(self._check_backend)
         self._backend_timer.start(2500)
 
+        # Periodic memory trim timer (cleans cold caches every 30s to keep under 120MB)
+        self._trim_timer = QTimer(self)
+        self._trim_timer.timeout.connect(self._trim_memory)
+        self._trim_timer.start(30000)
+
+    def _trim_memory(self):
+        try:
+            import gc
+            gc.collect()
+            import ctypes
+            libc = ctypes.CDLL("libc.so.6")
+            if hasattr(libc, "malloc_trim"):
+                libc.malloc_trim(0)
+        except Exception:
+            pass
+
     # -------------------------------------------------------------
-    # Slots - Agentic Reimagine
+    # Slots - Agentic Reimagine & Story Arc
     # -------------------------------------------------------------
-    @Slot(str, str)
-    def reimagineCard(self, mode: str, prompt: str):
+    @Slot(str, str, str)
+    @Slot(str, str, str, str)
+    def reimagineCard(self, mode: str, prompt: str, story_arc: str = "", format_type: str = "bbcode"):
         mode = mode if mode in ("redesign", "inspire") else "redesign"
         self._set_status(f"✨ {mode.title()}ing card...", True, "reimagine")
 
@@ -337,6 +372,8 @@ class BackendBridge(QObject):
                     "character": self._card,
                     "mode": mode,
                     "prompt": prompt or "",
+                    "storyArc": story_arc or "",
+                    "format": format_type or "bbcode",
                     "provider": self._provider,
                 }
                 res = requests.post(
@@ -360,6 +397,39 @@ class BackendBridge(QObject):
                 self.notification.emit(f"✨ {mode.title()} complete for '{self._card.get('name', 'Character')}'")
             except Exception as e:
                 self.errorOccurred.emit(f"Reimagine error: {e}")
+            finally:
+                self._set_status("Ready", False)
+        self._thread_pool.submit(run)
+
+    @Slot(str)
+    @Slot(str, int)
+    @Slot(str, int, str)
+    def generateStoryArcForReimagine(self, hint: str, min_acts: int = 3, mode: str = "redesign"):
+        acts_count = max(1, min_acts)
+        self._set_status(f"📜 Generating Story Arc ({acts_count} acts)...", True, "story_arc")
+
+        def run():
+            try:
+                payload = {
+                    "character": self._card,
+                    "roughStoryHint": hint or "",
+                    "minActs": acts_count,
+                    "mode": mode or "redesign",
+                    "provider": self._provider,
+                }
+                res = requests.post(
+                    f"{self._backend_url}/api/story-arc/generate",
+                    json=payload,
+                    timeout=resolve_timeout(FORGE_TIMEOUT),
+                )
+                if res.status_code == 200:
+                    data = res.json()
+                    self.storyArcReady.emit(data)
+                    self.notification.emit(f"📜 {acts_count}-Act Story Arc synthesized!")
+                else:
+                    self.errorOccurred.emit("Story Arc failed: " + res.text)
+            except Exception as e:
+                self.errorOccurred.emit(f"Story Arc error: {e}")
             finally:
                 self._set_status("Ready", False)
         self._thread_pool.submit(run)
@@ -1262,6 +1332,7 @@ class BackendBridge(QObject):
         self._card = {
             "id": f"char_{int(time.time())}",
             "name": "New Character",
+            "nickname": "",
             "tags": [],
             "description": "",
             "personality": "",
@@ -2671,6 +2742,43 @@ class BackendBridge(QObject):
                 self._set_status("Ready", False)
         self._thread_pool.submit(run)
 
+    @Slot(str, str)
+    def synthesizeGroupEncounter(self, household_id: str, scenario_goal: str):
+        """Bridge alias for HouseholdView."""
+        self.generateHouseholdEncounter(household_id, scenario_goal, True)
+
+    @Slot(str, str, dict)
+    def enhanceCharacter(self, action: str, card_name: str, options: dict = None):
+        """Dispatches an enhancement or spine regeneration request to /api/enhance."""
+        self._set_status("⚡ Processing character enhancement...", True, "enhance")
+
+        def run():
+            try:
+                payload = {
+                    "action": action,
+                    "character": self._card,
+                    "options": options or {},
+                    "provider": self._provider
+                }
+                res = requests.post(f"{self._backend_url}/api/enhance", json=payload, timeout=resolve_timeout(FORGE_TIMEOUT))
+                if res.status_code == 200:
+                    data = res.json()
+                    char = data.get("character")
+                    if isinstance(char, dict) and char:
+                        self._card = {**self._card, **char}
+                        self.cardChanged.emit()
+                        self._notify_ipc_active_card()
+                        self._save_last_card_cache()
+                        self._auto_save_to_library(self._card)
+                    self.notification.emit(f"✓ Character enhancement '{action}' complete!")
+                else:
+                    self.errorOccurred.emit(f"Enhance failed: {res.text}")
+            except Exception as e:
+                self.errorOccurred.emit(f"Enhance error: {e}")
+            finally:
+                self._set_status("Ready", False)
+        self._thread_pool.submit(run)
+
     # -------------------------------------------------------------
     # Scenario Matrix
     # -------------------------------------------------------------
@@ -2934,6 +3042,13 @@ def main():
     app = QGuiApplication(sys.argv)
     app.setApplicationName("CharGen Harness Native")
     app.setOrganizationName("CharGenUI")
+
+    # Hard-cap Qt Quick Pixmap Cache to 48MB so textures never balloon memory
+    try:
+        from PySide6.QtGui import QPixmapCache
+        QPixmapCache.setCacheLimit(48 * 1024)
+    except Exception:
+        pass
 
     engine = QQmlApplicationEngine()
     bridge = BackendBridge(app)

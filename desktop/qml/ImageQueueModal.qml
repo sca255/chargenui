@@ -193,8 +193,9 @@ Rectangle {
                                 ComboBox {
                                     id: modelCombo
                                     Layout.fillWidth: true
-                                    model: ["flux", "pony", "illustrious", "sdxl", "midjourney"]
+                                    model: ["anima", "flux", "pony", "illustrious", "sdxl", "midjourney"]
                                     displayText: {
+                                        if (currentText === "anima") return "CircleStone Anima (Cosmos 2B / Qwen3)"
                                         if (currentText === "flux") return "FLUX.1 / SD 3.5 (Natural Language)"
                                         if (currentText === "pony") return "Pony Diffusion V6 / XL (Score Tags)"
                                         if (currentText === "illustrious") return "Illustrious-XL / Animagine (Booru)"

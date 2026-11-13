@@ -17,7 +17,7 @@ Rectangle {
         target: bridge
         function onErrorOccurred(msg) {
             root.isLoading = false
-            root.btnSynthesize.enabled = true
+            if (btnSynthesize) btnSynthesize.enabled = true
         }
     }
 
