@@ -38,6 +38,7 @@ async function openWeaverInterviewModal(customInfluence) {
       nsfw: el.genNsfw.checked,
       botMode: state.botMode || "single",
       influence: typeof customInfluence === "string" && customInfluence.trim() ? customInfluence.trim() : undefined,
+      decisionConfig: state.decisionConfig,
       provider: state.provider,
     };
 
@@ -74,6 +75,9 @@ export function renderWeaverInterviewQuestions() {
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 6px;">
             <div class="weaver-question-category">[${qNum}/${questions.length}] ${escapeHtml(q.category)}</div>
             <div style="display: flex; align-items: center; gap: 6px;">
+              <button type="button" class="btn btn-sm btn-weaver-auto-pick-q" data-idx="${idx}" data-qid="${escapeHtml(q.id)}" style="padding: 2px 8px; font-size: 11px; color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); background: rgba(56, 189, 248, 0.1);" title="Auto-Pick with Jev Decision Model">
+                <span>⚡ Pick with Jev</span>
+              </button>
               <button type="button" class="btn btn-sm btn-weaver-reroll-q" data-idx="${idx}" data-qid="${escapeHtml(q.id)}" style="padding: 2px 8px; font-size: 11px; color: #c084fc; border: 1px solid rgba(192, 132, 252, 0.4); background: rgba(192, 132, 252, 0.1);" title="Generate 3 fresh alternative options for this question">
                 <span>🎲 Reroll</span>
               </button>
@@ -180,6 +184,54 @@ async function submitWeaverForge() {
     }
   });
 
+  // --- Strict Jev/Clef Answer Relevance Verification Gate ---
+  if (state.decisionConfig && state.decisionConfig.provider !== "disabled") {
+    btn.disabled = true;
+    btn.innerHTML = `<span class="spinner"></span> <span>Checking Answer Relevance via Jev...</span>`;
+
+    // Reset previous error highlights
+    document.querySelectorAll(".weaver-question-card").forEach((c) => {
+      c.style.borderColor = "";
+      const existingWarning = c.querySelector(".weaver-qa-warning");
+      if (existingWarning) existingWarning.remove();
+    });
+
+    let hasEvasiveAnswer = false;
+    for (const ans of answers) {
+      try {
+        const checkRes = await apiPost("/api/weaver/check-answer", {
+          question: ans.question,
+          category: ans.category,
+          userAnswer: ans.selectedAnswer,
+          decisionConfig: state.decisionConfig,
+        });
+
+        if (checkRes && checkRes.answersQuestion === false) {
+          hasEvasiveAnswer = true;
+          const card = document.querySelector(`.weaver-question-card[data-qid="${ans.questionId}"]`);
+          if (card) {
+            card.style.borderColor = "#ef4444";
+            card.scrollIntoView({ behavior: "smooth", block: "center" });
+            const warnBox = document.createElement("div");
+            warnBox.className = "weaver-qa-warning";
+            warnBox.style.cssText = "margin-top: 6px; padding: 6px 10px; background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; border-radius: var(--radius-sm); font-size: 11px; color: #fca5a5;";
+            warnBox.innerHTML = `<strong>⚠️ Answer Off-Topic:</strong> Jev detected this answer does not directly address the question dimension. Please clarify your answer before forging.`;
+            card.appendChild(warnBox);
+          }
+        }
+      } catch (err) {
+        console.warn("Failed answer check:", err);
+      }
+    }
+
+    if (hasEvasiveAnswer) {
+      btn.disabled = false;
+      btn.innerHTML = `<span>⚡ Synthesize Bible &amp; Forge Final Card</span>`;
+      alert("⚠️ One or more answers did not directly answer the question dimension. Please clarify the highlighted questions to proceed.");
+      return;
+    }
+  }
+
   const btn = el.btnWeaverSubmitForge;
   btn.disabled = true;
   btn.innerHTML = `<span class="spinner"></span> <span>Synthesizing Bible &amp; Forging Card...</span>`;
@@ -230,6 +282,49 @@ el.btnWeaverInterview?.addEventListener("click", () => openWeaverInterviewModal(
 el.btnCloseWeaverInterview?.addEventListener("click", () => el.modalWeaverInterview?.classList.add("hidden"));
 el.btnWeaverCancel?.addEventListener("click", () => el.modalWeaverInterview?.classList.add("hidden"));
 el.btnWeaverAutofill?.addEventListener("click", autoFillWeaverIntuition);
+el.btnWeaverAutoPickJev?.addEventListener("click", async () => {
+  if (!state.weaverInterview?.questions || state.weaverInterview.questions.length === 0) return;
+  const btn = el.btnWeaverAutoPickJev;
+  const origHtml = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spinner"></span> <span>Running Jev Across Questions...</span>`;
+
+  try {
+    const questions = state.weaverInterview.questions;
+    for (let i = 0; i < questions.length; i++) {
+      const q = questions[i];
+      const res = await apiPost("/api/weaver/auto-pick-jev", {
+        concept: el.genConcept?.value?.trim() || "",
+        category: q.category,
+        question: q.question,
+        options: q.options || [],
+        genre: el.genGenre?.value || "Fiction",
+        tone: el.genTone?.value || "",
+        nsfw: el.genNsfw?.checked || false,
+        provider: state.provider,
+        decisionConfig: state.decisionConfig,
+      });
+
+      if (res.dropped) {
+        console.warn(`Dropped question [${q.category}] after 10 failed rerolls`);
+        questions.splice(i, 1);
+        i--;
+        continue;
+      }
+      if (res.options && Array.isArray(res.options)) {
+        q.options = res.options;
+      }
+      q.recommendedOptionIndex = res.selectedOptionIndex >= 0 ? res.selectedOptionIndex : 0;
+    }
+    renderWeaverInterviewQuestions();
+    autoFillWeaverIntuition();
+  } catch (err) {
+    alert("Auto-Pick with Jev failed: " + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = origHtml;
+  }
+});
 el.btnWeaverAskMore?.addEventListener("click", async () => {
   if (!state.weaverInterview?.questions) return;
   const concept = el.genConcept.value.trim();
@@ -294,6 +389,60 @@ el.weaverQuestionsList?.addEventListener("click", async (e) => {
         const inp = drawer.querySelector(".weaver-influence-input");
         if (inp) inp.focus();
       }
+    }
+    return;
+  }
+
+  // Auto-Pick with Jev for a single question
+  const autoPickBtn = e.target.closest(".btn-weaver-auto-pick-q");
+  if (autoPickBtn) {
+    const idx = parseInt(autoPickBtn.getAttribute("data-idx") || "0", 10);
+    const q = state.weaverInterview?.questions?.[idx];
+    if (!q) return;
+
+    autoPickBtn.disabled = true;
+    const origHtml = autoPickBtn.innerHTML;
+    autoPickBtn.innerHTML = `<span class="spinner" style="width:10px;height:10px;display:inline-block;vertical-align:middle;margin-right:4px;"></span><span>Jev Picking...</span>`;
+
+    try {
+      const res = await apiPost("/api/weaver/auto-pick-jev", {
+        concept: el.genConcept?.value?.trim() || "",
+        category: q.category,
+        question: q.question,
+        options: q.options || [],
+        genre: el.genGenre?.value || "Fiction",
+        tone: el.genTone?.value || "",
+        nsfw: el.genNsfw?.checked || false,
+        provider: state.provider,
+        decisionConfig: state.decisionConfig,
+      });
+
+      if (res.dropped) {
+        alert(`Question [${q.category}] was dropped because even after 10 rerolls, no compelling options were found.`);
+        state.weaverInterview.questions.splice(idx, 1);
+        renderWeaverInterviewQuestions();
+        return;
+      }
+
+      if (res.options && Array.isArray(res.options)) {
+        q.options = res.options;
+      }
+      q.recommendedOptionIndex = res.selectedOptionIndex >= 0 ? res.selectedOptionIndex : 0;
+
+      const card = autoPickBtn.closest(".weaver-question-card");
+      if (card) {
+        card.querySelectorAll(".weaver-option-btn").forEach((b) => b.classList.remove("selected"));
+        const chosenBtn = card.querySelector(`.weaver-option-btn[data-oidx="${q.recommendedOptionIndex}"]`);
+        if (chosenBtn) chosenBtn.classList.add("selected");
+        const inp = card.querySelector(".weaver-custom-answer-input");
+        if (inp) inp.value = res.selectedOptionText || q.options[q.recommendedOptionIndex] || "";
+      }
+      renderWeaverInterviewQuestions();
+    } catch (err) {
+      alert("Failed auto-pick with Jev: " + err.message);
+    } finally {
+      autoPickBtn.disabled = false;
+      autoPickBtn.innerHTML = origHtml;
     }
     return;
   }

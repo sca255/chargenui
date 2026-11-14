@@ -66,6 +66,15 @@ export const state = {
     defaultArtStyle: "anime",
   },
 
+  // Decision Model (Clef / Jev) Config
+  decisionConfig: {
+    provider: "disabled",
+    endpoint: "",
+    apiKey: "",
+    modelName: "",
+    fallbackAction: "llm", // "llm" | "cancel_step" | "pass_through"
+  },
+
   // Historical & Fantasy Eras State
   eras: [],
   selectedEra: null,

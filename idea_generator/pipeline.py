@@ -97,9 +97,10 @@ YOUR TASK:
 Synthesize a singular, highly playable, and distinctive Character Concept Pitch tailored to the user's requested genre, dynamic, intensity tier, and tropes.
 
 CORE DESIGN PILLARS:
-1. TACTILE REALISM & ANTI-PURPLE-PROSE:
+1. TACTILE REALISM & ANTI-PURPLE-PROSE (ANTI-SLOP DIRECTIVE):
    - Strictly avoid overused AI tropes: "a testament to", "mask of cold indifference", "eyes darkening with desire", "smirks knowingly", "fortress around her heart", "lethal grace", "electric shiver".
-   - Ground scenes in physical specifics: muscle tension, averted gazes, swallowed sighs, cold linoleum, fabric friction, dropped voices, and genuine domestic habits.
+   - BANNED STOCK DYNAMICS: Never default to generic "matriarch / patriarch", "ritual chastisement", "taken over the lap", "haughty insolence broken", "kneeling protocol", or "disciplined into pliancy" unless specifically demanded by the user prompt.
+   - Ground scenes in physical specifics: muscle tension, averted gazes, swallowed sighs, cold linoleum, fabric friction, dropped voices, tradecraft, and genuine domestic habits.
 2. PSYCHOMETRIC FRICTION:
    - The character MUST possess a Central Contradiction: two compelling, mutually opposing internal needs at war (e.g. fierce independence vs fear of loneliness, or stubborn pride vs a secret craving to be held and comforted).
 3. CALIBRATED REACTION GRADIENT:

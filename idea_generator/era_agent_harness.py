@@ -315,6 +315,9 @@ RULES
 ================================================================
 - Faithful instruction following, zero dogma: honor whatever genre, hierarchy, tone the user asks for.
 - STRICT ZERO-PROCEDURAL RULE: never invent canned template text; author genuinely from the prompt.
+- ANTI-SLOP & ANTI-CLICHE MANDATE:
+  * Strictly avoid defaulting to formulaic purple prose pulp: "matriarch/patriarch", "ritual chastisement", "taken over the lap", "disciplined into pliancy", "haughty insolence broken", "kneeling protocol", "eyes darkening", or generic BDSM cliches unless explicitly and directly commanded by the user's prompt.
+  * Ground societies in believable cultural codes: legal disputes, guild economics, inheritance, dietary customs, craft ethics, geographic constraints, trade leverage, and genuine personal temperament.
 - If search reveals a near-duplicate, differentiate (fresh region, distinct dynamics, new naming) and re-draft.
 - Never claim a setting was created/saved unless save_era_extension succeeded.
 - No prose outside tool calls except tiny status notes between calls.
@@ -337,12 +340,14 @@ class EraAgentHarness:
         max_iterations: Optional[int] = None,
         min_save_score: int = 55,
         corrective_budget: int = 1,
+        filter_nsfl: bool = False,
     ):
         self.endpoint = endpoint.rstrip("/")
         self.model = model
         self.max_iterations = max_iterations
         self.min_save_score = min_save_score
         self.corrective_budget = corrective_budget
+        self.filter_nsfl = filter_nsfl
 
     @staticmethod
     def _cancelled(cancel_event: Optional[threading.Event]) -> bool:
@@ -679,7 +684,7 @@ class EraAgentHarness:
         if not query and cat_filter == "All":
             return json.dumps({"ok": False, "error": "query or category is required"})
         try:
-            matches = search_eras_semantic(query=query, category_filter=cat_filter) or []
+            matches = search_eras_semantic(query=query, category_filter=cat_filter, filter_nsfl=self.filter_nsfl) or []
         except Exception as e:
             return json.dumps({"ok": False, "error": f"search failed: {e}"})
 

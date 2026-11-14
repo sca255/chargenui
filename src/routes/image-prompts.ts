@@ -5,6 +5,7 @@ import { sendComfyClientRPC } from "../utils/comfy-client";
 import {
   listPromptQueue,
   addToPromptQueue,
+  stageOrReplacePromptQueueItem,
   updatePromptQueueItem,
   removeFromPromptQueue,
   clearPromptQueue,
@@ -12,6 +13,7 @@ import {
   exportPromptQueue,
 } from "../services/image/prompt-queue";
 import { generateImagePrompt, extractVisualIdentityWithLLM } from "../services/image/prompt-generator";
+import { decideChoice } from "../services/decision/decision-service";
 import { COMFYCLIENT_SOCKET } from "../config/constants";
 
 export const imagePromptRoutes: RequestHandler[] = [
@@ -49,6 +51,75 @@ export const imagePromptRoutes: RequestHandler[] = [
       }
       const queue = await listPromptQueue();
       return Response.json({ queue });
+    },
+  },
+  {
+    method: "POST",
+    path: "/api/image-prompts/smart-requeue-check",
+    handler: async (req) => {
+      const body = (await req.json().catch(() => ({}))) as {
+        character: any;
+        field: string;
+        oldValue: string;
+        newValue: string;
+        greetingIndex?: number;
+        hasExistingImage: boolean;
+        provider?: any;
+        decisionConfig?: any;
+      };
+
+      // Strict User Mandate: If the greeting or avatar did NOT already have an image, DO NOT auto-synthesize or re-queue.
+      if (!body.hasExistingImage) {
+        return Response.json({ requeued: false, reason: "No existing image associated with target." });
+      }
+
+      // Check with Decision Model if significant visual change occurred
+      let isSignificant = true;
+      if (body.decisionConfig && body.decisionConfig.provider !== "disabled") {
+        try {
+          const evalRes = await decideChoice({
+            state: `Target Field: ${body.field}\nPrevious Value: "${body.oldValue || ""}"\nNew Value: "${body.newValue || ""}"`,
+            schema: {
+              visual_change: ["significant_visual_change", "cosmetic_or_narrative_only"],
+            },
+            config: body.decisionConfig,
+          });
+          isSignificant = evalRes.decision.visual_change === "significant_visual_change";
+        } catch (err) {
+          console.warn("Visual change decision check error:", err);
+          isSignificant = true;
+        }
+      }
+
+      if (!isSignificant) {
+        return Response.json({ requeued: false, reason: "Visual change was cosmetic or narrative only." });
+      }
+
+      // Synthesize prompt and stage (replace in-place) without auto-running generation
+      const purpose = typeof body.greetingIndex === "number" ? "greeting" : "avatar";
+      const promptRes = await generateImagePrompt({
+        character: body.character,
+        targetModel: "flux",
+        artStyle: "anime",
+        imagePurpose: purpose,
+        greetingIndex: body.greetingIndex,
+        provider: body.provider,
+      });
+
+      const stagedItem = await stageOrReplacePromptQueueItem({
+        characterId: body.character.id,
+        characterName: body.character.name || "Unnamed",
+        imagePurpose: purpose,
+        greetingIndex: body.greetingIndex,
+        prompt: promptRes.positivePrompt,
+        positivePrompt: promptRes.positivePrompt,
+        negativePrompt: promptRes.negativePrompt,
+        targetModel: "flux",
+        artStyle: "anime",
+        status: "queued",
+      });
+
+      return Response.json({ requeued: true, item: stagedItem });
     },
   },
   {

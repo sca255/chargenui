@@ -101,7 +101,7 @@ export async function startAvifPrewarmJob(): Promise<void> {
           const b64 = card.avatarBase64 || card.character?.avatar;
 
           if (b64 && typeof b64 === "string") {
-            const cleanB64 = b64.includes(",") ? b64.split(",", 1)[1] : b64;
+            const cleanB64 = b64.includes(",") ? b64.slice(b64.indexOf(",") + 1) : b64;
             const buf = Buffer.from(cleanB64, "base64");
             const success = await convertPngToAvif(buf, targetAvif);
             if (success) warmed++;

@@ -19,6 +19,10 @@ export interface EraDefinition {
   is_extension?: boolean;
   relevance_score?: number;
   created_at?: number;
+  /** Content rating flag: true marks dark fantasy, extreme, taboo or NSFL themes */
+  nsfl?: boolean;
+  /** Granular content tier: defaults to vanilla or mature */
+  rating?: "vanilla" | "mature" | "nsfl";
 }
 
 const BUILTIN_ERAS_PATH = path.join(import.meta.dir, "eras_data.json");
@@ -204,9 +208,13 @@ export function searchEraCategories(query: string = ""): Array<{ name: string; c
   return cats.filter((c) => c.name.toLowerCase().includes(q));
 }
 
-export function getEraById(id: string): EraDefinition | null {
+export function getEraById(id: string, filterNsfl: boolean = false): EraDefinition | null {
   const all = getAllEras(true);
-  return all[id] || null;
+  const era = all[id] || null;
+  if (era && filterNsfl && isEraNsfl(era)) {
+    return null;
+  }
+  return era;
 }
 
 /**
@@ -413,11 +421,19 @@ function parseSpanYears(spanStr: string): [number | null, number | null] {
   return [null, null];
 }
 
+export function isEraNsfl(era: Partial<EraDefinition>): boolean {
+  if (!era) return false;
+  if (era.nsfl === true || era.rating === "nsfl") return true;
+  const tags = (era.tags || []).map((t) => String(t).trim().toLowerCase());
+  return tags.includes("nsfl") || tags.includes("extreme nsfl") || tags.includes("dark nsfl");
+}
+
 export function searchErasSemantic(
   query: string = "",
   categoryFilter: string = "All",
   regionFilter: string = "All",
-  onlyUser: boolean = false
+  onlyUser: boolean = false,
+  filterNsfl: boolean = true
 ): EraDefinition[] {
   const allEras = getAllEras(true);
   const qRaw = (query || "").trim().toLowerCase();
@@ -459,6 +475,11 @@ export function searchErasSemantic(
   const results: EraDefinition[] = [];
 
   for (const [eraId, era] of Object.entries(allEras)) {
+    // When filterNsfl is enabled (default vanilla mode), completely skip NSFL eras
+    if (filterNsfl && isEraNsfl(era)) {
+      continue;
+    }
+
     const isUser = !!era.is_user_era;
     const isExtension = !!era.is_extension;
     if (onlyUser && !isUser) continue;

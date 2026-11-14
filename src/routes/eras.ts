@@ -50,7 +50,8 @@ export const erasRoutes: RequestHandler[] = [
       const category = url.searchParams.get("category") || "All";
       const region = url.searchParams.get("region") || "All";
       const onlyUser = url.searchParams.get("onlyUser") === "true";
-      const results = searchErasSemantic(q, category, region, onlyUser);
+      const filterNsfl = url.searchParams.get("nsfl") === "false" || url.searchParams.get("filterNsfl") === "true";
+      const results = searchErasSemantic(q, category, region, onlyUser, filterNsfl);
       return Response.json({ results, total: results.length });
     },
   },

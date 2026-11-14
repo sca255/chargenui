@@ -8,6 +8,7 @@ import { routeLLMJson } from "../llm/provider-router";
 import { getEffectivePromptConfig } from "../config/prompt-config";
 import { retrieveCharacterLore } from "../search/web-search";
 import { synthesizeAuthoringSpine } from "./spine";
+import { decideScore, decideChoice } from "../decision/decision-service";
 import {
   renderDescriptionField,
   renderPersonalityField,
@@ -98,7 +99,7 @@ Analyze the concept and decide freely what dimensions to probe (contradictions, 
 FOR EVERY QUESTION:
 - "category": Short 2-4 word descriptor of what this question pins down (e.g. "Crucible Memory", "Friction with {{user}}", "Unspoken Oath", "Red Line").
 - "question": Direct, concise question (1-2 sentences max).
-- "options": Exactly 3 DISTINCT, creative, evocative candidate answers that go in genuinely different directions (each 1-2 punchy sentences).
+- "options": Exactly 3 compelling, concrete response choices offering contrasting narrative choices (each 1-2 punchy sentences).
 - "recommendedOptionIndex": 0, 1, or 2 for Weaver's top intuitive pick.
 
 Output STRICT JSON matching this schema:
@@ -124,29 +125,116 @@ Output STRICT JSON matching this schema:
     { role: "user" as const, content: prompt },
   ];
 
+  let preliminaryVision = "A compelling character waiting to be forged through your choices.";
+  let candidateQuestions: any[] = [];
+
   const raw = await routeLLMJson<any>(request.provider, messages);
-  const questions = Array.isArray(raw?.questions)
-    ? raw.questions.map((q: any, idx: number) => {
-        const id = q.id || `q_${Date.now()}_${idx + 1}`;
-        const rawOpts = Array.isArray(q.options) && q.options.length > 0 ? q.options.map(String) : ["Option A", "Option B"];
-        const recIdx = typeof q.recommendedOptionIndex === "number" && q.recommendedOptionIndex >= 0 && q.recommendedOptionIndex < rawOpts.length
-          ? q.recommendedOptionIndex
-          : 0;
-        return {
-          id,
-          category: q.category || `Dimension ${idx + 1}`,
-          question: q.question || "How does this character react?",
-          options: rawOpts,
-          recommendedOptionIndex: recIdx,
-        };
+  if (raw?.preliminaryVision) preliminaryVision = raw.preliminaryVision;
+  if (Array.isArray(raw?.questions)) {
+    candidateQuestions = raw.questions.map((q: any, idx: number) => {
+      const id = q.id || `q_${Date.now()}_${idx + 1}`;
+      const rawOpts = Array.isArray(q.options) && q.options.length > 0 ? q.options.map(String) : ["Option A", "Option B", "Option C"];
+      const recIdx = typeof q.recommendedOptionIndex === "number" && q.recommendedOptionIndex >= 0 && q.recommendedOptionIndex < rawOpts.length
+        ? q.recommendedOptionIndex
+        : 0;
+      return {
+        id,
+        category: q.category || `Dimension ${idx + 1}`,
+        question: q.question || "How does this character react?",
+        options: rawOpts,
+        recommendedOptionIndex: recIdx,
+      };
+    });
+  }
+
+  // --- Parallel Jev / Clef Decision Model Gate ---
+  // Evaluates every candidate question simultaneously in parallel.
+  // Questions must score >= 0.65 to survive. If survivors < 2, perform up to 3 deepening swap rounds.
+  async function filterQuestionsWithJev(qs: any[]): Promise<any[]> {
+    if (!request.decisionConfig || request.decisionConfig.provider === "disabled") {
+      return qs;
+    }
+    const scoreResults = await Promise.all(
+      qs.map(async (q) => {
+        try {
+          const res = await decideScore({
+            statement: "This interview question targets a crucial, high-leverage tension or unexplored psychological contradiction specific to this concept, avoiding generic cliches.",
+            text: `Concept: ${request.concept}\nCategory: ${q.category}\nQuestion: ${q.question}`,
+            config: request.decisionConfig,
+          });
+          return res.score;
+        } catch (err) {
+          console.warn("Jev question scoring warning:", err);
+          return 0.75; // Fail-open on network hiccup
+        }
       })
-    : [];
+    );
+    return qs.filter((_, i) => scoreResults[i] >= 0.65);
+  }
+
+  let vettedQuestions = await filterQuestionsWithJev(candidateQuestions);
+
+  // If fewer than 2 vetted questions survive, attempt up to 3 replacement loops
+  let swapAttempts = 0;
+  while (vettedQuestions.length < 2 && swapAttempts < 3) {
+    swapAttempts++;
+    console.log(`[Weaver Jev Gate] Only ${vettedQuestions.length} vetted question(s) survived. Fetching deepening replacements (Attempt ${swapAttempts}/3)...`);
+    const deepenPrompt = `You are the Weaver. The previous interview questions were too generic or insufficient.
+Formulate 3 BRAND NEW, deeply probing questions specifically targeting unaddressed psychological dilemmas or core contradictions in this concept:
+"""
+${request.concept.trim()}
+"""
+Already accepted questions (DO NOT repeat):
+${vettedQuestions.map((q, i) => `${i + 1}. [${q.category}] ${q.question}`).join("\n")}
+
+Output STRICT JSON matching schema:
+{
+  "questions": [
+    {
+      "id": "dimension_key",
+      "category": "Concise Category",
+      "question": "Concise, probing question text?",
+      "options": ["Option 1", "Option 2", "Option 3"],
+      "recommendedOptionIndex": 0
+    }
+  ]
+}`;
+    try {
+      const moreRaw = await routeLLMJson<any>(request.provider, [
+        { role: "system" as const, content: cfg.systemPrompt },
+        { role: "user" as const, content: deepenPrompt },
+      ]);
+      if (Array.isArray(moreRaw?.questions)) {
+        const newCandidates = moreRaw.questions.map((q: any, idx: number) => ({
+          id: q.id || `q_repl_${Date.now()}_${swapAttempts}_${idx + 1}`,
+          category: q.category || `Dimension ${vettedQuestions.length + idx + 1}`,
+          question: q.question || "How does this character react?",
+          options: Array.isArray(q.options) && q.options.length > 0 ? q.options.map(String) : ["Option A", "Option B", "Option C"],
+          recommendedOptionIndex: typeof q.recommendedOptionIndex === "number" ? q.recommendedOptionIndex : 0,
+        }));
+        const newVetted = await filterQuestionsWithJev(newCandidates);
+        for (const nq of newVetted) {
+          if (!vettedQuestions.some((vq) => vq.question.toLowerCase() === nq.question.toLowerCase())) {
+            vettedQuestions.push(nq);
+          }
+        }
+      }
+    } catch (err) {
+      console.warn("Failed deepening question fetch:", err);
+      break;
+    }
+  }
+
+  // Fallback: If after 3 swap loops we still have 0 questions, return the original candidate questions so user is never blocked
+  if (vettedQuestions.length === 0 && candidateQuestions.length > 0) {
+    vettedQuestions = candidateQuestions;
+  }
 
   // When asking more, preserve and append to existing questions rather than discarding
-  const finalQuestions = isAskingMore ? [...existingQList, ...questions] : questions;
+  const finalQuestions = isAskingMore ? [...existingQList, ...vettedQuestions] : vettedQuestions;
 
   return {
-    preliminaryVision: raw?.preliminaryVision || "A compelling character waiting to be forged through your choices.",
+    preliminaryVision,
     questions: finalQuestions,
   };
 }
@@ -228,6 +316,143 @@ Output STRICT JSON matching this schema:
       : 0;
 
   return { options, recommendedOptionIndex };
+}
+
+/**
+ * Evaluates whether a user's answer directly answers the Weaver question using Jev/Clef.
+ */
+export async function evaluateWeaverAnswerRelevance(params: {
+  question: string;
+  category: string;
+  userAnswer: string;
+  decisionConfig?: any;
+}): Promise<{ answersQuestion: boolean; reason?: string }> {
+  if (!params.decisionConfig || params.decisionConfig.provider === "disabled") {
+    return { answersQuestion: true };
+  }
+
+  try {
+    const res = await decideChoice({
+      state: `Question Category: ${params.category}\nQuestion: "${params.question}"\nUser Answer: "${params.userAnswer}"`,
+      schema: {
+        answers_question: ["yes", "no_or_evasive"],
+      },
+      config: params.decisionConfig,
+    });
+
+    const isYes = res.decision.answers_question === "yes";
+    return {
+      answersQuestion: isYes,
+      reason: isYes ? undefined : "The provided answer does not directly address the question dimension.",
+    };
+  } catch (err) {
+    console.warn("Jev answer relevance check error:", err);
+    return { answersQuestion: true }; // Fail open
+  }
+}
+
+/**
+ * Automatically picks the best option for a Weaver question using Jev.
+ * If none of the 3 options are compelling or of high quality, rerolls up to 10 times.
+ * If still not good enough after 10 rerolls, flags the question to be dropped.
+ */
+export async function autoPickWeaverOptionWithJev(params: {
+  concept: string;
+  category: string;
+  question: string;
+  options: string[];
+  genre?: string;
+  tone?: string;
+  nsfw?: boolean;
+  influence?: string;
+  provider: any;
+  decisionConfig?: any;
+}): Promise<{
+  selectedOptionIndex: number;
+  selectedOptionText: string;
+  dropped: boolean;
+  rerollCount: number;
+  options: string[];
+}> {
+  let currentOptions = [...params.options];
+  let rerolls = 0;
+  const maxRerolls = 10;
+
+  while (rerolls <= maxRerolls) {
+    // If decision provider is disabled, return recommended/first option
+    if (!params.decisionConfig || params.decisionConfig.provider === "disabled") {
+      return {
+        selectedOptionIndex: 0,
+        selectedOptionText: currentOptions[0] || "",
+        dropped: false,
+        rerollCount: 0,
+        options: currentOptions,
+      };
+    }
+
+    try {
+      const evalState = `Concept: "${params.concept}"\nQuestion: [${params.category}] ${params.question}\nOption 1: "${currentOptions[0] || ""}"\nOption 2: "${currentOptions[1] || ""}"\nOption 3: "${currentOptions[2] || ""}"`;
+      const res = await decideChoice({
+        state: evalState,
+        schema: {
+          best_option: ["1", "2", "3", "none_compelling"],
+          quality_level: ["strong", "mediocre_or_cliche"],
+        },
+        config: params.decisionConfig,
+      });
+
+      const bestChoice = res.decision.best_option;
+      const quality = res.decision.quality_level;
+
+      if (bestChoice !== "none_compelling" && quality === "strong") {
+        const idx = bestChoice === "1" ? 0 : bestChoice === "2" ? 1 : 2;
+        return {
+          selectedOptionIndex: idx,
+          selectedOptionText: currentOptions[idx] || currentOptions[0],
+          dropped: false,
+          rerollCount: rerolls,
+          options: currentOptions,
+        };
+      }
+    } catch (err) {
+      console.warn("Jev auto-pick evaluation error:", err);
+      // Fallback to top option on error
+      return {
+        selectedOptionIndex: 0,
+        selectedOptionText: currentOptions[0] || "",
+        dropped: false,
+        rerollCount: rerolls,
+        options: currentOptions,
+      };
+    }
+
+    rerolls++;
+    if (rerolls <= maxRerolls) {
+      console.log(`[Weaver Jev Auto-Pick] Options for [${params.category}] were not compelling. Rerolling (Attempt ${rerolls}/${maxRerolls})...`);
+      const rerolled = await rerollWeaverQuestionOptions({
+        concept: params.concept,
+        category: params.category,
+        question: params.question,
+        currentOptions,
+        genre: params.genre,
+        tone: params.tone,
+        nsfw: params.nsfw,
+        influence: params.influence,
+        provider: params.provider,
+      });
+      currentOptions = rerolled.options;
+    }
+  }
+
+  // If exceeded 10 rerolls and still not compelling, drop question per user specification
+  console.log(`[Weaver Jev Auto-Pick] Question [${params.category}] reached ${maxRerolls} rerolls without a compelling option. Dropping question.`);
+  return {
+    selectedOptionIndex: -1,
+    selectedOptionText: "",
+    dropped: true,
+    rerollCount: maxRerolls,
+    options: currentOptions,
+  };
 }
 
 /**

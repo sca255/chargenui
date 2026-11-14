@@ -1632,6 +1632,49 @@
 </div>
 </div>
 </div>
+<!-- System 1 / Decision Model Engine Section -->
+<div style="margin: 18px 0 10px; border-top: 1px solid var(--border-color); padding-top: 14px;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+<div style="font-size: 13px; font-weight: 700; color: #38bdf8;">
+  ⚡ System 1 Decision Model (Clef / Jev)
+</div>
+<span id="badge-decision-status" style="font-size: 10px; padding: 2px 6px; border-radius: 4px; background: rgba(56, 189, 248, 0.2); color: #38bdf8; font-weight: 600; display: inline-block;">
+  Fast Bounded Classification
+</span>
+</div>
+<div style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">
+  Powers fast Weaver question filtering, Auto-Pick with Jev, user answer QA verification, and image re-queue diff checks.
+</div>
+<div class="form-group">
+<label class="form-label">Decision Provider</label>
+<select class="form-select" id="setting-decision-provider">
+<option value="disabled">Disabled (Bypass System 1 checks)</option>
+<option value="cloudflare">Cloudflare Workers AI (Clef / Clef-flash)</option>
+<option value="jev">TypeSafe AI (Jev API)</option>
+<option value="custom_http">Custom HTTP Endpoint (vLLM / Ollama Clef weights)</option>
+</select>
+</div>
+<div class="form-group" id="group-decision-endpoint" style="display: none;">
+<label class="form-label">Endpoint URL</label>
+<input type="text" class="form-input" id="setting-decision-endpoint" placeholder="e.g. https://api.cloudflare.com/... or http://localhost:8000/v1/decide" />
+</div>
+<div class="form-group" id="group-decision-key" style="display: none;">
+<label class="form-label">Decision API Key</label>
+<input type="password" class="form-input" id="setting-decision-key" placeholder="Enter API Key / Token" />
+</div>
+<div class="form-group" id="group-decision-model" style="display: none;">
+<label class="form-label">Model Override</label>
+<input type="text" class="form-input" id="setting-decision-model" placeholder="@cf/cloudflare/clef-flash" />
+</div>
+<div class="form-group" id="group-decision-fallback" style="margin-top: 8px;">
+<label class="form-label">Fallback Behavior when Inaccessible / Network Down</label>
+<select class="form-select" id="setting-decision-fallback">
+<option value="llm">⚡ Fallback to Primary LLM (Default: Uses generative LLM for decisions)</option>
+<option value="cancel_step">🛑 Cancel &amp; Revert to Previous Finished Step</option>
+<option value="pass_through">⏩ Pass-through / Safe Defaults</option>
+</select>
+</div>
+</div>
 <!-- Prompt Engine & Architectures Section -->
 <div style="margin: 18px 0 10px; border-top: 1px solid var(--border-color); padding-top: 14px;">
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
@@ -2034,6 +2077,9 @@
 <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
 <button class="btn btn-sm" id="btn-weaver-autofill" title="Auto-fill with Weaver's recommended options" type="button">
 <span>✨ Auto-Fill Weaver's Intuition</span>
+</button>
+<button class="btn btn-sm" id="btn-weaver-auto-pick-jev" style="color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); background: rgba(56, 189, 248, 0.1);" title="Use Jev/Clef System 1 decision model to auto-pick compelling options across all questions" type="button">
+<span>⚡ Auto-Pick with Jev</span>
 </button>
 <button class="btn btn-sm" id="btn-weaver-ask-more" style="color: #34d399; border: 1px solid rgba(52, 211, 153, 0.4); background: rgba(52, 211, 153, 0.1);" title="Make the AI ask more deepening questions" type="button">
 <span>➕ Ask More Questions</span>

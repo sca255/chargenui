@@ -28,6 +28,8 @@ export interface EraAgentTurnRequest {
   /** Instructions supplied while the model is working, injected before the next model call. */
   queuedInstructions?: string[];
   instructionQueue?: () => string[];
+  /** When true, semantic searches during the era turn exclude NSFL eras */
+  filterNsfl?: boolean;
 }
 
 export interface EraAgentTurnResponse {
@@ -217,6 +219,9 @@ RULES
 ================================================================
 - Faithful instruction following, zero dogma: honor whatever genre, hierarchy, tone the user asks for.
 - STRICT ZERO-PROCEDURAL RULE: never invent canned template text; author genuinely from the prompt.
+- ANTI-SLOP & ANTI-CLICHE MANDATE:
+  * Strictly avoid defaulting to formulaic purple prose pulp: "matriarch/patriarch", "ritual chastisement", "taken over the lap", "disciplined into pliancy", "haughty insolence broken", "kneeling protocol", "eyes darkening", or generic BDSM cliches unless explicitly and directly commanded by the user's prompt.
+  * Ground societies in believable cultural codes: legal disputes, guild economics, inheritance, dietary customs, craft ethics, geographic constraints, trade leverage, and genuine personal temperament.
 - If search reveals a near-duplicate, differentiate (fresh region, distinct dynamics, new naming) and re-draft.
 - Never claim a setting was created/saved unless save_era_extension succeeded.
 - No prose outside tool calls except tiny status notes between calls.`;
@@ -518,7 +523,7 @@ async function executeTool(
       }
       let matches: EraDefinition[] = [];
       try {
-        matches = searchErasSemantic(query, catFilter) || [];
+        matches = searchErasSemantic(query, catFilter, "All", false, req.filterNsfl ?? false) || [];
       } catch (e) {
         result = JSON.stringify({ ok: false, error: `search failed: ${(e as Error).message}` });
         ok = false;

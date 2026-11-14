@@ -41,6 +41,7 @@ export interface WeaverInterviewQuestionsRequest {
   influence?: string; // Optional steering direction to influence all questions
   botMode?: "single" | "multi_character" | "rpg_world"; // Single character, multi-character cast, or RPG world/GM bot
   existingQuestions?: WeaverInterviewQuestion[]; // Questions already in the interview (for ask-more)
+  decisionConfig?: any; // Config for Decision Model (Clef/Jev)
   provider: ProviderConfig;
 }
 

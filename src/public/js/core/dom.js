@@ -184,6 +184,7 @@ export const el = {
   btnCloseWeaverInterview: document.getElementById("btn-close-weaver-interview"),
   btnWeaverCancel: document.getElementById("btn-weaver-cancel"),
   btnWeaverAutofill: document.getElementById("btn-weaver-autofill"),
+  btnWeaverAutoPickJev: document.getElementById("btn-weaver-auto-pick-jev"),
   btnWeaverAskMore: document.getElementById("btn-weaver-ask-more"),
   btnWeaverSubmitForge: document.getElementById("btn-weaver-submit-forge"),
   weaverInterviewLoading: document.getElementById("weaver-interview-loading"),
@@ -503,6 +504,17 @@ export const el = {
   settingMcpCommand: document.getElementById("setting-mcp-command"),
   settingImgDefaultModel: document.getElementById("setting-img-default-model"),
   settingImgDefaultArtStyle: document.getElementById("setting-img-default-art-style"),
+
+  // Decision Model Elements
+  settingDecisionProvider: document.getElementById("setting-decision-provider"),
+  settingDecisionEndpoint: document.getElementById("setting-decision-endpoint"),
+  settingDecisionKey: document.getElementById("setting-decision-key"),
+  settingDecisionModel: document.getElementById("setting-decision-model"),
+  settingDecisionFallback: document.getElementById("setting-decision-fallback"),
+  groupDecisionEndpoint: document.getElementById("group-decision-endpoint"),
+  groupDecisionKey: document.getElementById("group-decision-key"),
+  groupDecisionModel: document.getElementById("group-decision-model"),
+  badgeDecisionStatus: document.getElementById("badge-decision-status"),
 
   modalJson: document.getElementById("modal-json"),
   btnCloseJson: document.getElementById("btn-close-json"),

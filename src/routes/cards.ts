@@ -41,7 +41,7 @@ export const cardsRoutes: RequestHandler[] = [
         return new Response("Not found", { status: 404 });
       }
 
-      const clean = b64.includes(",") ? b64.split(",", 1)[1] : b64;
+      const clean = b64.includes(",") ? b64.slice(b64.indexOf(",") + 1) : b64;
       const rawBuf = Buffer.from(clean, "base64");
       return new Response(rawBuf, {
         headers: {

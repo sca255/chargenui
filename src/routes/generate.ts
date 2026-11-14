@@ -15,6 +15,8 @@ import {
   generateWeaverInterviewQuestions,
   rerollWeaverQuestionOptions,
   generateCharacterWithWeaverInterview,
+  evaluateWeaverAnswerRelevance,
+  autoPickWeaverOptionWithJev,
 } from "../services/generator/weaver-interview";
 
 export const generateRoutes: RequestHandler[] = [
@@ -51,6 +53,24 @@ export const generateRoutes: RequestHandler[] = [
     handler: async (req) => {
       const body = (await req.json().catch(() => ({})))  as any;
       const result = await rerollWeaverQuestionOptions(body);
+      return Response.json(result);
+    },
+  },
+  {
+    method: "POST",
+    path: "/api/weaver/check-answer",
+    handler: async (req) => {
+      const body = (await req.json().catch(() => ({}))) as any;
+      const result = await evaluateWeaverAnswerRelevance(body);
+      return Response.json(result);
+    },
+  },
+  {
+    method: "POST",
+    path: "/api/weaver/auto-pick-jev",
+    handler: async (req) => {
+      const body = (await req.json().catch(() => ({}))) as any;
+      const result = await autoPickWeaverOptionWithJev(body);
       return Response.json(result);
     },
   },

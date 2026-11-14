@@ -6,20 +6,13 @@ import type { ProviderConfig } from "../../types/provider";
 export const DEFAULT_IMAGE_GENERATION_CONFIG: ImageGenerationConfig = {
   systemPrompt:
     "You are an expert Diffusion Prompt Engineer for Stable Diffusion, Illustrious-XL, Flux, Pony XL, and ComfyUI. Your task is to convert this roleplay character profile into an optimized IMAGE GENERATION PROMPT that captures their visual identity.",
-  tagRules: `POSITIVE TAGS RULES (DANBOORU / BOORU MODELS):
-- Convert EVERY piece of visual evidence into one or more Booru tags. Nothing visible should be omitted.
-- Hair color and style, eye color, skin tone, body type, clothing pieces, accessories, expression, pose — all must appear as tags.
-- Use Booru-style tags: lowercase, underscores for multi-word tags (e.g. blue_eyes, long_hair, dark_skin, white_dress, cat_ears, upper_body).
-- Quality baseline tags (masterpiece, best quality, newest, very aesthetic) may use spaces.
-- If a visual attribute has no exact Booru tag, pick the closest standard Danbooru tag. Do not omit it.
-- Never output body measurements, numerical ages, dates, or abstract non-visual lore.
-- Convert demi-humans / fantasy species into physical anatomical tags (e.g. cat_ears, animal_ears, cat_tail, kemonomimi).
+  tagRules: `DANBOORU TAG CONVENTIONS:
+- Map visual features (hair, eyes, clothing, expression, framing) to standard booru comma tags (e.g. blue_eyes, white_dress, upper_body).
+- Use lowercase with underscores for multi-word descriptors.
+- Avoid abstract personality descriptions or non-visual text.
 
-NEGATIVE TAGS RULES:
-- Always include core quality negatives: worst quality, low quality, bad quality, jpeg artifacts, blurry.
-- Include anatomy negatives: bad anatomy, bad hands, extra fingers, missing fingers, deformed, malformed, mutated limbs.
-- Include artifact negatives: watermark, signature, text, border, censored, artist name.
-- Standard default negative prompt: "worst quality, low quality, bad quality, jpeg artifacts, blurry, bad anatomy, bad hands, extra fingers, missing fingers, deformed, malformed, mutated, watermark, signature, text, artist name".`,
+NEGATIVE PROMPT CONVENTIONS:
+- Default negative filters: worst quality, low quality, blurry, deformed anatomy, extra digits, text, watermark.`,
   models: {
     illustrious: {
       guidance: `TARGET MODEL: ILLUSTRIOUS-XL / ANIMAGINE XL / NOOBAI (BOORU TAG SYSTEM)

@@ -386,10 +386,48 @@ export function openSettingsModal() {
   if (el.settingImgDefaultArtStyle) {
     el.settingImgDefaultArtStyle.value = state.imageConfig?.defaultArtStyle || "anime";
   }
+
+  // Populate Decision Model fields
+  if (state.decisionConfig) {
+    if (el.settingDecisionProvider) el.settingDecisionProvider.value = state.decisionConfig.provider || "disabled";
+    if (el.settingDecisionEndpoint) el.settingDecisionEndpoint.value = state.decisionConfig.endpoint || "";
+    if (el.settingDecisionKey) el.settingDecisionKey.value = state.decisionConfig.apiKey || "";
+    if (el.settingDecisionModel) el.settingDecisionModel.value = state.decisionConfig.modelName || "";
+    if (el.settingDecisionFallback) el.settingDecisionFallback.value = state.decisionConfig.fallbackAction || "llm";
+  }
+  toggleDecisionFields();
+
   toggleSearchKeyField();
   toggleBaseUrlField();
   checkEnvKeyDetection();
   el.modalSettings.classList.remove("hidden");
+}
+
+export function toggleDecisionFields() {
+  if (!el.settingDecisionProvider) return;
+  const p = el.settingDecisionProvider.value;
+  const isEnabled = p !== "disabled";
+  if (el.groupDecisionEndpoint) el.groupDecisionEndpoint.style.display = isEnabled ? "block" : "none";
+  if (el.groupDecisionKey) el.groupDecisionKey.style.display = isEnabled ? "block" : "none";
+  if (el.groupDecisionModel) el.groupDecisionModel.style.display = isEnabled ? "block" : "none";
+
+  if (p === "cloudflare") {
+    if (el.settingDecisionEndpoint && !el.settingDecisionEndpoint.value) {
+      el.settingDecisionEndpoint.placeholder = "https://api.cloudflare.com/client/v4/accounts/{account_id}/ai/run/@cf/cloudflare/clef-flash";
+    }
+  } else if (p === "jev") {
+    if (el.settingDecisionEndpoint && !el.settingDecisionEndpoint.value) {
+      el.settingDecisionEndpoint.placeholder = "https://api.typesafe.ai/v1/decide";
+    }
+  } else if (p === "custom_http") {
+    if (el.settingDecisionEndpoint && !el.settingDecisionEndpoint.value) {
+      el.settingDecisionEndpoint.placeholder = "http://localhost:8000/v1/decide";
+    }
+  }
+}
+
+if (el.settingDecisionProvider) {
+  el.settingDecisionProvider.addEventListener("change", toggleDecisionFields);
 }
 
 export function toggleSearchKeyField() {
@@ -470,9 +508,18 @@ el.btnSaveSettings?.addEventListener("click", () => {
     defaultArtStyle: el.settingImgDefaultArtStyle?.value || "anime",
   };
 
+  state.decisionConfig = {
+    provider: el.settingDecisionProvider?.value || "disabled",
+    endpoint: el.settingDecisionEndpoint?.value.trim() || "",
+    apiKey: el.settingDecisionKey?.value.trim() || "",
+    modelName: el.settingDecisionModel?.value.trim() || "",
+    fallbackAction: el.settingDecisionFallback?.value || "llm",
+  };
+
   localStorage.setItem("chargen_provider_config", JSON.stringify(state.provider));
   localStorage.setItem("chargen_search_config", JSON.stringify(state.searchConfig));
   localStorage.setItem("chargen_image_config", JSON.stringify(state.imageConfig));
+  localStorage.setItem("chargen_decision_config", JSON.stringify(state.decisionConfig));
 
   if (el.imgTargetModel) el.imgTargetModel.value = state.imageConfig.defaultTargetModel;
   if (el.imgArtStyle) el.imgArtStyle.value = state.imageConfig.defaultArtStyle;

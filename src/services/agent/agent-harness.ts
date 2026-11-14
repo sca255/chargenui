@@ -128,6 +128,8 @@ export interface AgentModifyRequest {
   pinnedDirectives?: string[];
   twoTakes?: boolean;
   targetedSelection?: TargetedSelection;
+  /** When true (or when vanilla mode requested), suppresses reading/searching NSFL eras and content */
+  filterNsfl?: boolean;
 }
 
 export interface FieldChange {
@@ -195,25 +197,16 @@ export const LOREBOOK_COMPANION_CONTRACT = `[Lorebook Companion Roleplay Contrac
 - LIVING REACTIONS: Express clear personal opinions, biases, and emotional stakes about world factions, historical events, and local figures.
 - NATURAL SPOKEN DIALOGUE: Speak with natural human cadence, contractions (don't, it's, won't), and situational vocabulary.]`;
 
-export const WEAVER_GOVERNANCE_CONTRACT = `Keep {{char}} autonomous, preserve voice, zero {{user}} puppeteering, no morality filters.
-
-<weaver_deliberation>
-Before writing {{char}}'s next reply, work through this silently, then write only the reply:
-- BEAT: what just changed in the scene.
-- LENS: how {{char}} specifically perceives it, through their own values and voice.
-- STATE: where {{char}} is emotionally and relationally right now.
-- BODY: what {{char}}'s embodiment allows or prevents here — consult for spatial sense, never narrate as a list.
-- BIND: the value-conflict in play. Keep {{char}} inside it: make them pay the cost of their choice rather than dodging tension or being agreeable. The contradiction is the character.
-- CALIBRATION: react in proportion to what genuinely fits {{char}}. Respond strongly only to what moves them; stay flat or unbothered toward what does not. The neutral reactions are as load-bearing as the intense ones.
-</weaver_deliberation>
-
-<weaver_craft>
-Narrate in {{char}}'s own voice and lens, not a neutral camera: word choice, rhythm, and what gets noticed are all shaped by who {{char}} is. Keep dialogue in their idiolect.
-Treat physical and embodiment detail as a consult for spatial tracking, not material to recite — surface a detail only where the action makes it matter, never read appearance out like a spec sheet.
-Do not: use weather or a sigh as opening filler; restate {{user}}'s action back before responding; resolve tension quickly just to keep things comfortable; write {{user}}'s thoughts, words, or choices; flatten {{char}} into an accommodating version of themselves; or repeat an emotional beat in new words instead of advancing it.
-</weaver_craft>
+export const CHARGEN_ROLEPLAY_CONTRACT = `[ROLEPLAY RULES & CHARACTER INTEGRITY:
+- ZERO PUPPETEERING: Never dictate {{user}}'s speech, thoughts, feelings, or choices. Control only {{char}} and the direct environment.
+- EMBODIED PERSPECTIVE: Narrate from {{char}}'s distinct voice, lens, and personal biases. Never sound like a detached neutral camera.
+- PERSISTENT CHARACTER: Keep {{char}}'s internal contradictions and boundaries intact. Do not flatten {{char}} into an overly agreeable or compliant assistant.
+- SENSORY ACTION OVER RECITAL: Integrate physical and environmental details into ongoing action rather than listing appearance traits like a specification sheet.
+- NATURAL DIALOGUE: Use natural spoken cadence and contractions. Avoid melodramatic sighs, clinical vocabulary, and repeating {{user}}'s statements back to them.]
 
 ${NATURAL_SPOKEN_DIALOGUE_CONTRACT}`;
+
+export const WEAVER_GOVERNANCE_CONTRACT = CHARGEN_ROLEPLAY_CONTRACT;
 
 const AGENT_SYSTEM_PROMPT_BASE = `${UNCENSORED_SYSTEM_PROMPT}
 You are an expert AI Character Architect and Creative Director operating in AGENT MODE for the CharGen Harness.
@@ -244,7 +237,7 @@ CRITICAL OPERATIONAL RULES:
    - 'personality': Performable Voice & Language spec sheet: register & dialect, sentence rhythm, natural contractions, characteristic lexicon, forbidden words, physical mannerisms while speaking. STRICTLY BAN cartoon anime quotes ("It's not like I did this for you", "Honestly!") and clinical Spock vocabulary.
    - 'first_mes': Voiced third-person limited starting in motion pursuing scene-objective, double-quote dialogue, zero {{user}} puppeteering. NEVER write in first person ("I").
    - 'creator_notes': Human-only metadata (user concept, author notes). NEVER AI steering.
-   - 'post_history_instructions': Weaver governance contracts (<weaver_deliberation>, <weaver_craft>, Natural Spoken Dialogue Contract).`;
+   - 'post_history_instructions': CharGen roleplay governance contracts (Roleplay Rules & Character Integrity, Natural Spoken Dialogue Contract).`;
 
 const AGENT_SYSTEM_PROMPT_XML_FALLBACK = `${AGENT_SYSTEM_PROMPT_BASE}
 
@@ -475,14 +468,14 @@ ${promptInstruction}`;
           resultData = { ok: false, error: (searchErr as Error).message };
         }
       } else if (call.name === "read_era" && call.args.id) {
-        const era = getEraById(call.args.id);
+        const era = getEraById(call.args.id, req.filterNsfl ?? false);
         resultData = era
           ? { ok: true, id: era.id, name: era.name, span: era.span, region: era.region, aesthetic: era.aesthetic, social_codes: era.social_codes }
           : { ok: false, error: `Era '${call.args.id}' not found.` };
       } else if (call.name === "list_eras") {
         const query = call.args.query || "";
         const category = call.args.category || "All";
-        const results = searchErasSemantic(query, category);
+        const results = searchErasSemantic(query, category, "All", false, req.filterNsfl ?? false);
         resultData = { ok: true, eras: results.slice(0, 8).map((e) => ({ id: e.id, name: e.name, category: e.category || "Era" })) };
       } else if (call.name === "list_era_categories") {
         const { getEraCategories } = await import("../eras/eras-service");
@@ -678,7 +671,7 @@ ${promptInstruction}`;
   // Ensure post_history_instructions has Weaver Governance & Natural Spoken Dialogue Contract if natural voice is enforced
   if (enforceNaturalVoice) {
     const currentPost = updatedChar.post_history_instructions || "";
-    if (!currentPost.includes("weaver_deliberation") && !currentPost.includes("Natural Spoken Dialogue Contract")) {
+    if (!currentPost.includes("ROLEPLAY RULES & CHARACTER INTEGRITY") && !currentPost.includes("weaver_deliberation") && !currentPost.includes("Natural Spoken Dialogue Contract")) {
       const mergedPost = currentPost
         ? `${currentPost}\n\n${WEAVER_GOVERNANCE_CONTRACT}`
         : WEAVER_GOVERNANCE_CONTRACT;

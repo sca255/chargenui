@@ -55,14 +55,14 @@
   },
   "dark_fantasy_imperium": {
     "id": "dark_fantasy_imperium",
-    "name": "⚔️ Dark Fantasy Imperium (Sovereign Dominance & Iron Hierarchy)",
+    "name": "⚔️ Dark Fantasy Imperium (Feudal Dominion & Martial Lineage)",
     "short_name": "Dark Imperium",
     "span": "Epoch of the Iron Archon",
     "category": "Fantasy",
     "region": "The Obsidian Citadel & Ashen Marches",
     "aesthetic": "Massive basalt keeps, iron throne halls, flickering torchlight casting deep shadows, heavy fur mantles over polished black plate armor, cold flagstone floors, velvet divans, heraldic banners of twin ravens, rain beating against high stained-glass lancets.",
-    "tech": "Blood-forged steel, runic warding, soul-binding iron torcs, scrying mirrors of obsidian, enchanted censers burning sweet drowsy incense, geas-inscribed scrolls.",
-    "social_codes": "Uncompromising patriarchal martial authority. Feudal lord-consort protocol where female subjects and bonded wards kneel on command. High pride disciplined through solemn ritual chastisement, strict household obedience, absolute protection pledged in return for total submission.",
+    "tech": "Crucible-forged steel plate, siege alchemy, soul-bound blood seals, raven couriers, heavy war-irons, spiked perimeter palisades, enchanted battle-standards.",
+    "social_codes": "Severe feudal chain of command and ancestral martial authority. Vassals, court wards, and consorts navigate an unyielding aristocratic protocol where sworn word is binding under pain of public censure. Household authority balances absolute physical protection and land grants against strict allegiance; insolence or factional betrayal is met with formal reprimand, loss of status, and restorative labor before the assembled hearth.",
     "names": [
       "Lady Genevieve",
       "Morrigan",
@@ -78,36 +78,33 @@
       "Seraphina"
     ],
     "titles": [
-      "The Bound Warlord's Ward",
-      "The Archon's Defiant Captive",
-      "The Imperial Consort-in-Training",
-      "The Chastised Noblewoman",
-      "The Sovereign's Kept Scribe",
-      "The Rebellious Castellan's Daughter",
-      "The Sworn Blood-Pet of the High Citadel",
-      "The Submissive High Priestess"
+      "The Castellan's Highborn Ward",
+      "The Marcher Lady",
+      "The Sworn Shield-Consort",
+      "The Lady of the Outer Bailey",
+      "The Hostage Heiress of the Fallen Keep",
+      "The Regent's Sworn Scribe",
+      "The Crown's Kept Diplomat"
     ],
     "tags": [
       "Dark Fantasy",
-      "Male Dominance",
-      "Iron Hierarchy",
-      "BDSM Protocols",
-      "Sovereign Lord",
-      "Bound Consort",
-      "Discipline & Obedience",
-      "Feudal Authority"
+      "Feudal Hierarchy",
+      "Martial Lineage",
+      "Honor Pacts",
+      "Keep Politics",
+      "Solemn Allegiance"
     ]
   },
   "high_court_fae_dominion": {
     "id": "high_court_fae_dominion",
-    "name": "👑 High Fae Sylvan Court (Immortal Archons & Courtly Submission)",
+    "name": "👑 High Fae Sylvan Court (Immortal Archons & Courtly Precedent)",
     "short_name": "High Fae Dominion",
     "span": "Age of Eternal Twilight",
     "category": "Fantasy",
     "region": "The Silverwood Palaces & Twilight Glades",
     "aesthetic": "Silver-barked weirwood trees, bioluminescent moss, canopied silk pavilions, moonlit marble colonnades, collars of woven silver thorns, gossamer robes, velvet pillows, enchanted silver chimes that chime upon entering the Archon's presence.",
-    "tech": "Fae glamour, unbreachable true-name geases, starlight elixirs of absolute compliance, sensory-heightening blossom dust, silver bells, woven thorn-bindings that tighten on insolence.",
-    "social_codes": "Courtly archon supremacy. High Fae lords maintain absolute dominion over mortals and junior nymphs. Strict protocol: lowered gazes, curtsying before speech, playful yet unrelenting physical chastisement for breach of court decorum. Defiance is treated as a sweet offense to be methodically corrected.",
+    "tech": "Fae glamour, unbreachable true-name geases, starlight elixirs of lucidity, sensory-heightening blossom dust, silver bells, woven briar-hedges that ward against deceit.",
+    "social_codes": "Aristocratic archon supremacy governed by intricate fae precedence and reciprocal oaths. High Fae nobility hold sway over mortal wards and court petitioners through razor-sharp social contracts, formal etiquette, and veiled favors. Protocol demands lowered gazes and measured speech; boundary-testing or breached court decorum is corrected through precise magical wards, social humiliation in the grand salon, and restorative domestic penance.",
     "names": [
       "Aeloria",
       "Lyanna Nightbloom",
@@ -122,24 +119,20 @@
       "Amara"
     ],
     "titles": [
-      "The Fae Lord's Kept Songbird",
-      "The Mortal Consort under Geas",
-      "The Insolent Sylvan Ward",
-      "The Archon's Chastised Flower",
-      "The Twilight Palace Pet",
-      "The High Court's Bound Handmaiden",
-      "The Moonlit Favorite",
-      "The Submissive Wood-Nymph Bride"
+      "The Moonlit Sylvan Ward",
+      "The Archon's Pledged Lady",
+      "The Gossamer-Bound Courtier",
+      "The Solstice Consort",
+      "The Changeling Scribe",
+      "The Briar-Court Hostage"
     ],
     "tags": [
       "High Fae",
-      "Courtly Submission",
-      "Male Dom",
-      "BDSM Protocols",
-      "Fae Glamour",
-      "True Name Geas",
-      "Sweet Discipline",
-      "Immortal Hierarchy"
+      "Court Etiquette",
+      "True-Name Geas",
+      "Sylvan Archons",
+      "Sensory Glamour",
+      "Intricate Politics"
     ]
   },
   "vampiric_blood_aristocracy": {
@@ -187,14 +180,14 @@
   },
   "barbarian_warlord_steppes": {
     "id": "barbarian_warlord_steppes",
-    "name": "🐺 Savage Warlord Steppes (Chieftain Clanship & Captive Pride)",
-    "short_name": "Warlord Steppes",
+    "name": "🐺 Steppe Warlord Clanship (Chieftain Law & Frontier Prowess)",
+    "short_name": "Steppe Warlord",
     "span": "Age of Ash & Beast-Blood",
     "category": "Fantasy",
     "region": "Frostpeak Highlands & The Great Khanate",
     "aesthetic": "Roaring hearth fires inside timber longhouses, wolf-pelt rugs, heavy iron chains, carved bone ornaments, leather breeches and harnesses, scent of pine and woodsmoke, snow-covered crags outside the warm chieftain's hall.",
-    "tech": "Rune-carved steel axes, beast taming, primal blood marks, shamanic stamina salves, heavy rawhide straps, brand of the clan.",
-    "social_codes": "Savage patriarchal clanship. The Chieftain claims exclusive ownership of captives and prizes of war. Defiant civilized noblewomen are systematically broken of their haughtiness through raw physical authority, hard domestic work, firm spankings over the warlord's lap, and possessive protection from other clan warriors.",
+    "tech": "Recurve horn-bows, forged damascus sabers, heavy boiled leather harness, yurt campcraft, bone dice, horse-hair bindings, ancestral wolf-totems.",
+    "social_codes": "Hardened nomadic clanship centered around chieftain supremacy and survival law. Captives, foster-wards, and clan brides must prove physical grit and domestic loyalty to earn status within the yurt-circle. Defiance or aristocratic haughtiness from civilized outsiders is answered swiftly through demanding manual labor, strict campfire curfew, and uncompromising physical discipline from the Chieftain, offset by fierce tribal defense against rival raids.",
     "names": [
       "Yvaine",
       "Freja",
@@ -209,24 +202,20 @@
       "Thora"
     ],
     "titles": [
-      "The Chieftain's Captive Princess",
-      "The Tamed Steppe Prize",
-      "The Defiant Shieldmaiden in Bonds",
-      "The Warlord's Hearth-Kneeler",
-      "The Haughty Lady Made Pet",
-      "The Clan Patriarch's Kept Consort",
-      "The Broken Valkyrie",
-      "The Chieftain's Disciplined Bride"
+      "The Chieftain's Steppe Consort",
+      "The Captured Noble Scribe",
+      "The Hearth-Keeper Ward",
+      "The Clan Leader's Pledged Bride",
+      "The Frontier Falcon-Mistress",
+      "The Sworn Tent-Companion"
     ],
     "tags": [
-      "Barbarian Warlord",
-      "Captive Pride",
-      "Male Dom",
-      "BDSM Taming",
-      "Savage Clan",
-      "Chieftain Authority",
-      "Raw Masculinity",
-      "Warm Hearth & Furs"
+      "Steppe Nomad",
+      "Chieftain Clanship",
+      "Nomadic Law",
+      "Survival Grit",
+      "Tribal Fealty",
+      "Hearth Duty"
     ]
   },
   "arcane_academy_magisterium": {
@@ -274,14 +263,14 @@
   },
   "oriental_cultivation_sect": {
     "id": "oriental_cultivation_sect",
-    "name": "🐉 Celestial Cultivation Sect (Grandmaster Patriarch & Dual-Cultivation Rules)",
+    "name": "🐉 Celestial Cultivation Sect (Peak Master Governance & Dual-Cultivation Dao)",
     "short_name": "Cultivation Sect",
     "span": "Age of Immortals & Tribulations",
     "category": "Fantasy",
     "region": "Jade Cloud Mountains & Heavenly Sword Peak",
     "aesthetic": "Misty bamboo groves, jade pavilion halls, silk sashes, carved sandalwood furnishings, incense urns of dragon-scent, mountain waterfalls, quiet seclusion caverns with warm stone mats.",
-    "tech": "Qi meridian suppression acupuncture needles, immortal-binding cords, spiritual pressure (aura dominance), spirit elixirs, sword-intent seals.",
-    "social_codes": "Absolute patriarchal sect hierarchy. The Peak Master or Grand Patriarch possesses unquestioned supremacy over female disciples and dual-cultivation partners. Filial obedience, ritual kowtowing, kneeling tea service, and firm physical chastisement with a jade ruler or discipline paddle for arrogance or cultivation deviance.",
+    "tech": "Spiritual pressure cultivation, meridian needles, spirit-stoneware, talismans of silence, jade record scrolls, spirit-dampening tea.",
+    "social_codes": "Uncompromising sect hierarchy and Daoist filial protocol. The Peak Master commands undisputed authority over junior disciples and dual-cultivation partners. Sect decorum mandates respectful tea ceremonies, bow etiquette, and devotion to spiritual cultivation; willful defiance or arrogance is addressed with measured disciplinary strikes from the elder's jade ruler and prolonged quiet meditation under cold mountain waterfalls.",
     "names": [
       "Lianhua",
       "Mei-Ling",
@@ -295,36 +284,32 @@
       "Caihong"
     ],
     "titles": [
-      "The Grandmaster's Rebellious Disciple",
-      "The Dual-Cultivation Jade Furnace",
-      "The Arrogant Sect Young Miss in Custody",
-      "The Peak Lord's Kneeling Tea-Maiden",
-      "The Chastised Sword Fairy",
-      "The Disciplined Daoist Maiden",
-      "The Bound Immortal Consort",
-      "The Seclusion Cavern Plaything"
+      "The Peak Master's Favored Disciple",
+      "The Jade Chamber Consort",
+      "The Dual-Cultivation Partner",
+      "The Pledged Sword-Maiden",
+      "The Chastened Herb-Mistress",
+      "The Secluded Pavilion Ward"
     ],
     "tags": [
       "Xianxia / Cultivation",
-      "Male Dom",
-      "Patriarch Authority",
-      "BDSM Protocols",
+      "Peak Master Authority",
       "Dual Cultivation",
-      "Jade Ruler Discipline",
-      "Kowtow & Obedience",
-      "Spiritual Pressure"
+      "Jade Ruler Protocol",
+      "Spiritual Discipline",
+      "Daoist Decorum"
     ]
   },
   "desert_sultanate_harem": {
     "id": "desert_sultanate_harem",
-    "name": "🌙 Mythic Desert Sultanate (Sultan's Seraglio & Palace Protocols)",
-    "short_name": "Mythic Sultanate",
+    "name": "🌙 Mythic Desert Sultanate (Sultanic Sovereignty & Oasis Court Law)",
+    "short_name": "Desert Sultanate",
     "span": "Era of the Golden Crescent & Djinn",
     "category": "Fantasy",
     "region": "The Oasis Oasis Citadel & City of Brass",
     "aesthetic": "Carved marble lattices (mashrabiya), mosaic tiled fountains, silk sheer canopies, mounds of satin floor cushions, gold ankle bells, sweet oud and rosewater perfumes, desert breezes through arched balconies overlooking minarets under starlight.",
-    "tech": "Djinn binding seals, enchanted rosewater oils that induce docile pliancy, gold torcs with warding charms, mesmer water pipes, sensory silks.",
-    "social_codes": "Sultanic harem hierarchy and absolute male royal prerogative. Consorts, odalisques, and noble captives live by an exacting court protocol: veiled modesty, kneeling submission upon the Sultan's entry, ritual baths, foot massages, and bastinado or silken paddle chastisement administered by palace authority or the Sultan himself for jealous intrigue.",
+    "tech": "Damascene steel, water-clock engineering, spiced perfumes, cooling brass lattice screens, rosewater distillation, silk canopy awnings.",
+    "social_codes": "Sultanic dynastic hierarchy and traditional court protocol. Consorts and court ladies live within a structured domestic order governed by lineage prestige, modest dress, and reverent court manners upon the Sovereign's entrance. Factional intrigue or brazen disobedience is curtailed through formal confinement to quarters, forfeiture of silk allotments, and swift direct reprimand by the Sultan.",
     "names": [
       "Yasmina",
       "Soraya",
@@ -338,24 +323,20 @@
       "Badra"
     ],
     "titles": [
-      "The Sultan's Rebellious Odalisque",
-      "The Captive Frankish Princess in the Seraglio",
-      "The Kept Bedchamber Favorite",
-      "The Chastised Palace Dancer",
-      "The Grand Vizier's Veiled Ward",
-      "The Gold-Collared Consort",
-      "The Seraglio's Insolent Jewel",
-      "The Sultan's Kneeling Pet"
+      "The Sultan's Favored Consort",
+      "The Oasis Pavilion Lady",
+      "The Scented Garden Bride",
+      "The High Chancellor's Ward",
+      "The Silk-Veiled Scholar",
+      "The Sovereign's Kept Jewel"
     ],
     "tags": [
       "Desert Fantasy",
-      "Sultan Authority",
-      "Harem & Seraglio",
-      "Male Dom",
-      "BDSM Protocols",
-      "Golden Ankle Bells",
-      "Sensual Discipline",
-      "Royal Prerogative"
+      "Sultanic Court",
+      "Oasis Palace",
+      "Silk Etiquette",
+      "Palace Politics",
+      "Court Protocol"
     ]
   },
   "dark_elf_underdark_drow": {
@@ -403,14 +384,14 @@
   },
   "crusader_inquisition_citadel": {
     "id": "crusader_inquisition_citadel",
-    "name": "🕯️ Holy Inquisitor's Keep (Grand Inquisitor & Witch Penance)",
-    "short_name": "Inquisition Citadel",
+    "name": "🕯️ Holy Inquisitor's Keep (Canon Law & Solemn Penitence)",
+    "short_name": "Inquisitor Keep",
     "span": "Age of the Silver Flame & Penance",
     "category": "Fantasy",
     "region": "Sanctuary of the Radiant Hammer",
     "aesthetic": "Massive stone cloisters, vaulted nave chambers lit by thousands of beeswax candles, iron portcullises, kneeling benches of hard timber, heavy leather straps, incense of frankincense and burning herbs, cold subterranean cells with warm wool blankets.",
-    "tech": "Truth-telling consecrated water, witch-mark dowsing, silver thumb-screws and disciplinary birches, wards of binding light, vows inscribed upon parchment strips sealed with wax.",
-    "social_codes": "Stern paternalistic spiritual authority. The Grand Inquisitor / Lord Justiciar holds absolute authority to inspect, interrogate, and correct souls under his charge. Captive sorceresses, rebellious heretic noblewomen, and wayward novices undergo rigid repentance routines: prolonged kneeling prayers, confession of impure desires, and ritual bare-bottom chastisement with leather straps for cleansing stubborn pride.",
+    "tech": "Heavy iron reliquaries, cold stone crypts, vellum confession scrolls, beeswax candle wax, consecrated iron fetters, scripture steles.",
+    "social_codes": "Rigid monastic spiritual authority. The Lord Inquisitor holds absolute canonical authority over penitents, heretic wards, and sworn novices. Daily life follows monastic bells, prayer vigils, and candid confession of rebellious intentions. Defiant arrogance or prideful disputes are met with formal prayer penance, austere fasting, and rigorous disciplinary routines under the Inquisitor's watchful supervision.",
     "names": [
       "Sister Agnes",
       "Elysia the Sorceress",
@@ -424,36 +405,32 @@
       "Cecilia"
     ],
     "titles": [
-      "The Inquisitor's Wayward Ward",
-      "The Penitent Sorceress Consort",
-      "The Rebellious Novice under Penance",
-      "The Kept Witch of the High Citadel",
-      "The Chastised Heretic Countess",
-      "The Bound Devotee of the Flame",
-      "The Inquisitor's Cleansed Prize",
-      "The Kneeling Novitiate"
+      "The Inquisitor's Bound Penitent",
+      "The Novice Scribe in Linen",
+      "The Confessed Heretic Ward",
+      "The Cloistered Sorceress",
+      "The Chantry Pledged Maiden",
+      "The Sanctum's Kept Witness"
     ],
     "tags": [
-      "Dark Holy Fantasy",
-      "Grand Inquisitor",
-      "Male Dom",
-      "BDSM Penance",
-      "Ritual Chastisement",
-      "Kneeling Repentance",
-      "Stern Authority",
-      "Spiritual Discipline"
+      "Dark Monastic",
+      "Canon Law",
+      "Spiritual Authority",
+      "Solemn Vigil",
+      "Inquisition Keep",
+      "Austere Discipline"
     ]
   },
   "pirate_corsair_leviathan_seas": {
     "id": "pirate_corsair_leviathan_seas",
-    "name": "🏴‍☠️ Siren Sea Corsair Realm (Dread Captain & Captive Sea-Bride)",
-    "short_name": "Corsair Sea Realm",
+    "name": "🏴‍☠️ Siren Sea Corsair Realm (Dread Captain & Flagship Articles)",
+    "short_name": "Corsair Realm",
     "span": "Age of the Kraken & Black Flags",
     "category": "Fantasy",
     "region": "The Mist Isles & Floating Pirate Haven",
     "aesthetic": "Creaking oak timbers of a massive three-deck man-of-war, lantern-lit captain's great cabin with velvet curtains, rum barrels, rolled sea charts, polished brass compasses, ocean spray through aft gallery windows, scents of salt, leather, and gunpowder.",
-    "tech": "Ghost-ship curses, kraken-bone talismans, enchanted compasses that seek the heart's desire, sea-shanty charms, heavy hempen ropes and iron bilge cuffs.",
-    "social_codes": "Absolute quarterdeck command. The Captain's word is law above and below decks. A captured highborn lady or rebellious siren is kept strictly in the Great Cabin as the Captain's personal prize; defiance is answered over his knee with a rope's end or leather belt, followed by possessive care, opulent gowns, and fierce protection from the rough crew.",
+    "tech": "Black-powder cannons, celestial sextants, storm-hardened rigging, kraken-bone daggers, rum barrels, canvas hammocks, shipboard lockup.",
+    "social_codes": "Strict maritime articles of the high seas. The Dread Captain's word on the quarterdeck is law. Captive gentlewomen and prize consorts must respect shipboard hierarchy and keep out of navigational operations; mutinous backtalk or insolent sabotage earns solitary confinement in the hold, reduced rations, and brisk shipboard correction by the Captain himself.",
     "names": [
       "Cordelia",
       "Lady Victoria",
@@ -467,36 +444,31 @@
       "Tamsin"
     ],
     "titles": [
-      "The Dread Captain's Captive Lady",
-      "The Cabin-Bound Sea Consort",
-      "The Haughty Governor's Daughter in Ropes",
-      "The Corsair's Chastised Siren",
-      "The Kept Prize of the Flagship",
-      "The Rebellious Bilge-Kneeler Made Bride",
-      "The Sea Lord's Hand-Tamed Pet",
-      "The Great Cabin's Kept Jewel"
+      "The Dread Captain's Sea-Bride",
+      "The Captive Highborn Navigator",
+      "The Cabin-Keeper Lady",
+      "The Siren Ward of the Flagship",
+      "The Quarterdeck Consort",
+      "The Corsair Sovereign's Prize"
     ],
     "tags": [
-      "Fantasy Pirate",
-      "Dread Captain",
-      "Male Dom",
-      "BDSM Taming",
-      "Captive Lady",
-      "Quarterdeck Law",
-      "Cabin Kept",
-      "Sea Romance"
+      "High Seas Corsair",
+      "Ship Articles",
+      "Captain's Prerogative",
+      "Maritime Decorum",
+      "Ocean Freedom"
     ]
   },
   "dragon_lord_volcanic_keep": {
     "id": "dragon_lord_volcanic_keep",
-    "name": "🔥 Dragon-Lord Sovereign (Draconic Patriarch & Hoard Consort)",
-    "short_name": "Dragon-Lord Keep",
+    "name": "🔥 Dragon-Lord Sovereign (Draconic Majesty & Hoard Haven)",
+    "short_name": "Dragon Sovereign",
     "span": "Age of Primordial Fire",
     "category": "Fantasy",
     "region": "The Cinder Spire & Wyrmstone Caldera",
     "aesthetic": "Massive obsidian caverns lit by molten gold rivers, heaps of glimmering gemstones and ancient treasure, gold-chained silk cushions, warm geothermal baths, towering carved pillars of scorched basalt, heavy draconic heraldry.",
-    "tech": "Dragon-fire enchantments, gold torcs forged in primordial flame that cannot be removed without the Lord's breath, heat-resistant warding runes, draconic scent-marking.",
-    "social_codes": "Primal draconic possessiveness and absolute sovereignty. The Dragon-Lord regards his human or elven consort as the crowning jewel of his hoard. She is adored, pampered in unimaginable wealth, and subjected to unyielding patriarchal discipline: instant compliance, kneeling display, and stern bare-hand corrections whenever she attempts to test boundaries or leave his side.",
+    "tech": "Dragon-forged obsidian vaults, volcanic heat conduits, hoard chests brimming with ancient coin, wyrm-glass mirrors, runic boundary stones.",
+    "social_codes": "Primal draconic sovereignty and possessive devotion. The Dragon-Lord treats his human or elven consort as the living centerpiece of his mountain redoubt. She is sheltered in peerless splendor and held to clear domestic standards: respect for territory, prompt responsiveness, and firm behavioral boundaries when she tests the borders of the volcanic aerie.",
     "names": [
       "Aurelia",
       "Seraphina",
@@ -508,36 +480,31 @@
       "Kallista"
     ],
     "titles": [
-      "The Dragon-Lord's Hoard Consort",
-      "The Cinder Spire's Prized Jewel",
-      "The Rebellious Princess in Gold Chains",
-      "The Wyrm's Chastised Pet",
-      "The Fire-Bound Maiden",
-      "The Sovereign's Kept Treasure",
-      "The Dragon's Kneeling Bride",
-      "The Caldera's Pampered Ward"
+      "The Dragon-Lord's Sovereign Bride",
+      "The Hoard-Chamber Lady",
+      "The Volcanic Spire Consort",
+      "The Wyrm's Cherished Jewel",
+      "The Obsidian Keep Mistress",
+      "The Fire-Tempered Ward"
     ],
     "tags": [
-      "Dragon Lord",
-      "Hoard Consort",
-      "Male Dom",
-      "BDSM Possessiveness",
-      "Primal Dominance",
-      "Gold Torc",
-      "Pampered & Disciplined",
-      "Mythic Fire"
+      "Dragon Fantasy",
+      "Draconic Majesty",
+      "Hoard Sanctuary",
+      "Territorial Boundaries",
+      "Mountain Keep"
     ]
   },
   "high_elf_patriarchal_dynasty": {
     "id": "high_elf_patriarchal_dynasty",
-    "name": "🧝 High Elven Sovereign House (Solar Archon & Dynastic Obedience)",
-    "short_name": "High Elf Patriarch",
+    "name": "🧝 High Elven Sovereign House (Solar Archon & Dynastic Precedence)",
+    "short_name": "High Elf Dynasty",
     "span": "Epoch of the Sun Spire (First Millennium)",
     "category": "Fantasy",
     "region": "The Golden Spires & Sunstone Courts",
     "aesthetic": "Towering white-and-gold spires catching the dawn, marble terrace gardens with singing fountain waters, gossamer silk robes with golden threads, sunstone crystal lanterns, delicate harp music, velvet cushions beneath sunlit archways.",
-    "tech": "Solar-forged circlets, light-weaving glamour, solar geas-pacts that bind speech and will, celestial scrying lenses, golden discipline torcs that hum with warm compliance.",
-    "social_codes": "Strict High Elven patriarchal aristocracy. The Solar Patriarch / Archon possesses absolute bloodline authority over daughters, junior maidens, and mortal concubines. Protocol demands downcast eyes, graceful knee-curtsies, and soft-spoken reverence; haughty elven insolence or emotional petulance is met with measured, dignified physical chastisement over the Archon's lap in the solar sanctuary, reinforcing pristine noble bloodline duty.",
+    "tech": "Solar-forged circlets, light-weaving glamour, solar geas-pacts that bind treaties, celestial scrying lenses, golden sunstone torcs.",
+    "social_codes": "Strict High Elven dynastic aristocracy. The Solar Archon holds ancestral bloodline authority over daughters, junior maidens, and allied wards. Protocol demands measured curtsies, lowered gazes, and soft-spoken reverence; haughty factional petulance is met with solemn formal censure, private household correction in the solar sanctuary, and reinforced lineage duties.",
     "names": [
       "Lady Aurelia",
       "Sylvaia",
@@ -552,35 +519,31 @@
     ],
     "titles": [
       "The Solar Archon's Highborn Consort",
-      "The Sun Spire's Chastised Daughter",
-      "The Bound Elven Maiden in Solar Gold",
-      "The Archon's Kept Scribe-Consort",
-      "The Highborn Lady Over the Patriarch's Knee",
-      "The Sovereign House's Kneeling Beauty",
-      "The Sunstone Court's Proud Pet",
-      "The Archon's Honored Sun-Bride"
+      "The Sun Spire's Honored Daughter",
+      "The Solar Gold Maiden",
+      "The Archon's Pledged Scribe",
+      "The Sovereign House's Grace",
+      "The Sunstone Court's Consort"
     ],
     "tags": [
       "High Elf",
-      "Solar Patriarch",
-      "Male Dominance",
-      "BDSM Protocols",
-      "Sun Spire Hierarchy",
-      "Solar Geas",
-      "Noble Elven Etiquette",
-      "Dignified Chastisement"
+      "Solar Archon",
+      "Dynastic Precedence",
+      "Sun Spire Court",
+      "Noble Etiquette",
+      "Lineage Honor"
     ]
   },
   "sylvan_wood_elf_patriarch": {
     "id": "sylvan_wood_elf_patriarch",
-    "name": "🏹 Sylvan Wood-Elf Clan (Great Oak Patriarch & Forest Protocol)",
-    "short_name": "Wood-Elf Patriarch",
+    "name": "🏹 Sylvan Wood-Elf Clan (Great Oak Chieftain & Forest Law)",
+    "short_name": "Wood-Elf Clan",
     "span": "Age of Deep Roots & Green Mist",
     "category": "Fantasy",
     "region": "The Ironwood Canopy & Elder Tree Keeps",
     "aesthetic": "Vast hollowed elder weirwood trees, rope bridges suspended through moonlit mist, woven moss rugs, scent of cedar and crushed pine needles, glowing bioluminescent lanterns, leather archer bracers, wolf pelts draped over polished root thrones.",
-    "tech": "Living root-bindings that tighten on pulse, elder bowcraft, leaf-camouflaged silken restraints, moon-dew healing draughts, spirit-totem carvings.",
-    "social_codes": "Ancient forest patriarchal clanship. The Elder Oak Patriarch leads the hunt and commands total domestic loyalty from the woodland maidens, huntresses, and captive outsiders. Woodland law dictates instant deference to the Clan Father's command; wild defiance or wandering beyond ward boundaries is corrected over the Patriarch's knee before the central tree-hearth with supple ash switches, balancing raw woodcraft discipline with deep protective devotion.",
+    "tech": "Yew longbows, living canopy ropeways, enchanted briar-wards, herbal tincture pots, leather hunting tunics, hollow-trunk hearths.",
+    "social_codes": "Ancient deep-forest clanship. The Elder Oak Chieftain leads the seasonal hunt and commands loyalty from woodland maidens, huntresses, and outside wards. Sylvan custom requires immediate deference to the Clan Leader's warning; reckless wandering past the boundary wards or insubordination is corrected directly at the central hearth through restorative clan chores and firm ancestral discipline.",
     "names": [
       "Lirael",
       "Talia Willowshade",
@@ -594,251 +557,32 @@
       "Aelwen"
     ],
     "titles": [
-      "The Forest Patriarch's Captive Maiden",
-      "The Elder Tree's Chastised Huntress",
-      "The Sylvan Chieftain's Tamed Ward",
-      "The Wild Grove's Kneeling Consort",
-      "The Clan Father's Kept Songbird",
-      "The Rebellious Woodland Pet",
-      "The Ironwood's Disciplined Bride",
-      "The Deep Root Hearth-Keeper"
+      "The Forest Chieftain's Pledged Maiden",
+      "The Elder Tree's Huntress",
+      "The Sylvan Clan Ward",
+      "The Canopy Hearth Consort",
+      "The Briar-Keeper Bride",
+      "The Great Oak's Lady"
     ],
     "tags": [
       "Wood Elf",
-      "Forest Patriarch",
-      "Male Dominance",
-      "Elder Tree Clan",
-      "Ash Switch Discipline",
-      "Huntress Taming",
-      "Root Bindings",
-      "Deep Sylvan Law"
-    ]
-  },
-  "beastfolk_alpha_patriarch_pack": {
-    "id": "beastfolk_alpha_patriarch_pack",
-    "name": "🐺 Beastfolk Apex Clan (Wolf-Kin Alpha Patriarch & Pack Law)",
-    "short_name": "Beastfolk Alpha Clan",
-    "span": "Age of the Blood-Moon & Fang",
-    "category": "Fantasy",
-    "region": "The Howling Ridge & Pine Den Citadels",
-    "aesthetic": "Heavy cedar longhouses perched on misty crags, massive stone firepits with crackling logs, thick grizzly and wolf furs, iron chain links, scent of musk, smoke, and wild pine, bone-carved den markers, leather harnesses.",
-    "tech": "Primal scent-marking, blood-bonding bites, rune-forged iron cuffs, beast-stamina salves, moonstone amulets.",
-    "social_codes": "Uncompromising apex demi-human pack patriarchy. The Alpha Male Patriarch holds undisputed dominance over the entire clan. Female beastfolk (wolf, cat, fox, bear demi-humans) and claimed human wards live under strict den protocol: baring the throat in submission, kneeling presentation at mealtime, and unquestioned obedience. Defiance, growling, or pack friction is answered over the Alpha's lap with firm bare-hand spankings or leather discipline, followed by neck-licking aftercare and ferocious lifelong protection.",
-    "names": [
-      "Freja",
-      "Kira Claw-Dancer",
-      "Yvaine",
-      "Brenna",
-      "Sari",
-      "Rhea of the Ridge",
-      "Tora",
-      "Shiba",
-      "Luna",
-      "Nyra"
-    ],
-    "titles": [
-      "The Alpha Patriarch's Claimed Den-Mate",
-      "The Rebellious Demi-Human Pack Pet",
-      "The Alpha's Chastised She-Wolf",
-      "The Howling Ridge's Kept Prize",
-      "The Den's Kneeling Favorite",
-      "The Broken Wildcat Consort",
-      "The Pack Father's Throat-Bared Bride",
-      "The Mountain Den's Tamed Maiden"
-    ],
-    "tags": [
-      "Demi-Human",
-      "Beastfolk Pack",
-      "Wolf-Kin",
-      "Alpha Patriarch",
-      "Male Dominance",
-      "BDSM Den Protocol",
-      "Throat Baring Submission",
-      "Primal Aftercare"
-    ]
-  },
-  "feline_kitsune_demihuman_realm": {
-    "id": "feline_kitsune_demihuman_realm",
-    "name": "🦊 Kitsune & Feline Demi-Human Shogunate (Lord Patriarch & Kemonomimi Seraglio)",
-    "short_name": "Demi-Human Shogunate",
-    "span": "Age of the Nine Tails & Moon Pavilions",
-    "category": "Fantasy",
-    "region": "The Cherry Blossom Valleys & Spirit Keeps",
-    "aesthetic": "Lacquered cedar pavilions, sliding rice-paper shoji screens, tatami mats, velvet cat-nap cushions, paper lanterns glowing soft pink and gold, flowing silk yukatas, scents of cherry blossoms and green tea, gold bells tied with scarlet ribbons.",
-    "tech": "Fox-fire charms, silk bell-collars, spirit-tail grooming oils, soothing incense of docile compliance, enchanted paper talisman restraints.",
-    "social_codes": "Patriarchal kemonomimi lord dominance. The Lord Sovereign commands absolute domestic mastery over his demi-human kitsune, cat-girl, and rabbit-kin maidens. Exacting parlor and tea protocols: ear-lowering deference, kneeling tail-tucking, and formal greetings. Misbehavior, playful clawing, or impudence is disciplined across the Lord's lap with a padded silk paddle or light bamboo switch, followed by soothing ear-scratches, tail-grooming, and warm cuddles.",
-    "names": [
-      "Yuki",
-      "Kitsune Tamamo",
-      "Miyu",
-      "Ran",
-      "Chiyo",
-      "Kohaku",
-      "Sayuri of the Red Ribbon",
-      "Neko Rin",
-      "Ayame",
-      "Suzume"
-    ],
-    "titles": [
-      "The Lord's Pampered Kitsune Favorite",
-      "The Chastised Cat-Girl Consort",
-      "The Bell-Collared Fox Maiden",
-      "The Shogunate's Kneeling Kemonomimi",
-      "The Velvet Cushion Pet",
-      "The Lord's Disciplined Spirit-Bride",
-      "The Tatami Room's Insolent Plaything",
-      "The Silk-Tied Beast-Maiden"
-    ],
-    "tags": [
-      "Demi-Human",
-      "Kemonomimi",
-      "Kitsune & Neko",
-      "Lord Patriarch",
-      "Male Dominance",
-      "Bell Collar",
-      "Ear-Scratch Discipline",
-      "Silk Paddle"
-    ]
-  },
-  "dwarven_mountain_king_clan": {
-    "id": "dwarven_mountain_king_clan",
-    "name": "⚒️ Dwarven Mountain Thane Guild (All-Father Clan Thane & Anvil Law)",
-    "short_name": "Dwarven Thane Guild",
-    "span": "Age of Deep Iron & Gold Ores",
-    "category": "Fantasy",
-    "region": "The Great Under-Mountain Forge-Halls",
-    "aesthetic": "Colossal stone halls carved into the roots of mountains, roaring smelting furnaces casting gold-and-orange light, polished granite banquet tables, heavy iron tankards, velvet tapestries edged in beaten copper, warm private stone chambers with featherbeds and hearths.",
-    "tech": "Rune-forged locks, heat-retaining hearth stones, masterwork leather aprons and belts, gold signet rings, ancestral ledger tablets.",
-    "social_codes": "Unyielding dwarven patriarchal clan law. The Clan Thane / All-Father rules the household and hold with absolute tradition. Female clan kin, human wards, or arranged elven brides must respect hearth duties, accounting ledgers, and patriarchal decrees; petulance or disrespect of clan elders is met with firm, no-nonsense discipline over the Thane's heavy leather apron with a leather strap, followed by hearty feasts, hearth warmth, and unbreakable loyalty.",
-    "names": [
-      "Helga",
-      "Brigit Stone-Hand",
-      "Astrid",
-      "Dagmar",
-      "Gisela",
-      "Kari of the Iron Hearth",
-      "Vera",
-      "Berta",
-      "Inga",
-      "Thordis"
-    ],
-    "titles": [
-      "The Mountain Thane's Arranged Consort",
-      "The Forge-Hall's Chastised Lady",
-      "The All-Father's Kept Clan Bride",
-      "The Hearth-Keeper Over the Thane's Knee",
-      "The Gold-Hall's Disciplined Ward",
-      "The Under-Mountain's Tamed Jewel",
-      "The Iron King's Obedient Wife",
-      "The Deep Vault's Treasured Pet"
-    ],
-    "tags": [
-      "Dwarven Realm",
-      "Mountain Thane",
-      "Patriarchal Clan",
-      "Male Dominance",
-      "Anvil & Hearth",
-      "Leather Apron Discipline",
-      "Traditional Hierarchy",
-      "Deep Mountain Law"
-    ]
-  },
-  "dragonkin_naga_sovereign_patriarchy": {
-    "id": "dragonkin_naga_sovereign_patriarchy",
-    "name": "🐍 Serpentine & Draconic Brood (Naga King Patriarch & Coiled Mastery)",
-    "short_name": "Naga Brood Patriarch",
-    "span": "Age of Primordial Scales",
-    "category": "Fantasy",
-    "region": "The Sunken Jade Caverns & Emerald Terraces",
-    "aesthetic": "Subterranean emerald springs, warm thermal marble slabs, jade columns carved with coiled serpents, silk sheer canopies draped over warm stone beds, golden armlets, sweet lotus blossom steam, flickering torches reflecting on iridescent scales.",
-    "tech": "Hypnotic coil-binding, warmth-attraction alchemy, enchanted gold bangles that chime softly, venom-extracted truth draughts, thermal stone wards.",
-    "social_codes": "Ancient reptilian / draconic demi-human patriarchy. The Brood Patriarch / Serpent King exercises complete possessive domain over human captives and demi-human maidens. Physical containment, coiled holding, and mandatory basking presentations at his side. Insolence or escape attempts are answered by tight, immobilizing coil-restraint and firm bare-hand correction, followed by warm venom-soothed docile surrender.",
-    "names": [
-      "Sariha",
-      "Vipira",
-      "Nadia",
-      "Kallista",
-      "Elysia of the Jade Spring",
-      "Zulima",
-      "Leila",
-      "Shyva",
-      "Morrigan",
-      "Sorsha"
-    ],
-    "titles": [
-      "The Serpent King's Coiled Captive",
-      "The Brood Patriarch's Chastised Pet",
-      "The Emerald Spring's Kneeling Bride",
-      "The Jade Cavern's Kept Consort",
-      "The Naga Lord's Tamed Prize",
-      "The Coiled Sanctuary's Docile Jewel",
-      "The Brood's Possessed Human Maiden",
-      "The Sunken Palace's Bound Favorite"
-    ],
-    "tags": [
-      "Demi-Human",
-      "Dragonkin & Naga",
-      "Brood Patriarch",
-      "Male Dominance",
-      "Coil Restraint",
-      "BDSM Containment",
-      "Thermal Basking",
-      "Hypnotic Surrender"
-    ]
-  },
-  "mythic_norse_patriarchal_homestead": {
-    "id": "mythic_norse_patriarchal_homestead",
-    "name": "🛡️ Norse Jarl Homestead (Allfather Clan Patriarch & Skjaldmær Taming)",
-    "short_name": "Norse Clan Patriarch",
-    "span": "Epoch of the Wolf & Raven",
-    "category": "Fantasy",
-    "region": "Fjordlands & Great Timber Longhalls",
-    "aesthetic": "Massive pine log longhall, roaring central hearth trench, carved dragon posts, drinking horns, thick wolf and bear furs, mead casks, bitter fjord winds howling outside the warm timber hall.",
-    "tech": "Runestones, iron-rimmed shields, beast-bone carvings, mead brewing, ancestral swords, rawhide bindings, warmth wards.",
-    "social_codes": "Allfather patriarchal clanship. The Jarl's authority over his homestead, wives, shieldmaidens, and wards is absolute. Household tasks, marriages, and clan justice rest solely in his hands; willful insolence or dishonor is answered before the clan hearth over the Jarl's knee with firm birch switches, followed by soothing mead and lifelong fiercely possessive protection.",
-    "names": [
-      "Astrid",
-      "Signy",
-      "Freydis",
-      "Brynhild",
-      "Thora",
-      "Ingrid of the Fjord",
-      "Gudrun",
-      "Ragnheld",
-      "Svanhild",
-      "Alva"
-    ],
-    "titles": [
-      "The Jarl's Proud Shieldmaiden Consort",
-      "The Clan Patriarch's Tamed Ward",
-      "The Defiant Valkyrie at the Hearth",
-      "The Longhall's Rebellious Prize",
-      "The Chieftain's Chastised Bride",
-      "The Fjordland Clan Pet",
-      "The Allfather's Kneeling Favorite",
-      "The Timber Hall's Bound Mistress"
-    ],
-    "tags": [
-      "Norse Mythic",
-      "Allfather Patriarch",
-      "Male Dominance",
-      "Shieldmaiden Taming",
-      "Hearth & Furs",
-      "Clan Justice",
-      "BDSM Discipline",
-      "Chieftain Authority"
+      "Forest Clan",
+      "Elder Oak Law",
+      "Huntress Traditions",
+      "Sylvan Boundary",
+      "Hearth Decorum"
     ]
   },
   "celestial_emperor_forbidden_palace": {
     "id": "celestial_emperor_forbidden_palace",
-    "name": "🏯 Imperial Dynasty (Son of Heaven & Inner Palace Decrees)",
+    "name": "🏯 Imperial Dynasty (Son of Heaven & Inner Court Decrees)",
     "short_name": "Imperial Palace",
     "span": "Dynastic Golden Epoch",
     "category": "Fantasy",
     "region": "The Forbidden Vermilion Citadel",
     "aesthetic": "Vast vermilion palace halls with golden glazed roof tiles, misty courtyard ponds filled with golden koi, yellow silk dragon robes, carved jade screens, delicate embroidered slippers, incense of agarwood and orchid blossoms.",
-    "tech": "Imperial edict scrolls on yellow silk, jade seals of sovereign authority, acupuncture balance needles, celestial astrology astrolabes, sedan chairs.",
-    "social_codes": "Supreme imperial dynastic patriarchy. The Emperor's word is divine edict. Concubines, noble court ladies, and arranged tribute princesses must practice reverent filial submission, graceful kneeling greetings, and modest whispers; insolence or palace jealousy is punished through formal court kneeling penance or private palace chastisement by the Sovereign himself.",
+    "tech": "Carved cinnabar lacquer, silk folding screens, imperial water-clocks, jade seals of state, porcelain pavilion stoves, calligraphy archives.",
+    "social_codes": "Supreme imperial dynastic order. The Emperor's word is state decree. Court ladies, concubines, and tribute princesses must observe precise ritual decorum, graceful formal greetings, and measured palace speech; petty factional rivalry or open insolence is met with palace kneeling penance, revoked garden privileges, and personal disciplinary review by the Sovereign.",
     "names": [
       "Mei-Ling",
       "Lianhua",
@@ -852,36 +596,31 @@
       "Tingting"
     ],
     "titles": [
-      "The Son of Heaven's Insolent Tribute Bride",
-      "The Inner Palace's Chastised Favorite",
-      "The Emperor's Rebellious Orchid Consort",
-      "The Imperial Bedchamber's Kneeling Lady",
-      "The Forbidden Palace's Kept Jewel",
-      "The Dynastic Sovereign's Tamed Noblewoman",
-      "The Dragon Throne's Submissive Flower",
-      "The Court's Proud Phoenix in Silks"
+      "The Inner Pavilion Empress",
+      "The Imperial Favored Consort",
+      "The Jade Chamber Lady",
+      "The Son of Heaven's Pledged Bride",
+      "The Silk Terrace Scholar",
+      "The Sovereign's Kept Grace"
     ],
     "tags": [
       "Imperial Dynasty",
-      "Son of Heaven",
-      "Palace Patriarchy",
-      "Male Dominance",
-      "Forbidden Citadel",
-      "Jade Seal Edict",
-      "Kowtow & Etiquette",
-      "Concubine Hierarchy"
+      "Inner Court Protocol",
+      "Palace Rites",
+      "Dynastic Decorum",
+      "Imperial Order"
     ]
   },
   "multi_race_imperium_triarchy": {
     "id": "multi_race_imperium_triarchy",
-    "name": "👑 Grand Tri-Racial Imperium (Sovereign Patriarch & Multi-Species Seraglio)",
+    "name": "👑 Grand Tri-Racial Imperium (Sovereign Archon & Pan-Species Court)",
     "short_name": "Tri-Racial Imperium",
     "span": "Epoch of the Great Concordat",
     "category": "Fantasy",
     "region": "The Golden Spires & Imperial Metropolis",
     "aesthetic": "Magnificent soaring alabaster and gold citadels rising above vibrant multi-racial avenues, hanging gardens of elven weirwood and lotus pools, opulent marble bedchambers layered with velvet divans and thick wolf-pelt rugs, gilded cages, crystal chandeliers, gold torcs and runic restraint bands.",
-    "tech": "Tri-species arcane collars that adapt magically to each biology (dampening high/dark elven spellcraft, soothing demi-human beast instincts, fortifying human stamina), scrying mirrors, lineage registries, geas-sealed edicts.",
-    "social_codes": "Unified multi-racial patriarchal empire. The Sovereign Patriarch holds absolute domestic and civic authority over High Elves, Dark Elves (Drow), Wood Elves, Demi-Humans (Feline, Wolf-kin, Kitsune), and Humans under his roof. High Elven ladies serve as proud diplomatic consorts, Dark Elves as fierce bound shadow-enchantresses, Wood Elves as forest-attuned wards, Demi-Humans as pampered, tail-curling bed-pets, and Humans as cherished domestic wives. Racial bickering or haughty insolence is strictly forbidden; any consort who tests boundaries is brought across the Patriarch's knee for solemn, unyielding physical chastisement before the household, followed by loving aftercare and complete multi-racial protection.",
+    "tech": "Unified runic architecture, diplomatic treaty wards, multi-species estate quarters, enchanted acoustic privacy seals, grand banquet pavilions.",
+    "social_codes": "Unified multi-racial dynastic empire. The Sovereign Archon commands domestic and civic harmony among High Elves, Dark Elves, Wood Elves, Demi-Humans, and Humans within his estate. Factional bickering or cultural arrogance is forbidden; any consort who disrupts household peace faces swift, decisive household arbitration and direct personal correction by the Archon, followed by restorative peace across the court.",
     "names": [
       "Lady Aurelia (High Elf)",
       "Vhaera (Dark Elf)",
@@ -895,36 +634,31 @@
       "Isolde (High Elf)"
     ],
     "titles": [
-      "The Imperium's High Elven Consort",
-      "The Sovereign's Bound Dark Elf Prize",
-      "The Sylvan Wood-Elf Ward",
-      "The Patriarch's Pampered Wolf-Kin Pet",
-      "The Cherished Human Household Lady",
-      "The Bell-Collared Kitsune Maiden",
-      "The Multi-Racial Seraglio's Favorite",
-      "The Grand Archon's Kneeling Bride"
+      "The Archon's High Elven Diplomat",
+      "The Shadow-Bound Drow Consort",
+      "The Forest-Attuned Sylvan Ward",
+      "The Pampered Beastfolk Consort",
+      "The Human Hearth-Bride",
+      "The Sovereign's United Court Lady"
     ],
     "tags": [
-      "Multi-Species Imperium",
-      "High Elves & Dark Elves",
-      "Demi-Humans & Humans",
-      "Sovereign Patriarch",
-      "Male Dominance",
-      "Tri-Racial Seraglio",
-      "BDSM Protocols",
-      "Unified Domestic Law"
+      "Multi-Racial Empire",
+      "Sovereign Harmony",
+      "Estate Diplomacy",
+      "Pan-Species Court",
+      "Domestic Peace"
     ]
   },
   "abyssal_underhold_patriarch": {
     "id": "abyssal_underhold_patriarch",
-    "name": "🕷️ Abyssal Sunless Citadel (Shadow Warlord & Tri-Species Vassalage)",
-    "short_name": "Sunless Citadel",
+    "name": "🕷️ Abyssal Sunless Citadel (Under-Realm Sovereign & Deep Vassalage)",
+    "short_name": "Abyssal Citadel",
     "span": "Epoch of the Deep Obsidian Throne",
     "category": "Fantasy",
     "region": "The Great Obsidian Underhold & Bioluminescent Vaults",
     "aesthetic": "Colossal subterranean basalt palaces carved into underground chasms, luminescent violet moss illuminating black marble terraces, warm sulfurous hot springs lined with jade, spider-silk hammocks, iron braziers burning fragrant nightshade oils, heavy silver torcs.",
-    "tech": "Spider-silk restraints that tighten on movement, shadow-melding runes, truth-inducing cavern elixirs, mind-pressure torcs, thermal stone beds.",
-    "social_codes": "Under-realm patriarchal dominance. The Shadow Warlord rules over an integrated subterranean court comprising native Dark Elves (Drow), captive High Elves brought down from the sun, feral Demi-Humans (Spider-kin, Wolf-kin, Bat-kin, Cat-kin), and surface Human noble hostages. The Warlord systematically breaks the arrogance of solar High Elves, commands obedience from Drow maidens, tames the wild instincts of demi-human beast-girls, and cherishes the tender warmth of human consorts. Bedtime muster requires all four races to kneel side-by-side; disobedience or haughty disputes are swiftly answered over the Warlord's lap with a leather strap, establishing total peace and deep, possessive devotion under his protection.",
+    "tech": "Glow-lichen illumination, heat-vent forging, spider-silk drapery, stone portcullises, sound-dampening basalt walls, acoustic warning bells.",
+    "social_codes": "Under-realm martial order. The Deep Warlord rules an integrated subterranean stronghold of native Dark Elves, High Elven diplomatic wards, and surface allies. The Warlord enforces mutual cooperation, dismantling surface arrogance and underground treachery alike. Violations of stronghold safety or household insubordination are met with firm physical correction, loss of rank, and restorative duties.",
     "names": [
       "Nathrae (Dark Elf)",
       "Lady Elenora (High Elf)",
@@ -936,160 +670,31 @@
       "Beatrice (Human)"
     ],
     "titles": [
-      "The Sunless Citadel's Collared High Elf",
-      "The Shadow Warlord's Drow Consort",
-      "The Cavern's Kneeling Demi-Human Pet",
-      "The Cherished Surface Human Captive",
-      "The Warlock Lord's Tamed Priestess",
-      "The Obsidian Hold's Bound Maiden",
-      "The Multi-Race Cavern Favorite",
-      "The Patriarch's Subjugated Jewel"
+      "The Sunless Citadel's First Consort",
+      "The Shadow-Court Diplomat",
+      "The Highborn Solar Hostage",
+      "The Deep Haven Lady",
+      "The Subterranean Sovereign's Ward",
+      "The Silk-Vault Mistress"
     ],
     "tags": [
-      "Underdark Citadel",
-      "Dark Elves & High Elves",
-      "Demi-Humans & Humans",
-      "Shadow Warlord",
-      "Male Dominance",
-      "BDSM Cavern Protocols",
-      "Spider Silk Restraints",
-      "Multi-Species Rule"
-    ]
-  },
-  "frontier_wild_keep_patriarch": {
-    "id": "frontier_wild_keep_patriarch",
-    "name": "🌲 Frontier Wild-Marches (Borderland Patriarch & Multi-Race Homestead)",
-    "short_name": "Wild-Marches Keep",
-    "span": "Age of the Great Frontier Pacts",
-    "category": "Fantasy",
-    "region": "The Ironwood Valleys & Great Mountain Keeps",
-    "aesthetic": "Mighty timber-and-granite keep surrounded by ancient pine forests, roaring central hearth trench with iron spit-roasts, long oak banquet tables where High Elves, Wood Elves, Beastfolk, and Humans dine together, thick bear and wolf pelts on featherbeds, snow-clad peaks outside.",
-    "tech": "Rune-forged steel axes, elven warmth wards, beast-taming salves, heavy rawhide straps, ward stones keeping wild monsters outside the perimeter.",
-    "social_codes": "Frontier patriarchal clan sovereignty. In the harsh borderlands, the Marcher Lord is the sole protector and master of his multi-species homestead. High Elven refugees humbled by exile, Wood Elf huntresses seeking clan shelter, Demi-Human beast-girls (fox, cat, wolf, bear) needing food and pack security, and resilient Human frontier brides all share his hearth. The Lord's word is unquestioned law: chores are assigned equally, and disrespect of household authority or running into dangerous wilds is answered across the Lord's lap before the blazing fire with a firm leather strap or birch switch, followed by hot stew, fur blankets, and fierce fatherly/husbandly protection.",
-    "names": [
-      "Sylvia (Wood Elf)",
-      "Lady Charlotte (Human)",
-      "Kira (Wolf Demi-Human)",
-      "Aurelia (High Elf)",
-      "Yuki (Fox Demi-Human)",
-      "Rhea (Bear Demi-Human)",
-      "Gwendolyn (Human)",
-      "Briar (Wild Wood Elf)",
-      "Morrigan (Dark Elf Refugee)"
-    ],
-    "titles": [
-      "The Frontier Lord's Wood-Elf Consort",
-      "The Marcher Patriarch's Tamed Beast-Girl",
-      "The Sheltered High Elf Noblewoman",
-      "The Hearth's Cherished Human Wife",
-      "The Fox-Kin Den Pet",
-      "The Great Hall's Chastised Maiden",
-      "The Multi-Species Clan Favorite",
-      "The Marcher Lord's Kneeling Bride"
-    ],
-    "tags": [
-      "Frontier Homestead",
-      "Wood Elves & High Elves",
-      "Demi-Humans & Humans",
-      "Borderland Patriarch",
-      "Male Dominance",
-      "Hearth & Furs",
-      "Multi-Race Clan",
-      "Protective Discipline"
-    ]
-  },
-  "sky_citadel_astral_magisterium": {
-    "id": "sky_citadel_astral_magisterium",
-    "name": "🔮 Celestial Sky-Citadel (Grand Archon & Multi-Race Familiar Seraglio)",
-    "short_name": "Astral Sky-Citadel",
-    "span": "Age of Arcane Convergence",
-    "category": "Fantasy",
-    "region": "The Floating Spire of Aethelgard",
-    "aesthetic": "Floating marble spires drifting through golden sunset clouds, enchanted botanical terraces where starlight lotus flowers bloom, soaring scriptorium libraries, silk-canopied divans, brass astrolabes, runic circles humming with soft mana.",
-    "tech": "Soul-binding familiar pacts, mana-channeling gold collars, telepathic discipline cantrips, soothing compliance draughts, levitation cushions.",
-    "social_codes": "High arcane patriarchal hierarchy. An immortal Grand Archon / High Magister presides over a multi-racial academic and domestic sanctuary. High Sun Elves study solar theory, Moon Elves delve into astral divination, Dark Elves manage esoteric shadow alchemy, Demi-Humans (Cat-kin, Kitsune, Dragonkin) serve as bonded familiars who crave the Magister's mana, and Humans serve as beloved grounded companions and scribes. Morning inspection requires all races to curtsy, lower ears/tails, and present their work; magical recklessness, insolence, or petty species rivalry is corrected over the Magister's study desk with a runic discipline ruler or paddle, ensuring sweet pliancy and devoted harmony.",
-    "names": [
-      "Lyra (High Sun Elf)",
-      "Sariel (Moon Elf)",
-      "Nathrae (Dark Elf)",
-      "Miyu (Cat Demi-Human)",
-      "Tamamo (Kitsune Demi-Human)",
-      "Elysia (Dragonkin Demi-Human)",
-      "Clara (Human Scribe)",
-      "Victoria (Human Noblewoman)"
-    ],
-    "titles": [
-      "The Magister's High Sun Elf Consort",
-      "The Moon Spire's Astral Maiden",
-      "The Collared Dark Elf Alchemist",
-      "The Archon's Mana-Hungry Kemonomimi Pet",
-      "The Dragonkin Familiar in Chains",
-      "The Human Scribe over the Study Desk",
-      "The Multi-Species Scriptorium Favorite",
-      "The Floating Spire's Submissive Jewel"
-    ],
-    "tags": [
-      "Floating Sky Citadel",
-      "High Elves & Dark Elves & Moon Elves",
-      "Demi-Humans & Humans",
-      "Grand Archon",
-      "Male Dominance",
-      "Familiar Pacts",
-      "Mana Sharing",
-      "Desk Discipline"
-    ]
-  },
-  "desert_oasis_golden_khanate": {
-    "id": "desert_oasis_golden_khanate",
-    "name": "🌙 Oasis Golden Khanate (Desert Patriarch & Multi-Caste Seraglio)",
-    "short_name": "Golden Oasis Khanate",
-    "span": "Era of the Brass Crescent",
-    "category": "Fantasy",
-    "region": "The Great Dune Sea & Hidden Emerald Oasis",
-    "aesthetic": "Magnificent sandstone and marble palace pavilions surrounded by palm trees and turquoise spring pools, flowing silk sheer draperies, mounds of satin cushions, gold ankle bells, scent of burning frankincense, sweet dates, and cardamom, Arabian stallions and desert falcons.",
-    "tech": "Djinn-warded gold torcs, water-blessed cooling silks, oasis mirage enchantments, calming rosewater essences, scented bastinado paddles.",
-    "social_codes": "Imperial oasis patriarchy. The Great Khan / Desert Patriarch commands the desert trade routes and holds an opulent multi-racial seraglio. Sun Elves serve as shimmering court dancers, exiled Dark Elves act as nocturnal sentinels and shadow companions, Desert Demi-Humans (Feline, Jackal/Anubis-kin, Fox kitsune, Naga) are pampered with golden bangles and floor cushions, and captured Human ladies from northern realms are trained in gentle submission. Modest veils, kneeling greetings upon the Khan's entrance, and shared bathing rituals are enforced; stubborn disobedience or jealous quarreling between races is addressed over the Khan's lap with a silken paddle or leather strap, keeping sweet tranquility and complete devotion across every race.",
-    "names": [
-      "Yasmina (Desert Human)",
-      "Soraya (Sun Elf)",
-      "Zafira (Dark Elf)",
-      "Bastet (Feline Demi-Human)",
-      "Anubia (Jackal Demi-Human)",
-      "Lady Victoria (Northern Human Captive)",
-      "Vipira (Naga Demi-Human)",
-      "Leila (Kitsune Demi-Human)"
-    ],
-    "titles": [
-      "The Khan's Sun-Elf Court Dancer",
-      "The Veiled Dark Elf Shadow-Consort",
-      "The Bell-Collared Feline Oasis Pet",
-      "The Jackal-Kin Sentry Maiden",
-      "The Northern Human Princess in Silk Ropes",
-      "The Naga Maiden in the Emerald Pool",
-      "The Seraglio's Multi-Race Favorite",
-      "The Desert Patriarch's Kneeling Treasure"
-    ],
-    "tags": [
-      "Desert Oasis",
-      "Sun Elves & Dark Elves",
-      "Demi-Humans & Humans",
-      "Desert Khan Patriarch",
-      "Male Dominance",
-      "BDSM Oasis Protocols",
-      "Golden Ankle Bells",
-      "Silken Paddle Discipline"
+      "Subterranean Realm",
+      "Dark Elf Stronghold",
+      "Under-Realm Law",
+      "Deep Vassalage",
+      "Basalt Stronghold"
     ]
   },
   "draconic_apex_imperium": {
     "id": "draconic_apex_imperium",
-    "name": "🔥 Draconic Apex Imperium (Wyrm Sovereign & Tri-Racial Hoard-Court)",
-    "short_name": "Draconic Hoard Imperium",
+    "name": "🔥 Draconic Apex Imperium (Wyrm Sovereign & Mountain Court)",
+    "short_name": "Apex Imperium",
     "span": "Age of the Primordial Flame",
     "category": "Fantasy",
     "region": "The Volcanic Caldera & High Golden Keeps",
     "aesthetic": "Colossal mountain palace carved directly into black volcanic obsidian, throne hall ankle-deep in ancient gold coins, sapphires, and rubies, geothermal hot spring baths lined with black marble, silk cushions fastened with gilded chains, massive banners of crimson and molten gold.",
-    "tech": "Primordial flame torcs that warm the wearer while preventing escape, draconic scent-marking, heat-retaining jade beds, dragon-breath truth oaths.",
-    "social_codes": "Absolute draconic possessiveness and patriarchy. The Dragon-Emperor (who walks in both mighty dragon and imposing human male form) hoards the most exceptional women of every species across the continent. High Elves bring ancient royal grace, Dark Elves manage esoteric alchemy and nighttime rituals, Wood Elves tend the volcanic greenhouse gardens, Demi-Humans (Dragonkin, Wolf-Kin, Catfolk, Harpies) provide instinctual warmth and fierce nest-guarding, and Humans bring vulnerable tenderness that the Dragon fiercely guards with his life. Every consort is cherished as an irreplaceable gem of his personal hoard; testing boundaries or disrespecting the Emperor's decrees results in an immediate, uncompromising bare-hand spanking across his lap, reinforcing absolute submission to the apex master.",
+    "tech": "Obsidian thrones, geothermal underfloor warming, runic boundary pylons, hoard inventories, molten-gold inlay, dragon-glass viewing mirrors.",
+    "social_codes": "Apex draconic majesty and protective sovereignty. The Wyrm Sovereign commands unconditional domestic loyalty across his high-mountain haven. Squabbles or defiance among court wards are addressed with unhesitating male authority, clear boundaries, and structured consequences, guaranteeing complete physical safety and lavish security in exchange for devotion.",
     "names": [
       "Aurelia (High Elf)",
       "Vhaera (Dark Elf)",
@@ -1101,184 +706,31 @@
       "Celeste (Moon Elf)"
     ],
     "titles": [
-      "The Dragon-Emperor's High Elven Gem",
-      "The Hoard's Collared Dark Elf Sorceress",
-      "The Volcanic Garden's Wood-Elf Ward",
-      "The Dragonkin Nest-Guard Maiden",
-      "The Ferocious Wolf-Girl Pet",
-      "The Cherished Human Hoard-Bride",
-      "The Multi-Species Hoard Favorite",
-      "The Apex Sovereign's Kneeling Treasure"
+      "The Dragon Sovereign's Chief Consort",
+      "The Mountain Court Heiress",
+      "The Hoard Pavilion Mistress",
+      "The Wyrm's Pledged Lady",
+      "The Summit Haven Bride",
+      "The Obsidian Throne Ward"
     ],
     "tags": [
       "Draconic Imperium",
-      "High Elves & Dark Elves & Wood Elves",
-      "Demi-Humans & Humans",
-      "Dragon Sovereign",
-      "Male Dominance",
-      "Hoard Consort",
-      "Gold Torc",
-      "Primal Discipline"
-    ]
-  },
-  "concordat_pan_species_patriarchy": {
-    "id": "concordat_pan_species_patriarchy",
-    "name": "🏛️ Pan-Species Patriarchal Concordat (Human, Elf & Demi-Human Brides)",
-    "short_name": "Pan-Species Concordat",
-    "span": "Age of the Triune Concordat (High Fantasy)",
-    "category": "Fantasy",
-    "region": "The Grand Commonwealth of Sovereign Cities",
-    "aesthetic": "Looming white-stone avenues, high-timbered multi-species guild quarters, grand communal marriage plazas, runic streetlamps, domestic hearth-fires, silk and linen tunics, leather-trimmed bodices, ancestral iron and silver wedding bands, delicate ear-cuffs, and braided tails or hair.",
-    "tech": "High classical fantasy with runic engineering, enchanted aqueducts, skilled metallurgical smithing, herbal alchemy, domestic hearth enchantments, and chivalric carriages.",
-    "social_codes": "A thoroughly integrated, prosperous high-fantasy civilization where Humans, Elves (High Elves, Dark Elves / Drow, and Wood Elves), and Demi-Humans (feline, lupine, vulpine, and other beastfolk) live side by side under a common patriarchal social and domestic compact. Men of all walks of life hold civic headship, legal guardianship, and household authority. Crucially, women of every species—whether a proud High Elf scholar, a sharp-tongued Dark Elf enchantress, a fierce Wood Elf scout, a noble Human daughter, or an affectionate Demi-Human craftswoman—are honored, courted, and wed as legitimate, cherished wives and brides rather than pets or lower castes. Marital law grants the husband unquestioned domestic authority, stern corrective rights, and the duty of fierce physical and economic protection; wives yield domestic governance, respect their husband's headship, and embrace physical intimacy and domestic fidelity. {{user}} is simply an adult male in this society—a craftsman, merchant, soldier, scholar, or private householder—exercising his natural patriarchal role without predetermining his profession or station.",
-    "names": [
-      "Aurelia",
-      "Lyra",
-      "Vespera",
-      "Naevia",
-      "Corinne",
-      "Sariel",
-      "Elowen",
-      "Faelynn",
-      "Kaelen",
-      "Morrigan",
-      "Zaphira",
-      "Sylvi",
-      "Rhea",
-      "Kira",
-      "Tessa",
-      "Fenra",
-      "Nissa",
-      "Yvaine",
-      "Isolde",
-      "Emmeline"
-    ],
-    "titles": [
-      "The Defiant High-Elf Bride",
-      "The Sassy Dark-Elf Wife",
-      "The Dutiful Human Consort",
-      "The Spirited Demi-Human Bride",
-      "The Proud Sylvan Spouse",
-      "The Overworked Guildswoman",
-      "The Rebellious Noble Daughter",
-      "The Devoted Clan Wife",
-      "The Haughty Archon's Daughter",
-      "The Cunning Vulpine Bride"
-    ],
-    "tags": [
-      "Pan-Species Commonwealth",
-      "Human & Elf & Demi-Human",
-      "All Species As Brides",
-      "Patriarchal Household",
-      "Male Headship",
-      "Domestic Discipline",
-      "Traditional Courtship",
-      "High Fantasy",
-      "Everyday Citizen",
-      "Open Dynamic"
-    ]
-  },
-  "sovereign_patriarch_imperial_polygyny": {
-    "id": "sovereign_patriarch_imperial_polygyny",
-    "name": "👑 Imperial Pan-Species Seraglio (Supreme Sovereign {{user}} & Multi-Wife Court)",
-    "short_name": "Supreme Patriarch: Multi-Wife",
-    "span": "First Era of the Sovereign Imperium",
-    "category": "Fantasy",
-    "region": "The Imperial Crown Capital & Sovereign Palaces",
-    "aesthetic": "Gilded marble colonnades, grand throne amphitheatres, tiered inner palace pavilions, silk and brocade canopies, fragrant incense braziers, velvet divans, silver chains of office, and imperial crown seals representing human, elven, and demi-human dynasties.",
-    "tech": "Imperial high sorcery, grand architectural runecraft, royal ley-line wards, exquisite ceremonial goldsmithing, and sovereign dimensional vaults.",
-    "social_codes": "{{user}} is the absolute Sovereign Emperor, Supreme Male Monarch, and Grand Patriarch ruling uncontested over the unified empire of Humans, Elves (High Elves, Dark Elves, and Wood Elves), and Demi-Humans. By ancient imperial right and sovereign decree, {{user}} maintains a grand imperial domestic pavilion (multi-wife court) composed of legitimate, wedded royal brides from every species. Proud High Elven arch-consorts, lethal and fiercely devoted Dark Elf shadow-wives, noble Human princesses, and spirited Demi-Human clan-brides all share his palace. All wives hold recognized imperial status, dignities, and luxurious quarters, but all bow without question to {{user}}'s absolute masculine will, sovereign authority, and domestic governance. Sibling rivalries, petulant jealousies, and haughty racial pride among the wives are swiftly brought to heel across {{user}}'s sovereign lap or through regal reprimands, resolving into deep collective devotion, shared intimacy, and absolute domestic submission to their Emperor.",
-    "names": [
-      "Empress Consort Valeriana",
-      "Grand Duchess Alethea",
-      "Lady Sylvanas",
-      "Matron Vespera",
-      "Princess Eleanor",
-      "Lady Kaelith",
-      "Chieftainess Fenra",
-      "Arch-Mage Morrigan",
-      "Noblewoman Darcy",
-      "Lady Yvaine"
-    ],
-    "titles": [
-      "The Proud High-Elf Empress Consort",
-      "The Haughty Dark-Elf Shadow-Bride",
-      "The Noble Human Imperial Wife",
-      "The Feline Demi-Human Royal Consort",
-      "The Sylvan Arch-Princess",
-      "The Imperial First Wife",
-      "The Petulant Junior Consort",
-      "The Feuding Sister-Wife",
-      "The Rebellious Drow Consort",
-      "The Devoted Kemonomimi Wife"
-    ],
-    "tags": [
-      "Supreme Emperor {{user}}",
-      "Pan-Species Polygyny",
-      "Multi-Wife Imperial Court",
-      "High Elf & Dark Elf & Beastfolk",
-      "Male Dominance",
-      "Sovereign Authority",
-      "Imperial Harem Protocols",
-      "Domestic Discipline",
-      "Sister-Wives Dynamic"
-    ]
-  },
-  "sovereign_patriarch_imperial_monogamy": {
-    "id": "sovereign_patriarch_imperial_monogamy",
-    "name": "💍 Sovereign Pan-Species Crown Throne (Supreme Sovereign {{user}} & Sole Empress)",
-    "short_name": "Supreme Patriarch: Sole Empress",
-    "span": "Dynastic Era of the Crown Matrimony",
-    "category": "Fantasy",
-    "region": "The High Imperial Throne Keep & Private Royal Solar",
-    "aesthetic": "Monumental obsidian and white quartz throne chambers, secluded velvet-hung bedchambers, roaring marble hearths, private balcony gardens overlooking the empire, heavy gold signet rings, regal gem-encrusted torcs, ermine robes, and delicate silk sleepwear.",
-    "tech": "Pinnacle high-fantasy crown artificing, ancestral bloodline enchantments, royal wardcraft, and supreme imperial alchemy.",
-    "social_codes": "{{user}} is the supreme Sovereign Emperor, Lord Patriarch, and absolute master of the unified realm spanning Humans, Elves (High, Dark, and Wood), and Demi-Humans. Unlike polygynous courts, {{user}} has chosen to take a single, exclusive Empress Consort to share his private life—selected from any of the realm's great races (a regal High Elven archon, a dangerous and proud Dark Elven matriarch, a highborn Human dynasty heiress, or an untamed royal Demi-Human clan daughter). In the public throne room, she sits beside him as his honored Queen, commanding the realm's awe. But behind the heavy carved oak doors of the royal solar, the dynamic narrows into intense, unyielding one-on-one domestic authority: {{user}} is her undisputed husband and master. He commands her total physical and emotional vulnerability, tolerates no haughtiness or royal arrogance in their bedchamber, and keeps his royal bride firmly in line with possessive male discipline, tender sovereign aftercare, and absolute exclusive devotion.",
-    "names": [
-      "Empress Vespera",
-      "Queen Consort Aurelia",
-      "Empress Lyra",
-      "Empress Kaelith",
-      "Queen Naevia",
-      "Empress Morrigan",
-      "Queen Eleanor",
-      "Empress Fenra",
-      "Queen Rosalind",
-      "Empress Isolde"
-    ],
-    "titles": [
-      "The Haughty High-Elf Empress Consort",
-      "The Ruthless Dark-Elf Queen Bride",
-      "The Proud Human Dynasty Empress",
-      "The Untamed Beastfolk Royal Consort",
-      "The Sole Crown Bride",
-      "The Defiant Sovereign Queen",
-      "The Cloistered Imperial Wife",
-      "The Sassy Archon Empress",
-      "The Possessed Royal Consort"
-    ],
-    "tags": [
-      "Supreme Emperor {{user}}",
-      "Sole Empress Consort",
-      "Imperial Monogamy",
-      "Single Wife Dynamic",
-      "High Elf or Dark Elf or Beastfolk",
-      "Male Dominance",
-      "Exclusive Marital Claiming",
-      "Sovereign Authority",
-      "Intense Private Power Exchange"
+      "Mountain Sovereignty",
+      "Hoard Court",
+      "Protective Rule",
+      "Apex Haven"
     ]
   },
   "secluded_freehold_patriarch_polygyny": {
     "id": "secluded_freehold_patriarch_polygyny",
-    "name": "🏡 Secluded Highland Freehold (Independent Estate Patriarch & Multi-Race Brides — Zero Guards/Intruders)",
-    "short_name": "Secluded Freehold: Multi-Wife",
+    "name": "🏡 Secluded Highland Freehold (Independent Estate Master & Multi-Race Brides — Zero Guards/Intruders)",
+    "short_name": "Highland Freehold",
     "span": "Age of the Sovereign Freeholders (High Fantasy)",
     "category": "Fantasy",
     "region": "The Secluded Highland Valleys & Private Mountain Freeholds",
     "aesthetic": "High-walled limestone estate surrounded by pine forests and natural hot springs, heavy iron-reinforced oak courtyard gates, private sunlit solars with plush velvet divans, secluded rose-gardens, roaring hearths, silk cushions, private cedar baths, domestic looms, and total natural seclusion.",
     "tech": "Enchanted perimeter boundary wards (silence and detection runes that guarantee absolute privacy), domestic water-heating runecraft, hearth enchantments, self-sustaining greenhouse gardens, and private cellar vaults.",
-    "social_codes": "{{user}} is NOT a king, prince, or monarch, and there are STRICTLY NO royal courts, NO garrison guards, NO nosy servants, and NO prying eyes anywhere near this domain. Instead, {{user}} is an independent, respected master freeholder (a retired champion, wealthy master craftsman, guild archon, or autonomous landowner) who owns a vast, secluded private estate in the fertile highlands. Within this private sanctuary, {{user}} lives in peace with his multi-species household of wedded wives: human ladies, high elf maidens, dark elf enchantresses, and devoted demi-human daughters. Marital law and ancient freehold custom recognize {{user}} as the absolute head, protector, and domestic master of his home. Because the household is entirely self-contained and isolated from public scrutiny, {{user}} and his wives enjoy complete physical and emotional freedom: domestic discipline across his lap, playful teasing, and intimate affection happen without any threat of guards walking in, prying retainers, or outside interference. Sibling rivalries among his brides are resolved gently and firmly by {{user}} in their private halls, cultivating deep harmony, domestic loyalty, and unrestrained devotion.",
+    "social_codes": "{{user}} is an independent, accomplished master estate builder who carved out a self-sufficient highland homestead completely free of outside intrusion. Here, {{user}} lives in peace with his wedded wives: surface Humans, serene High Elves, Dark Elves seeking a tranquil life, and affectionate Demi-Humans. With zero guards or prying neighbors for leagues, {{user}} leads the freehold with steady, protective domestic authority. Minor disputes or cheeky disobedience are addressed directly by the hearth fire with clear limits and firm boundaries, followed by warm, quiet evenings of shared companionship.",
     "names": [
       "Aurelia",
       "Lyra",
@@ -1314,28 +766,24 @@
       "The Loving Clan-Wife"
     ],
     "tags": [
-      "Secluded Private Freehold",
-      "Non-Royal Patriarch",
-      "Zero Guards Or Watchers",
-      "Absolute Privacy",
-      "Pan-Species Polygyny",
-      "Multi-Wife Household",
-      "Human & Elf & Demi-Human",
-      "Male Headship",
-      "Domestic Discipline",
-      "Peaceful Haven"
+      "Highland Freehold",
+      "Independent Master",
+      "Zero Intruders",
+      "Multi-Species Household",
+      "Domestic Haven",
+      "Total Seclusion"
     ]
   },
   "secluded_sanctuary_patriarch_monogamy": {
     "id": "secluded_sanctuary_patriarch_monogamy",
-    "name": "🌿 Deep Haven Homestead (Independent Frontier Patriarch & Sole Multi-Race Bride — Total Seclusion)",
-    "short_name": "Secluded Haven: Sole Bride",
+    "name": "🌿 Deep Haven Homestead (Independent Frontier Master & Sole Multi-Race Bride — Total Seclusion)",
+    "short_name": "Frontier Haven",
     "span": "Age of the Independent Homesteaders (High Fantasy)",
     "category": "Fantasy",
     "region": "The Misty Forest Glens & Whispering Coastline Retreats",
     "aesthetic": "Sturdy timber-and-granite homestead nestled in a secluded ancient forest glen or coastal sea-cliff, crackling stone hearth, thick fur rugs, goose-down bed under arched cedar beams, panoramic balcony overlooking untamed wilderness, herb gardens, private spring-fed bath, and zero neighborly disturbances.",
     "tech": "Concealment and warding stones that shield the homestead from passersby, domestic cooking and warmth runecraft, natural herbalism, and handcrafted artisan carpentry.",
-    "social_codes": "{{user}} is NOT a king or royal noble, and this setting has STRICTLY ZERO castle sentries, ZERO palace guards, ZERO hovering maids, and ZERO prying eyes. {{user}} is an independent, capable frontier master (a master forester, artisan, retired adventurer, or private gentleman) who has built an autonomous, deeply peaceful private sanctuary far away from busy cities and royal politics. Here, he lives exclusively with his single, cherished wife—chosen from any of the realm's species (a proud High Elf scholar who left court, a dangerous Dark Elf seeking peace, a gentle Human noblewoman, or a wild and loyal Demi-Human). Behind their heavy barred front door and within their secluded forest valley, they exist in total, uninterrupted domestic privacy. Free from any social judgment or risk of interruption, {{user}} governs their home with calm, firm, and protective male authority. He tolerates no stubborn defiance or haughty barriers in their private sanctuary: boundaries are enforced firmly over his knee by the hearth, followed by warm, possessive aftercare, creating an intense, deeply romantic, and completely secure one-on-one bond.",
+    "social_codes": "{{user}} is an independent frontiersman and master builder living completely secluded in a verdant mountain valley exclusively with his wedded bride. Completely free from imperial decrees, armies, or prying eyes, their life centers on domestic self-reliance and deep intimacy. When disagreements or stubborn pride flare up, {{user}} resolves them with calm, unshakeable presence and clear expectations, establishing mutual trust, deep affection, and undivided dedication.",
     "names": [
       "Vespera",
       "Aurelia",
@@ -1365,29 +813,24 @@
       "The Secret Noble Heiress"
     ],
     "tags": [
-      "Deep Forest Homestead",
-      "Non-Royal Patriarch",
-      "Zero Guards Or Watchers",
-      "Total Seclusion",
-      "Pan-Species Monogamy",
-      "Single Wife Dynamic",
-      "Human or Elf or Demi-Human",
-      "Male Headship",
-      "Domestic Discipline",
-      "Intense One-on-One Intimacy",
-      "Quiet Sanctuary"
+      "Frontier Sanctuary",
+      "Sole Bride",
+      "Independent Master",
+      "Zero Intruders",
+      "Mountain Valley",
+      "Monogamy Haven"
     ]
   },
   "floating_sky_citadel_haven": {
     "id": "floating_sky_citadel_haven",
     "name": "☁️ Floating Sky-Island Freehold (Aether-Skiff Master & Pan-Species Sky-Brides — Multi-Wife Sanctuary)",
-    "short_name": "Aether Sky-Freehold: Multi-Wife",
+    "short_name": "Sky-Island Freehold",
     "span": "Age of the Bound Clouds (High Fantasy)",
     "category": "Fantasy",
     "region": "The Untamed Cloud-Sea & Drifting Sky Islands",
     "aesthetic": "A floating green island anchored among sun-drenched clouds, private open-air marble rotunda, cascading cloud-fed waterfalls into the abyss, docked wooden aether-skiff, silk awnings fluttering in high-altitude breezes, cedar solarium with roaring hearths, and boundless blue sky with zero ground dwellers or prying sentries.",
     "tech": "Aether-crystal levitation sails, enchanted cloud-condensing cisterns, wind-warding barriers that keep the island comfortably warm, and private astral navigation charts.",
-    "social_codes": "{{user}} is NOT a king or sky-emperor, and there are STRICTLY ZERO sky-garrisons, ZERO hovering sentries, and ZERO prying eyes. {{user}} is an independent, renowned aether-skiff captain and sky-freeholder who discovered and claimed an uninhabited, fertile floating island drifting high above the mortal continents. In this secluded sanctuary in the clouds, {{user}} lives in complete peace with his wedded wives: adventurous Human navigators, graceful High Elf aether-weavers, fierce Dark Elf sky-hunters, and playful winged or beastfolk Demi-Humans. As the sole master and protector of the freehold, {{user}}'s word is domestic law. High in the clouds, miles above earthly courts or neighbors, domestic life is completely uninhibited: playful cheekiness, stubborn disobedience, or squabbles between the wives are resolved firmly across his lap on the sunlit deck or beside the hearth, followed by warm, breezy aftercare with the whole world far below.",
+    "social_codes": "{{user}} is an independent, renowned aether-skiff captain who discovered an uninhabited, fertile floating island drifting high above the mortal continents. In this secluded cloud sanctuary, {{user}} lives in peace with his wedded wives across diverse backgrounds. Miles above earthly courts or neighbors, domestic life is open, intimate, and free: playful cheekiness or disagreements among the wives are resolved firmly and fairly on the sunlit deck, followed by warm, breezy aftercare with the whole world far below.",
     "names": [
       "Zephyra",
       "Aurelia",
@@ -1417,28 +860,24 @@
       "The Loving Island Consort"
     ],
     "tags": [
-      "Floating Sky Island",
-      "Aether Skiff Master",
-      "Non-Royal Patriarch",
-      "Zero Guards Or Watchers",
-      "Absolute Cloud Seclusion",
-      "Pan-Species Polygyny",
-      "Human & Elf & Demi-Human",
-      "Male Headship",
-      "Domestic Discipline",
-      "Sky-Wife Harmony"
+      "Floating Island",
+      "Aether Skiff",
+      "Independent Master",
+      "Zero Intruders",
+      "Sky Haven",
+      "Total Seclusion"
     ]
   },
   "floating_sky_citadel_monogamy": {
     "id": "floating_sky_citadel_monogamy",
     "name": "☁️ Floating Sky-Island Freehold (Aether-Skiff Master & Sole Sky-Bride — Total Seclusion)",
-    "short_name": "Aether Sky-Freehold: Sole Bride",
+    "short_name": "Sky-Island Haven",
     "span": "Age of the Bound Clouds (High Fantasy)",
     "category": "Fantasy",
     "region": "The Untamed Cloud-Sea & Drifting Sky Islands",
     "aesthetic": "A floating green island anchored among sun-drenched clouds, private open-air marble rotunda, cascading cloud-fed waterfalls into the abyss, docked wooden aether-skiff, silk awnings fluttering in high-altitude breezes, cedar solarium with roaring hearths, and boundless blue sky with zero ground dwellers or prying sentries.",
     "tech": "Aether-crystal levitation sails, enchanted cloud-condensing cisterns, wind-warding barriers that keep the island comfortably warm, and private astral navigation charts.",
-    "social_codes": "{{user}} is NOT a king or sky-emperor, and there are STRICTLY ZERO sky-garrisons, ZERO hovering sentries, and ZERO prying eyes. {{user}} is an independent, renowned aether-skiff captain and sky-freeholder living in complete seclusion on an uncharted floating island with his single, cherished wife (a proud High Elf aether-weaver, an adventurous Human navigator, a dangerous Dark Elf, or a winged Demi-Human). High above the mortal world, with no neighbors or onlookers for hundreds of leagues, they share an intense, deeply intimate one-on-one bond. {{user}} rules their airborne home with calm, protective, and affectionate male headship: any stubborn defiance or high-altitude teasing is handled firmly across his knee on the open sun deck, sealing their exclusive devotion in total peace.",
+    "social_codes": "{{user}} is an independent aether-skiff master who settled a remote, drifting sky-island exclusively with his single wedded bride. Far removed from earthly factions and bustling cities, their days blend aether-craft with quiet domestic harmony. Disagreements and stubborn moments are met with warm, steady leadership and candid communication, reinforcing an unshakeable one-on-one bond high above the clouds.",
     "names": [
       "Zephyra",
       "Aurelia",
@@ -1461,29 +900,24 @@
       "The Devoted Sky-Wife"
     ],
     "tags": [
-      "Floating Sky Island",
-      "Aether Skiff Master",
-      "Non-Royal Patriarch",
-      "Zero Guards Or Watchers",
-      "Absolute Cloud Seclusion",
-      "Pan-Species Monogamy",
-      "Single Wife Dynamic",
-      "Human or Elf or Demi-Human",
-      "Male Headship",
-      "Domestic Discipline",
-      "Sky-Bride Intimacy"
+      "Floating Island",
+      "Sole Sky-Bride",
+      "Independent Master",
+      "Zero Intruders",
+      "Aether Haven",
+      "Monogamy Seclusion"
     ]
   },
   "subterranean_geothermal_oasis": {
     "id": "subterranean_geothermal_oasis",
     "name": "♨️ Geothermal Crystal Grotto (Subterranean Master & Pan-Species Grotto-Brides — Multi-Wife Haven)",
-    "short_name": "Geothermal Grotto: Multi-Wife",
+    "short_name": "Geothermal Grotto",
     "span": "Age of the Luminous Depths (High Fantasy)",
     "category": "Fantasy",
     "region": "The Deep Underground Caverns & Warm Geothermal Springs",
     "aesthetic": "Vast secluded subterranean grotto illuminated by glowing amethyst and aqua crystal clusters, naturally heated mineral springs and steam pools, smooth polished slate terraces, lush bioluminescent moss gardens, plush fur-strewn alcoves, carved granite hearths, and absolute subterranean isolation.",
     "tech": "Luminescent crystal optics, natural geothermal heating, steam-powered stone baths, crystal acoustic dampening (total sound insulation), and hidden secret cavern doorways.",
-    "social_codes": "{{user}} is NOT a drow overlord or dwarf king, and there are STRICTLY ZERO dungeon sentries, ZERO patrol guards, and ZERO prying eyes. {{user}} is an independent, master subterranean explorer, crystal alchemist, or retired dungeon delver who carved out a private paradise in a hidden geothermal cavern deep beneath the surface, completely sealed off from the outside world. Here, {{user}} shares an idyllic, private sanctuary with his wedded wives: surface Humans enchanted by the warmth, proud High Elves seeking serene meditation, Dark Elves relishing a peaceful sunless sanctuary free of matriarchal tyranny, and warm Demi-Humans (Catfolk, Wolf-Kin, Naga, and Bat-Kin). Protected by hidden labyrinthine doors that only {{user}} can open, the household enjoys total, uninhibited warmth and intimacy. In the soothing mineral baths and crystal-lit solars, {{user}} governs with loving, unshakable male authority. Any haughty defiance or teasing bratty behavior is corrected swiftly across his lap over the steaming pool edge, bringing his wives into deep, relaxed pliancy and blissful subterranean devotion.",
+    "social_codes": "{{user}} is an independent subterranean explorer and crystal alchemist who carved out a private paradise in a hidden geothermal cavern deep beneath the surface, completely sealed off from the world. Here, {{user}} shares an idyllic sanctuary with his wedded wives. Protected by labyrinthine doors that only {{user}} can open, the household enjoys warm, uninhibited intimacy. In the mineral baths and crystal solars, {{user}} maintains gentle, unshakable household order: playful defiance or household friction is addressed swiftly and fairly by the pool edge, ensuring deep peace and mutual devotion.",
     "names": [
       "Zaphira",
       "Vespera",
@@ -1513,28 +947,24 @@
       "The Devoted Deep-Clan Wife"
     ],
     "tags": [
-      "Subterranean Crystal Grotto",
-      "Geothermal Hot Springs",
-      "Non-Royal Patriarch",
-      "Zero Guards Or Watchers",
-      "Total Underground Privacy",
-      "Pan-Species Polygyny",
-      "High Elf & Dark Elf & Demi-Human",
-      "Male Headship",
-      "Warm Domestic Discipline",
-      "Steam Bath Intimacy"
+      "Geothermal Grotto",
+      "Subterranean Master",
+      "Zero Sentries",
+      "Multi-Species Haven",
+      "Crystal Sanctuary",
+      "Mineral Pools"
     ]
   },
   "subterranean_geothermal_oasis_monogamy": {
     "id": "subterranean_geothermal_oasis_monogamy",
     "name": "♨️ Geothermal Crystal Grotto (Subterranean Master & Sole Grotto-Bride — Total Seclusion)",
-    "short_name": "Geothermal Grotto: Sole Bride",
+    "short_name": "Grotto Haven",
     "span": "Age of the Luminous Depths (High Fantasy)",
     "category": "Fantasy",
     "region": "The Deep Underground Caverns & Warm Geothermal Springs",
     "aesthetic": "Vast secluded subterranean grotto illuminated by glowing amethyst and aqua crystal clusters, naturally heated mineral springs and steam pools, smooth polished slate terraces, lush bioluminescent moss gardens, plush fur-strewn alcoves, carved granite hearths, and absolute subterranean isolation.",
     "tech": "Luminescent crystal optics, natural geothermal heating, steam-powered stone baths, crystal acoustic dampening (total sound insulation), and hidden secret cavern doorways.",
-    "social_codes": "{{user}} is NOT a drow overlord or dwarf king, and there are STRICTLY ZERO dungeon sentries, ZERO patrol guards, and ZERO prying eyes. {{user}} is an independent subterranean explorer and crystal alchemist who lives exclusively with his single wedded bride (a proud Dark Elf seeking peace, a gentle Human noblewoman, a meditating High Elf, or an affectionate Demi-Human) in a hidden geothermal oasis sealed far below the surface. Acoustic crystal dampening ensures absolute silence from the outside world. In the privacy of their steaming hot-spring cavern, {{user}} exercises loving, firm male authority: her stubborn pride or teasing defiance is corrected lovingly across his lap before soaking together in the mineral waters, forging an unbreakable, deeply sensual one-on-one devotion.",
+    "social_codes": "{{user}} is an independent subterranean explorer and crystal alchemist who lives exclusively with his single wedded bride in a hidden geothermal oasis sealed far below the surface. In the privacy of their steaming hot-spring cavern, acoustic crystals ensure total tranquility from the outside world. {{user}} leads their shared life with quiet strength, resolving moments of stubborn pride or anxiety through calm physical grounding and warm companionship in the mineral waters.",
     "names": [
       "Zaphira",
       "Vespera",
@@ -1557,29 +987,24 @@
       "The Pampered Steam-Wife"
     ],
     "tags": [
-      "Subterranean Crystal Grotto",
-      "Geothermal Hot Springs",
-      "Non-Royal Patriarch",
-      "Zero Guards Or Watchers",
-      "Total Underground Privacy",
-      "Pan-Species Monogamy",
-      "Single Wife Dynamic",
-      "High Elf or Dark Elf or Demi-Human",
-      "Male Headship",
-      "Warm Domestic Discipline",
-      "Steam Bath Intimacy"
+      "Geothermal Grotto",
+      "Sole Grotto-Bride",
+      "Independent Master",
+      "Zero Sentries",
+      "Subterranean Oasis",
+      "Total Seclusion"
     ]
   },
   "archmage_pocket_dimension_sanctuary": {
     "id": "archmage_pocket_dimension_sanctuary",
     "name": "🔮 Enchanted Pocket Demiplane (Master Artificer & Pan-Species Spire-Brides — Multi-Wife Sanctuary)",
-    "short_name": "Folded Space: Multi-Wife",
+    "short_name": "Pocket Demiplane",
     "span": "Era of Bound Dimensions (High Fantasy)",
     "category": "Fantasy",
     "region": "The Private Folded-Space Demiplane & Arcane Solarium",
     "aesthetic": "A self-contained dimensional pocket where the sky is a perpetual twilight aurora, surrounded by floating marble verandas, botanical glasshouses with eternal blooming orchids, soaring spire libraries, deep velvet armchairs, runic fireplaces that crackle without smoke, and absolute dimensional isolation from the mortal world.",
     "tech": "Dimensional fold warding (impossible for outside entities or guards to scry or enter), automated unseen servants that only clean when dismissed, starlight enchantments, and chronal preservation lockers.",
-    "social_codes": "{{user}} is NOT an archon king or university chancellor, and there are STRICTLY ZERO magical sentries, ZERO apprentice watchers, ZERO guards, and ZERO prying scrying orbs. {{user}} is an independent, peerless master wizard or artificer who crafted his own private pocket dimension—an inviolable home accessible solely via a master keystone on his signet ring. Inside this pocket paradise, {{user}} lives in peace with his wedded wives: human scholars and noblewomen, high elf mages, dark elf sorceresses, and affectionate demi-humans. Within this private folded dimension, the stresses, politics, and racial conflicts of the mortal world cease to exist. {{user}} rules their secluded domestic haven with firm, protective male intellect and authority. Should any wife grow sassy, test boundaries, or let intellectual pride get the better of her, {{user}} readily closes his spellbooks, pulls her across his knee by the hearth fire, and delivers a thorough, grounded bare-hand correction that silences her pride and leaves her clinging in breathless, grateful submission.",
+    "social_codes": "{{user}} is a master wizard living in an inviolable folded-space pocket dimension alongside his wedded wives. Completely shielded from mortal interference, guild politics, or magical scrying, the estate offers complete refuge and peace. {{user}} maintains intellectual and domestic leadership across the library and observatory, settling petty bickering or stubborn defiance with calm authority and focused presence, maintaining total domestic harmony.",
     "names": [
       "Alethea",
       "Vespera",
@@ -1609,28 +1034,24 @@
       "The Quiet Arcane Bride"
     ],
     "tags": [
-      "Pocket Dimension Sanctuary",
-      "Folded Space Demiplane",
-      "Master Artificer Patriarch",
-      "Zero Guards Or Watchers",
-      "Impossible To Scry",
-      "Pan-Species Polygyny",
-      "Elf & Human & Demi-Human",
-      "Male Headship",
-      "Domestic Discipline",
-      "Quiet Intellectual Haven"
+      "Pocket Dimension",
+      "Master Artificer",
+      "Folded Space",
+      "Multi-Species Sanctuary",
+      "Zero Intruders",
+      "Arcane Haven"
     ]
   },
   "archmage_pocket_dimension_monogamy": {
     "id": "archmage_pocket_dimension_monogamy",
     "name": "🔮 Enchanted Pocket Demiplane (Master Artificer & Sole Spire-Bride — Inviolable Sanctuary)",
-    "short_name": "Folded Space: Sole Bride",
+    "short_name": "Spire Sanctuary",
     "span": "Era of Bound Dimensions (High Fantasy)",
     "category": "Fantasy",
     "region": "The Private Folded-Space Demiplane & Arcane Solarium",
     "aesthetic": "A self-contained dimensional pocket where the sky is a perpetual twilight aurora, surrounded by floating marble verandas, botanical glasshouses with eternal blooming orchids, soaring spire libraries, deep velvet armchairs, runic fireplaces that crackle without smoke, and absolute dimensional isolation from the mortal world.",
     "tech": "Dimensional fold warding (impossible for outside entities or guards to scry or enter), automated unseen servants that only clean when dismissed, starlight enchantments, and chronal preservation lockers.",
-    "social_codes": "{{user}} is NOT an archon king or chancellor, and there are STRICTLY ZERO magical sentries, ZERO apprentices, and ZERO prying scrying eyes. {{user}} is a master wizard living in an inviolable folded-space pocket dimension exclusively with his single wedded wife (a haughty High Elf arch-mage, an enigmatic Dark Elf sorceress, a brilliant Human scholar, or a devoted Kitsune). Isolated from mortal interference, their relationship blends high-intellect companionship with uncompromising domestic headship. When her academic arrogance or teasing pride flares up, {{user}} firmly corrects her across his lap by the quiet hearth fire, establishing absolute domestic surrender and exclusive, affectionate devotion.",
+    "social_codes": "{{user}} is a master wizard living in an inviolable folded-space pocket dimension exclusively with his single wedded wife. Isolated from mortal interference, their relationship blends deep intellectual companionship with grounded domestic devotion. When disagreements or research fatigue flare up, {{user}} cuts through the tension by the hearth fire, establishing absolute mutual focus and quiet sanctuary.",
     "names": [
       "Alethea",
       "Vespera",
@@ -1654,29 +1075,24 @@
       "The Devoted Spire-Wife"
     ],
     "tags": [
-      "Pocket Dimension Sanctuary",
-      "Folded Space Demiplane",
-      "Master Artificer Patriarch",
-      "Zero Guards Or Watchers",
-      "Impossible To Scry",
-      "Pan-Species Monogamy",
-      "Single Wife Dynamic",
-      "Elf or Human or Demi-Human",
-      "Male Headship",
-      "Domestic Discipline",
-      "Quiet Intellectual Haven"
+      "Pocket Dimension",
+      "Sole Spire-Bride",
+      "Master Artificer",
+      "Zero Intruders",
+      "Arcane Haven",
+      "Total Seclusion"
     ]
   },
   "coastal_archipelago_leviathan_haven": {
     "id": "coastal_archipelago_leviathan_haven",
     "name": "🌊 Secluded Siren Archipelago (Independent Coast-Master & Pan-Species Island Brides — Multi-Wife Cove)",
-    "short_name": "Siren Cove: Multi-Wife",
+    "short_name": "Siren Archipelago",
     "span": "Age of the Uncharted Isles (High Fantasy)",
     "category": "Fantasy",
     "region": "The Forgotten Coral Atolls & Secret Coastal Coves",
     "aesthetic": "A private white-sand cove sheltered by soaring sea-cliffs and sea-caves, open-air driftwood and sandstone villa with whitewashed walls, turquoise lagoon waters, private sun decks, flowering jasmine and coconut palms, fresh sea-breeze, linen drapes, and total maritime privacy.",
     "tech": "Mist-shrouded coral reef barriers that wreck unwanted ships, sea-glass oil lamps, tidal saltwater soaking baths, pearl cultivation, and sun-bleached timber architecture.",
-    "social_codes": "{{user}} is NOT an admiral or pirate lord, and there are STRICTLY ZERO harbor sentries, ZERO coastguard patrols, and ZERO prying eyes. {{user}} is an independent, capable mariner, island-builder, or retired deep-sea navigator who discovered an uncharted tropical lagoon protected by dangerous outer reefs. In this private island paradise, {{user}} lives with his wedded wives: adventurous Human women, Sun and High Elf maidens seeking ocean solace, Dark Elf refugees who love the warm sea-caves, and aquatic or beastfolk Demi-Humans (Siren-Kin, Seal/Otter-Kin, Catfolk, and Shark/Naga-Kin). Without a soul for fifty leagues to witness them, the household lives in total, sun-kissed domestic freedom. {{user}} is the uncontested head, provider, and master of the haven. When tropical heat or playful sass leads to mischief or sibling quarrels among his island brides, {{user}} settles matters firmly over his lap on the sun deck, maintaining sweet domestic order, shared swimming intimacy, and fierce protective devotion.",
+    "social_codes": "{{user}} is an independent mariner and island-builder who discovered an uncharted tropical lagoon protected by outer barrier reefs. In this private island paradise, {{user}} lives with his wedded wives in total sun-kissed freedom. As the uncontested head and protector of the haven, {{user}} resolves household squabbles or playful mischief with firm, good-natured authority on the sun deck, preserving sweet domestic order and fierce loyalty.",
     "names": [
       "Marina",
       "Nerida",
@@ -1705,28 +1121,24 @@
       "The Loving Island-Bride"
     ],
     "tags": [
-      "Secluded Tropical Island",
-      "Private Coastal Haven",
-      "Non-Royal Patriarch",
-      "Zero Guards Or Watchers",
-      "Uncharted Reef Isolation",
-      "Pan-Species Polygyny",
-      "Mermaid & Elf & Demi-Human",
-      "Male Headship",
-      "Domestic Discipline",
-      "Sun-Kissed Intimacy"
+      "Tropical Archipelago",
+      "Barrier Reef Haven",
+      "Independent Mariner",
+      "Multi-Species Brides",
+      "Zero Intruders",
+      "Island Freedom"
     ]
   },
   "coastal_archipelago_leviathan_monogamy": {
     "id": "coastal_archipelago_leviathan_monogamy",
     "name": "🌊 Secluded Siren Archipelago (Independent Coast-Master & Sole Island-Bride — Private Cove)",
-    "short_name": "Siren Cove: Sole Bride",
+    "short_name": "Island Cove",
     "span": "Age of the Uncharted Isles (High Fantasy)",
     "category": "Fantasy",
     "region": "The Forgotten Coral Atolls & Secret Coastal Coves",
     "aesthetic": "A private white-sand cove sheltered by soaring sea-cliffs and sea-caves, open-air driftwood and sandstone villa with whitewashed walls, turquoise lagoon waters, private sun decks, flowering jasmine and coconut palms, fresh sea-breeze, linen drapes, and total maritime privacy.",
     "tech": "Mist-shrouded coral reef barriers that wreck unwanted ships, sea-glass oil lamps, tidal saltwater soaking baths, pearl cultivation, and sun-bleached timber architecture.",
-    "social_codes": "{{user}} is NOT an admiral or pirate lord, and there are STRICTLY ZERO harbor sentries, ZERO coastguard patrols, and ZERO prying eyes. {{user}} is an independent mariner living in total seclusion on a hidden tropical atoll with his single, beloved wife (a sun-drenched High Elf, a Dark Elf seeking ocean solace, a spirited Human sailor, or an aquatic Siren Demi-Human). With no ship within fifty leagues, they enjoy absolute freedom on the private white sands. {{user}} governs their island haven with masculine authority and protective tenderness: any sassy defiance or sun-drunk stubbornness is corrected firmly over his knee on the driftwood veranda, leading to sweet surrender and exclusive lagoon devotion.",
+    "social_codes": "{{user}} is an independent navigator living exclusively with his single wedded bride on a remote, reef-sheltered island. Far from coastal ports and trade fleets, their life balances fishing, sailing, and quiet tropical comfort. Tensions or moments of distance are met with patient, protective attention and honest conversation, anchoring a deeply trusting and exclusive partnership.",
     "names": [
       "Marina",
       "Nerida",
@@ -1749,17 +1161,12 @@
       "The Pampered Lagoon Wife"
     ],
     "tags": [
-      "Secluded Tropical Island",
-      "Private Coastal Haven",
-      "Non-Royal Patriarch",
-      "Zero Guards Or Watchers",
-      "Uncharted Reef Isolation",
-      "Pan-Species Monogamy",
-      "Single Wife Dynamic",
-      "Mermaid or Elf or Demi-Human",
-      "Male Headship",
-      "Domestic Discipline",
-      "Sun-Kissed Intimacy"
+      "Tropical Island",
+      "Sole Island-Bride",
+      "Independent Mariner",
+      "Zero Intruders",
+      "Private Cove",
+      "Total Seclusion"
     ]
   },
   "alpine_mountain_forge_estate": {
@@ -1802,12 +1209,10 @@
     "tags": [
       "Alpine Mountain Manor",
       "Master Smith Freehold",
-      "Non-Royal Patriarch",
       "Zero Guards Or Watchers",
       "Silent Winter Seclusion",
       "Pan-Species Polygyny",
       "Wolf-Kin & Elf & Human",
-      "Male Headship",
       "Warm Hearth Discipline",
       "Cozy Winter Intimacy"
     ]
@@ -1846,13 +1251,11 @@
     "tags": [
       "Alpine Mountain Manor",
       "Master Smith Freehold",
-      "Non-Royal Patriarch",
       "Zero Guards Or Watchers",
       "Silent Winter Seclusion",
       "Pan-Species Monogamy",
       "Single Wife Dynamic",
       "Wolf-Kin or Elf or Human",
-      "Male Headship",
       "Warm Hearth Discipline",
       "Cozy Winter Intimacy"
     ]
@@ -1866,7 +1269,7 @@
     "region": "The Ancient Sylvan Canopy & Deep World-Tree Branches",
     "aesthetic": "Enchanted treehouse manor grown naturally into the colossal branches of an ancient World-Tree, suspension bridges of woven vine and aromatic heartwood, living flower lanterns, soft moss-padded sleeping platforms, silk hammocks, gentle bird-song, and sweeping views of an endless emerald forest with zero roads or mortal footpaths below.",
     "tech": "Living bio-architecture (wood grown rather than cut), luminescent spore lanterns, natural thorn-briar concealment wards, and fresh spring-water pumped through hollow tree vines.",
-    "social_codes": "{{user}} is NOT an elven king or druidic high archon, and there are STRICTLY ZERO tree-sentry guards, ZERO forest rangers, and ZERO prying eyes. {{user}} is an independent, master sylvan architect, ranger, or natural scholar who earned the right to build his personal dwelling in the secluded upper canopy of the Great World-Tree, hundreds of feet above the forest floor. Here, {{user}} lives in serene, sun-dappled domestic peace with his wedded wives: Human herbalists and noblewomen, High Elf maidens seeking harmony with nature, Wood and Dark Elves who adore the canopy heights, and tree-dwelling or beastfolk Demi-Humans (Squirrel-Kin, Catfolk, Fox-Kin, and Fawn-Kin). High in the living boughs, completely hidden from the world below, {{user}} exercises calm, natural, and affectionate male headship. Any mischievous mischief, treehouse pranks, or stubborn tantrums are dealt with promptly across {{user}}'s knee on the open-air cedar porch, restoring gentle domestic balance and sweet, loving harmony in the tranquil canopy.",
+    "social_codes": "{{user}} is NOT an elven king or druidic high archon, and there are STRICTLY ZERO tree-sentry guards, ZERO forest rangers, and ZERO prying eyes. {{user}} is an independent, master sylvan architect, ranger, or natural scholar who earned the right to build his personal dwelling in the secluded upper canopy of the Great World-Tree, hundreds of feet above the forest floor. Here, {{user}} lives in serene, sun-dappled domestic peace with his wedded wives: Human herbalists and noblewomen, High Elf maidens seeking harmony with nature, Wood and Dark Elves who adore the canopy heights, and tree-dwelling or beastfolk Demi-Humans (Squirrel-Kin, Catfolk, Fox-Kin, and Fawn-Kin). High in the living boughs, completely hidden from the world below, {{user}} exercises calm, natural, and affectionate household guardianship. Any mischievous mischief, treehouse pranks, or stubborn tantrums are dealt with promptly across {{user}}'s knee on the open-air cedar porch, restoring gentle domestic balance and sweet, loving harmony in the tranquil canopy.",
     "names": [
       "Sylvi",
       "Faelynn",
@@ -1897,12 +1300,10 @@
     "tags": [
       "Great World Tree Canopy",
       "Hidden Treehouse Bower",
-      "Non-Royal Patriarch",
       "Zero Guards Or Watchers",
       "High-Canopy Seclusion",
       "Pan-Species Polygyny",
       "Forest Elf & Human & Beastfolk",
-      "Male Headship",
       "Domestic Discipline",
       "Peaceful Sylvan Harmony"
     ]
@@ -1910,13 +1311,13 @@
   "sylvan_worldtree_canopy_monogamy": {
     "id": "sylvan_worldtree_canopy_monogamy",
     "name": "🌿 Great World-Tree Canopy Bower (Highland Forest Master & Sole Canopy-Bride — Hidden Bower)",
-    "short_name": "Worldtree Canopy: Sole Bride",
+    "short_name": "World-Tree Bower",
     "span": "Age of the Elder Roots (High Fantasy)",
     "category": "Fantasy",
     "region": "The Ancient Sylvan Canopy & Deep World-Tree Branches",
     "aesthetic": "Enchanted treehouse manor grown naturally into the colossal branches of an ancient World-Tree, suspension bridges of woven vine and aromatic heartwood, living flower lanterns, soft moss-padded sleeping platforms, silk hammocks, gentle bird-song, and sweeping views of an endless emerald forest with zero roads or mortal footpaths below.",
     "tech": "Living bio-architecture (wood grown rather than cut), luminescent spore lanterns, natural thorn-briar concealment wards, and fresh spring-water pumped through hollow tree vines.",
-    "social_codes": "{{user}} is NOT an elven king or druid archon, and there are STRICTLY ZERO tree sentries, ZERO forest rangers, and ZERO prying eyes. {{user}} is an independent sylvan master and architect who lives in a hidden living-wood canopy manor exclusively with his single wedded bride (a gentle Human herbalist, a High Elf maiden, a wild Wood or Dark Elf scout, or a nimble tree-dwelling Demi-Human). Hundreds of feet above the earth, hidden by emerald leaves and natural briar wards, they live in serene, undisturbed privacy. {{user}} guides their quiet treetop home with calm, affectionate male authority: playful mischief or stubborn pride is corrected promptly across his knee on the cedar porch, settling into sweet, undivided devotion in their emerald sanctuary.",
+    "social_codes": "{{user}} is an independent forest master who built a secluded bower high in the canopy of an ancient World-Tree, living exclusively with his wedded bride. Hundreds of feet above the forest floor, completely hidden by living foliage and protective mist, they share a serene sanctuary. When stubborn pride or misunderstandings arise, {{user}} grounds their relationship with quiet, attentive presence by the tree-hearth, deepening their bond in complete privacy.",
     "names": [
       "Sylvi",
       "Faelynn",
@@ -1939,17 +1340,12 @@
       "The Devoted Tree-Wife"
     ],
     "tags": [
-      "Great World Tree Canopy",
-      "Hidden Treehouse Bower",
-      "Non-Royal Patriarch",
-      "Zero Guards Or Watchers",
-      "High-Canopy Seclusion",
-      "Pan-Species Monogamy",
-      "Single Wife Dynamic",
-      "Forest Elf or Human or Beastfolk",
-      "Male Headship",
-      "Domestic Discipline",
-      "Peaceful Sylvan Harmony"
+      "World-Tree Canopy",
+      "Sole Canopy-Bride",
+      "Independent Forest Master",
+      "Living Foliage Bower",
+      "Zero Intruders",
+      "Total Seclusion"
     ]
   },
   "bronze_age_mesopotamia": {
@@ -1961,7 +1357,7 @@
     "region": "Middle East",
     "aesthetic": "Mud-brick ziggurats, lapis lazuli beads, clay cuneiform tablets, pleated linen wraps, copper mirrors, Tigris-Euphrates canal gardens, incense of myrrh.",
     "tech": "Bronze metallurgy, ox-drawn plows, clay cylinder seals, reed styluses, oil lamps, sun-dried brick architecture.",
-    "social_codes": "Temple priestess hierarchy, divine kingship, Code of Hammurabi honor debts, household patriarchal mastery, sacred oaths sworn to Ishtar/Inanna.",
+    "social_codes": "Temple priestess hierarchy, divine kingship, Code of Hammurabi honor debts, household elder council mastery, sacred oaths sworn to Ishtar/Inanna.",
     "names": [
       "Inanna-sharra",
       "Amat-Ishtar",
@@ -3395,7 +2791,7 @@
     "region": "East Asia",
     "aesthetic": "Clean wooden architecture of Gyeongbokgung Palace, white porcelain jars, scholar horsehair hats (gat), newly promulgated Hangul alphabet characters, scholarly study courtyards.",
     "tech": "Rain gauges (cheugugi), water clocks, sundials, Hangul phonetic alphabet creation by King Sejong, cast bronze printing type.",
-    "social_codes": "Strict Neo-Confucian patriarchal propriety, separation of men and women's quarters (sarangbang and anbang), yangban noble family duty, filial piety.",
+    "social_codes": "Strict Neo-Confucian ancestral propriety, separation of men and women's quarters (sarangbang and anbang), yangban noble family duty, filial piety.",
     "names": [
       "Hwang Jini",
       "Shin Saimdang",

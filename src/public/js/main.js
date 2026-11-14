@@ -62,6 +62,12 @@ async function initApp() {
       state.imageConfig = { ...state.imageConfig, ...JSON.parse(savedImage) };
     } catch {}
   }
+  const savedDecision = localStorage.getItem("chargen_decision_config");
+  if (savedDecision) {
+    try {
+      state.decisionConfig = { ...state.decisionConfig, ...JSON.parse(savedDecision) };
+    } catch {}
+  }
   if (el.imgTargetModel && state.imageConfig?.defaultTargetModel) {
     el.imgTargetModel.value = state.imageConfig.defaultTargetModel;
   }

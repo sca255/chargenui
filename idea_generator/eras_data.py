@@ -2503,9 +2503,19 @@ def delete_user_era(era_id: str) -> bool:
     return False
 
 ERAS_DB_FILE = Path(__file__).parent / "eras_db.json"
+SRC_ERAS_DATA_FILE = Path(__file__).resolve().parent.parent / "src" / "services" / "eras" / "eras_data.json"
 
 def load_eras_db() -> Dict[str, Dict[str, Any]]:
-    """Loads all eras from the primary eras_db.json database file."""
+    """Loads all eras from the primary clean eras_data.json / eras_db.json database file."""
+    # Check src/services/eras/eras_data.json first (clean, declichified source of truth)
+    if SRC_ERAS_DATA_FILE.exists():
+        try:
+            with open(SRC_ERAS_DATA_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                if isinstance(data, dict):
+                    return data
+        except Exception:
+            pass
     if ERAS_DB_FILE.exists():
         try:
             with open(ERAS_DB_FILE, "r", encoding="utf-8") as f:
@@ -2579,10 +2589,12 @@ def get_era_info(era_id: str) -> Optional[Dict[str, Any]]:
 
 def get_all_eras(include_user: bool = True) -> Dict[str, Dict[str, Any]]:
     """Returns all available eras including database, extensions, and user-created eras."""
-    combined = dict(HISTORICAL_ERAS)
+    # When clean DB eras exist in eras_data.json, use them as primary source of truth
     db_eras = load_eras_db()
     if db_eras:
-        combined.update(db_eras)
+        combined = dict(db_eras)
+    else:
+        combined = dict(HISTORICAL_ERAS)
     if include_user:
         extensions = load_extension_eras()
         user_eras = load_user_eras()
@@ -2745,12 +2757,23 @@ def parse_span_years(span_str: str):
         return nums[0], nums[0]
     return None, None
 
+def is_era_nsfl(era: Dict[str, Any]) -> bool:
+    """Returns True if era is tagged or marked as NSFL / extreme content."""
+    if not isinstance(era, dict):
+        return False
+    if era.get("nsfl") is True or str(era.get("rating", "")).lower() == "nsfl":
+        return True
+    tags = [str(t).strip().lower() for t in era.get("tags", [])]
+    return "nsfl" in tags or "extreme nsfl" in tags or "dark nsfl" in tags
+
+
 def search_eras_semantic(
     query: str = "",
     category_filter: str = "All",
     region_filter: str = "All",
     only_user: bool = False,
-    variant_filter: str = "all"
+    variant_filter: str = "all",
+    filter_nsfl: bool = False
 ) -> List[Dict[str, Any]]:
     """
     High-accuracy semantic search engine across both built-in historical eras and user-created custom eras.
@@ -2798,6 +2821,9 @@ def search_eras_semantic(
     results: List[Dict[str, Any]] = []
 
     for era_id, era in all_eras.items():
+        if filter_nsfl and is_era_nsfl(era):
+            continue
+
         # Apply variant filter ('poly' for multi-partner/polygyny, 'mono' for sole partner/monogamy)
         if variant_filter in ("poly", "polygyny", "eram", "m"):
             name_low = (era.get("name") or "").lower()

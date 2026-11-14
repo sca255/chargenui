@@ -41,8 +41,51 @@ async function savePromptQueue(items: ImagePromptQueueItem[]): Promise<void> {
 }
 
 /**
- * Adds a new image prompt item to the queue.
+ * Stages or updates an image prompt in-place for a specific card or greeting purpose.
+ * Replaces existing pending entries for the same target to avoid cluttering the queue.
  */
+export async function stageOrReplacePromptQueueItem(
+  item: Omit<ImagePromptQueueItem, "id" | "createdAt" | "status"> & {
+    id?: string;
+    createdAt?: string;
+    status?: ImageQueueStatus;
+  }
+): Promise<ImagePromptQueueItem> {
+  const items = await listPromptQueue();
+  const effectivePrompt = item.prompt || item.positivePrompt || "";
+
+  // Locate existing unexecuted pending item for this character & purpose
+  const existingIndex = items.findIndex((existing) => {
+    if (existing.status === "completed" || existing.status === "failed") return false;
+    const sameChar = existing.characterId && item.characterId
+      ? existing.characterId === item.characterId
+      : existing.characterName === item.characterName;
+    if (!sameChar) return false;
+
+    if (item.imagePurpose === "greeting") {
+      return existing.imagePurpose === "greeting" && existing.greetingIndex === item.greetingIndex;
+    }
+    return existing.imagePurpose === item.imagePurpose;
+  });
+
+  if (existingIndex !== -1) {
+    const current = items[existingIndex];
+    const updated: ImagePromptQueueItem = {
+      ...current,
+      ...item,
+      id: current.id,
+      createdAt: current.createdAt,
+      status: "queued",
+      prompt: effectivePrompt,
+      positivePrompt: effectivePrompt,
+    };
+    items[existingIndex] = updated;
+    await savePromptQueue(items);
+    return updated;
+  }
+
+  return addToPromptQueue(item);
+}
 export async function addToPromptQueue(
   item: Omit<ImagePromptQueueItem, "id" | "createdAt" | "status"> & {
     id?: string;

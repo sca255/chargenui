@@ -1,8 +1,6 @@
 # Agent Guidelines & Memory
 
 ## Environment & System Architecture
-- **Operating System**: Native Linux environment (NOT WSL / Windows Subsystem for Linux).
-- **Filesystem Mounts**: Mount paths use `/mnt/...` by convention (e.g., `/mnt/d/projects/chargenui`), but it is a native Linux filesystem and kernel.
 - **Process Communication & Applications**: Always prefer Unix Domain Socket IPC (`/tmp/comfyclient.sock` for ComfyClient, `/tmp/chargenui-ipc.sock` for CharGenUI) over file polling or disk-based syncing.
 - **Data Safety**: NEVER delete or corrupt files under `data/`.
 
@@ -55,6 +53,7 @@
   - Communicates directly with local `llama-server` (typically port `:5001` or `:8080`) or exports paired Polygyny/Monogamy era extensions into `idea_generator/eras_extensions/` and `src/services/eras/eras_data.json`.
 
 ### 5. Reference Weaver (`reference_weaver/`)
+- **Status & Policy**: **DO NOT TOUCH**. Reference Weaver has served its purpose and is frozen/archived. Do not modify, scan, refactor, or touch `reference_weaver/` unless the user explicitly asks.
 - **Runtime**: TypeScript pipeline service.
 - **Role**: Deep psychometric Weaver engine, dynamic question-gate interview trees, and Character Card V2/V3 extraction service.
 - **Integration**: Powers Weaver interviews, story arc synthesis, reaction gradients, and relational tension building across both web and desktop runtimes.

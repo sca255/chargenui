@@ -197,7 +197,7 @@ describe("Net-New Feature 4: Asset Pipeline Plugins & Lumiverse Exporter", () =>
       tags: ["priestess", "blonde"],
     };
 
-    const res = await expressionSheetPlugin.onGenerateAssets!(char);
+    const res = await expressionSheetPlugin.onGenerateAssets!(char, { count: 8 });
     expect(res.success).toBe(true);
     expect(res.data?.assets.length).toBe(8);
     expect(res.data?.assets[0].workflowTemplate).toBeDefined();
