@@ -1,127 +1,122 @@
 # 🔮 CharGen Harness
-> **The Uncensored Roleplay Character Engineer, Enhancer & Multimodal Vision Forge**
+> **The Uncensored Roleplay Character Engineer, Weaver Studio & Multimodal Vision Forge**
 
-An advanced roleplay character engineering harness inspired by Lumiverse's Weaver architecture, but engineered specifically with:
-1. **Zero Censorship / Moralizing**: Operates with zero puritanical guardrails, preaching, or refusal disclaimers. Handles dark fiction, gritty psychological tension, mature/NSFW attributes, taboo conflicts, and authentic dialogue.
-2. **Deep Character Enhancer**: Not just a card maker—audit existing character cards, eliminate generic AI clichés, deepen internal tensions, rewrite opening scenes, and generate alternate greetings.
-3. **Multimodal Vision Scanner**: Scan character portraits, anime artwork, cosplay photos, or concept art with vision models (Gemini, Claude, GPT-4o, Ollama/Llama 3.2-Vision) to forensically deconstruct appearance, vibe, and demeanor into a complete SillyTavern V2 character card.
-4. **Embedded PNG Card Generation**: Direct import & export of SillyTavern-compliant `.png` character cards containing the embedded `chara` base64 chunk.
+[![Version](https://img.shields.io/badge/version-1.0.1-blue.svg)](https://github.com/sca255/chargenui/releases/tag/v1.0.1)
+[![Runtime](https://img.shields.io/badge/runtime-Bun%201.0+-orange.svg)](https://bun.sh)
+[![Architecture](https://img.shields.io/badge/format-SillyTavern%20V2%2FV3%20%7C%20CharX-purple.svg)](https://github.com/sca255/chargenui)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
+Stop generating cardboard, agreeable chatbots that speak like academic textbooks. 
+
+**CharGen Harness** is an open-source, full-stack character authoring workshop designed to construct high-tension, psychologically deep roleplay characters optimized for **local models** (`llama-server`, Ollama, vLLM) and cloud APIs alike.
 
 ---
 
-## ⚡ Quick Start
+## ⚡ What Makes CharGen Different?
 
-### Option A: Web Application
+### 1. 🚫 Anti-Slop & Zero-Pleaser Conditioning
+Most LLMs default to "Thesaurus Syndrome"—polite, robotic, agreeable assistants who smile nervously, agree with everything, and recite appearance traits like a grocery list. 
+CharGen enforces:
+- **Calibrated Reaction Gradients**: Defines what leaves {{char}} completely flat and unimpressed (`NEUTRAL`), hard limits they will never cross (`WON'T`), and vulnerabilities that must be earned through trust (`WILL`).
+- **Natural Spoken Cadence**: Banned clinical jargon ("statistical anomaly", "nutrient intake"), enforced contractions (*don't*, *won't*, *it's*), and distinct vocal mannerisms.
+- **Tagged Bundle Architecture**: Structured cleanly into performable sections (`[CORE]`, `[ARC]`, `[FORM]`, `[TENSIONS]`, `[INTENT]`, `[NEGATIVE SPACE]`).
+
+### 2. ⚡ System 1 Decision Model Engine (Jev / Clef Integration)
+CharGen is the first character creator integrated with **fast bounded classification models** (Cloudflare Clef / TypeSafe AI Jev):
+- **⚡ Auto-Pick with Jev**: Explore divergent narrative branches and psychometrics in sub-50ms passes.
+- **🛡️ Answer Relevance Verification**: Detects evasive or off-topic responses in real time before card forging.
+- **🎨 Smart Image Re-Queue**: Evaluates semantic diffs between card edits and only updates image generation queues if actual visual traits changed.
+
+### 3. 👁️ Multimodal Vision Image-to-Card Forge
+Drop in any anime portrait, fantasy illustration, or 3D render:
+- Forensically deconstructs facial demeanor, lighting, wardrobe layers, scars, weapons, and latent body language.
+- Infers psychological archetypes and backstory from visual cues.
+- Automatically injects the completed card metadata directly into the image’s `chara` chunk, exporting ready-to-play **SillyTavern PNGs**.
+
+### 4. 🏛️ The Era Forge: 120+ Curated Historical & Fantasy Settings
+Leave generic fantasy kingdoms behind. Ground your characters in authentic cultural codes, guild rivalries, and trade tensions:
+- Spans Bronze Age Dynasties, Medieval Feudalism, Heian Court intrigue, Cold War Espionage, and Basalt Dark Fantasy.
+- Content rating filters: `Vanilla`, `Mature`, and `NSFL`.
+- Completely declichified and purged of formulaic pulp tropes.
+
+### 5. 🔌 Multi-Process Companion Ecosystem
+- **Web UI (`:3333`)**: Clean, responsive tabbed interface with live diff inspectors, token telemetry, and health audits.
+- **Desktop Studio (`desktop/run.sh`)**: GPU-accelerated PySide6/QML desktop app linked via zero-latency **Unix Domain Socket** (`/tmp/chargenui-ipc.sock`).
+- **ComfyClient Sidecar (`comfyclient/run.sh`)**: Headless or native diffusion runner for SDXL, Flux, Illustrious, and `sd.cpp`.
+
+---
+
+## 🚀 One-Line Quick Start
+
+### Installation
 ```bash
-# In the project directory
+git clone https://github.com/sca255/chargenui.git
+cd chargenui
+
+# Automated setup (checks Bun, installs deps, and builds assets)
+./install.sh
+```
+
+### Launch
+```bash
 ./start.sh
-# Or directly with Bun
-bun run start
 ```
-Then open your browser at **[http://localhost:3333](http://localhost:3333)**.
+Open **[http://localhost:3333](http://localhost:3333)** in your browser!
 
-### Option B: Native Desktop Studio (PySide6 + QML)
+### Updating
+Whenever new updates land:
 ```bash
-# Launch native desktop application (auto-starts Bun daemon if offline)
-./desktop/run.sh
+./update.sh
 ```
-The native desktop client runs a full GPU-accelerated Qt 6 Quick interface with high-DPI scaling, native system file pickers, real-time token telemetry, Weaver Guided Interview workshop, and multi-theme/BDSM tag selector.
 
 ---
 
-## 🌟 Key Features
+## 🛠️ Supported Formats & Integrations
 
-### 1. 👁️ Multimodal Vision Image Scanner (Image-to-Card)
-- **Upload or Drop Any Image**: Character portraits, digital paintings, anime artwork, or 3D renders.
-- **Forensic Visual Deconstruction**: Extracts anatomy, apparent age, hair, eyes, facial expressions, micro-demeanor, wardrobe layers, weapons/props, lighting, and ambient atmosphere.
-- **Psychological Profiling**: Infers character archetypes, latent contradictions (e.g. elegant formalwear paired with bloodied knuckles and concealed daggers), and vocal register.
-- **Direct PNG Card Injection**: Automatically re-encodes the scanned image with the generated V2 Character Card embedded directly into the PNG metadata (`chara` chunk), ready for SillyTavern, Lumiverse, Agnai, and RisuAI.
-
-### 2. ⚡ The Enhancer Suite
-Take any existing card (from PNG, JSON, or raw text) and run specialized enhancement modules:
-- 🩺 **Diagnostic Card Audit**: Scores cards (0–100) and detects weak points (lack of contradiction, missing reaction boundaries, "eager agreeable bot" syndrome, passive starters, cliché stock phrases).
-- 🧠 **Deepen Persona & Psychology**: Sharpens the **Central Contradiction** (internal warring forces that prevent 1D tropes) and builds concrete sensory habits.
-- 🎙️ **Voice Rules & Ali:Chat Examples**: Crafts distinctive idiolect rules, forbidden words the character would never say, and generates 3–5 multi-beat example dialogue exchanges formatted with `<START>` tags.
-- 🎬 **Scene Starter & Alternate Greetings**: Rewrites opening greetings with sensory hooks and clear agency, and generates multiple alternate greetings for different roleplay branches (e.g. Hostile Interrogation, Late-Night Intimacy, In Media Res combat).
-- 🗜️ **Token Compressor & Format Converter**: Convert between Natural Prose, Boostyle (`[Character("Name"){...}]`), W++ (`[character("Name"){...}]`), and Markdown, reducing token bloat by 20–40%.
-- 📚 **World Info & Lorebook Generator**: Automatically creates SillyTavern embedded character books with activation keys for signature weapons, factions, locations, and secrets.
-- 🎭 **Tone & Dynamic Shifter**: Shifts demeanor along uncensored creative axes (Grittier, Sensual, Tsundere, Yandere, Stoic, Playful).
-- 🚀 **Full Overhaul**: Executes persona deepening, voice polish, and starter punch-up in a single pass.
-
-### 3. ⛩️ Weaver-Inspired Spine Architecture
-Built upon the principles of elite roleplay engineering:
-- **Central Contradiction**: Two forces pulling against each other (not a bolted-on flaw).
-- **Calibrated Reaction Gradient**:
-  - `wont`: Hard limits (trust-invariant boundaries).
-  - `craves`: Obsessive desires, paired with what repels them.
-  - `neutral`: Flat reactions (topics that leave the character unmoved, breaking default agreeable chatbot behavior).
-  - `will`: Behaviors unlocked only through earned trust.
-- **Sensory Embodiment**: Physical specs designed as a consult-only reference, not recited as an inventory list.
-
-### 4. 🎨 Diffusion Image Prompt Generator & Offline Queue (ComfyUI / Flux / Pony)
-- **VRAM-Saving Offline Workflow**: Designed specifically for creators running local LLMs and diffusion models on a single GPU. Generate characters and their tailored visual prompts first, then shut down your LLM to free VRAM and batch-generate images in ComfyUI or WebUI!
-- **Architecture-Tuned Prompting**:
-  - **Flux.1 / SD 3.5**: Natural language descriptive prose focusing on lighting, materials, and composition without tag stuffing.
-  - **Pony Diffusion V6 / XL**: Automatic score prefix (`score_9, score_8_up... rating_safe/explicit`), Danbooru visual tags, and negative score tags.
-  - **Illustrious-XL / Animagine**: Clean booru tags with quality headers.
-  - **SDXL Standard & Midjourney V6**: Photographic or anime styling with optimal aspect ratios (`832x1216`, `1024x1024`, `1216x832`, `768x1344`).
-- **Persistent Offline Queue**:
-  - Saved to `data/image_prompt_queue.json` across sessions.
-  - 1-click clipboard buttons for Positive, Negative, or full ComfyUI payload.
-  - Batch export to **JSON** (ComfyUI batch queue) or formatted **Text Sheet** (`.txt`).
-  - **One-Click Avatar Attachment**: Drag and drop generated images back onto queue items to automatically embed them into the character card!
-
-### 5. 🌐 Model Providers Supported
-- **llama.cpp Native Server (`llama-server`)**: Directly connects to llama.cpp's native `POST /completion` endpoint (not OpenAI compatibility wrapper). Supports native prompt formatting, ChatML, stop tokens, and native multimodal vision via `image_data: [{ data, id }]` with `[img-1]` tags! (Default: `http://127.0.0.1:8080`).
-- **Ollama**: Local Ollama models (`http://localhost:11434/v1`).
-- **Google Gemini**: Gemini 2.5 Flash, Gemini 2.0 Flash, Gemini 1.5 Pro (Multimodal Vision + Text with `BLOCK_NONE` safety thresholds).
-- **OpenRouter**: Access uncensored models (DeepSeek, Llama 3 Uncensored, Claude, Qwen, etc.).
-- **OpenAI-Compatible / Local**: LM Studio, vLLM, Aphrodite, TabbyAPI, etc.
-- **Anthropic**: Claude 3.5 Sonnet / Haiku.
+- **Card Formats**: SillyTavern V2 & V3 PNGs, modern `.charx` multi-asset bundles, raw JSON.
+- **LLM Backends**: Local `llama.cpp` (`llama-server`), Ollama, OpenRouter, OpenAI, Claude, LM Studio.
+- **Image Diffusion**: Automatic ComfyUI workflow generation, Booru tag translation, and SD.cpp dispatch.
+- **Asset Plugins**: Expression sheet generator (up to 28 canonical expressions), outfit variants, and VTT token packs.
 
 ---
 
-## 📦 File Architecture
+## 🤝 Community & Feedback
+Found an edge case or want to suggest new era templates? 
+- **GitHub**: [https://github.com/sca255/chargenui](https://github.com/sca255/chargenui)
+- **Releases**: [View Changelogs & Releases](https://github.com/sca255/chargenui/releases)
 
-```
-chargenui/
-├── package.json
-├── tsconfig.json
-├── start.sh
-├── .env.example
-├── src/
-│   ├── server.ts                    # Bun API server + static file serving
-│   ├── types/
-│   │   ├── character.ts             # SillyTavern V1/V2, CharX, Lorebook types
-│   │   ├── provider.ts              # Model configurations & multimodal types
-│   │   └── harness.ts               # Generator, enhancer & vision request types
-│   ├── services/
-│   │   ├── llm/
-│   │   │   ├── provider-router.ts   # Routes requests to Gemini, OpenRouter, OpenAI, Claude
-│   │   │   ├── gemini.ts            # Gemini text & vision with BLOCK_NONE
-│   │   │   ├── openai-compat.ts     # OpenAI / OpenRouter / Ollama text & vision
-│   │   │   └── anthropic.ts         # Claude text & vision
-│   │   ├── vision/
-│   │   │   ├── deconstruct.ts       # Multimodal image deconstruction
-│   │   │   └── image-to-card.ts     # Vision synthesis + PNG card injection
-│   │   ├── character/
-│   │   │   ├── png-card.ts          # Pure TS PNG tEXt 'chara' chunk reader & writer
-│   │   │   ├── card-parser.ts       # Ingestion for PNG, JSON, CharX, text
-│   │   │   └── token-counter.ts     # Fast token estimator
-│   │   ├── generator/
-│   │   │   ├── uncensored-prompts.ts# Anti-trope, uncensored generation prompts
-│   │   │   └── quick-spark.ts       # Prompt-to-card generator
-│   │   └── enhancer/
-│   │       ├── diagnostic.ts        # Card audit & weakness detection
-│   │       ├── persona-deepener.ts  # Contradiction, psychology, sensory habits
-│   │       ├── voice-alichat.ts     # Idiolect rules & Ali:Chat <START> generation
-│   │       ├── greetings-puncher.ts # Starter revamp & alternate greetings
-│   │       ├── token-compressor.ts  # Boostyle, W++, Markdown conversion
-│   │       ├── lorebook-builder.ts  # SillyTavern character_book entries
-│   │       ├── tone-shifter.ts      # Uncensored tone calibration
-│   │       └── index.ts             # Enhancer dispatcher
-│   └── public/
-│       ├── index.html               # Tactical 3-column UI layout
-│       ├── style.css                # Dark cyber/tactical styling
-│       └── app.js                   # Client-side reactivity, tokens, API handlers
-```
+---
+
+## ⚖️ Legal Documentation, User Responsibility & Disclaimers
+
+### User Responsibility
+- **Self-Hosted Operation**: CharGenUI is general-purpose, self-hosted software distributed for independent installation, configuration, and operation by users.
+- **Independent Content Control**: Users independently choose how to operate the software and are solely responsible for all content they generate, import, modify, store, or distribute using the application.
+- **Legal Compliance**: Users must ensure that their installation, generation prompts, and resulting materials comply with all laws, regulations, and statutes applicable in their jurisdiction and country of operation.
+- **Third-Party Rights**: Users must respect intellectual property rights, copyrights, publicity rights, and privacy rights of third parties when authoring or importing character data, names, imagery, and lore.
+- **Terms of External Providers**: When configuring cloud AI integrations, users are independently responsible for reviewing and adhering to the respective provider's terms of service, usage policies, and content restrictions.
+
+### Developer Role and Content Ownership
+- **Software Distribution Only**: The developer distributes CharGenUI solely as open-source application software. The developer does not author, curate, review, verify, approve, endorse, or publish characters or content created by users.
+- **No Public Hosting or Central Gallery**: CharGenUI is not a centralized content-hosting, character-sharing, or public publishing service. All card databases and generation assets reside locally on the user's host machine.
+- **No Claim of Content Ownership**: The developer claims no ownership, intellectual property rights, or licensing stake in any user-generated character cards, text, or images produced using the software.
+- **Data Flow Transparency**: When local engines (such as `llama-server`, Ollama, or ComfyUI) are selected, inference and data remain entirely on the user's local network. When external cloud providers (such as Gemini, Anthropic, OpenAI, or OpenRouter) are chosen by the user, submitted prompts, character metadata, and reference images are transmitted directly across the network to that third-party provider's endpoints.
+
+### Third-Party Services
+- Cloud AI providers (including Google Gemini, Anthropic, OpenAI, OpenRouter, and Cloudflare Workers AI) are independently operated external services.
+- Their respective terms of service, privacy policies, availability, pricing, and content restrictions apply independently to the user's API credentials.
+- Users select and provide their own API endpoints and keys and are responsible for their use. CharGenUI does not warrant or guarantee the availability, reliability, legality, safety, or behaviour of any third-party model or service.
+
+### Disclaimer of Warranty and Limitation of Liability
+- **As-Is Provision**: CharGenUI is provided "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT, as set forth in the [LICENSE](file:///mnt/d/projects/chargenui/LICENSE).
+- **Limitation of Liability**: To the maximum extent permitted by applicable law, in no event shall the authors, copyright holders, or contributors be liable for any claim, damages, or other liability, whether in an action of contract, tort, or otherwise, arising from, out of, or in connection with:
+  1. Any user-generated, imported, or exported content;
+  2. The independent operation, deployment, or misuse of the software;
+  3. User-configured models, third-party AI providers, or remote API endpoints;
+  4. Local network exposure, unauthenticated hosting, or system modifications; or
+  5. Any indirect, incidental, consequential, special, or exemplary damages.
+- Nothing in this disclaimer excludes or limits liability that cannot legally be excluded under applicable governing law.
+
+---
+
+*Crafted with zero puritanical moralizing, zero corporate filters, and 100% focus on deep, performable roleplay.*
