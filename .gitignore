@@ -8,6 +8,8 @@ session-ses_*.md
 
 # Build & Runtime Cache
 dist/
+src/public/dist/
+src/public/index.html
 .cache/
 bun.lockb
 bun.lock

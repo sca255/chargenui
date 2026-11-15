@@ -1,6 +1,24 @@
-# 🚀 Changelog - v1.0.0
+# 🚀 Changelog
 
 All notable changes to the **CharGen Harness & Studio** ecosystem are documented below.
+
+## [v1.0.1] - 2026-11-15
+
+### 🌟 Enhancements & Polish
+- **⚡ System One Decision Protocol & Model Auto-Discovery**:
+  - Aligned Decision Service with the formal System One endpoint (`/v1/systemone` on port `8017`).
+  - Added dynamic model auto-discovery querying `/v1/models` on startup to automatically bind available models (e.g., `jevos-v5`, `clef`).
+  - Formatted question payloads using criteria maps (`choice`, `noul`) and normalized probabilities/scores.
+- **🎙️ Weaver Options Quality & Autonomous Reroll Gate**:
+  - Filter gate now checks both question leverage and option responsiveness.
+  - Automatically rerolls option candidates up to 10 times if initial options are evasive or weak before presenting them to the user.
+- **📦 Runtime Asset Automation & Repository Cleanup**:
+  - Untracked generated `src/public/index.html` from Git; added to `.gitignore`.
+  - Added automatic HTML assembly on server startup in `src/server.ts`.
+  - Added standalone `install.sh` and `update.sh` helper scripts for automated setup, dependency installation, and asset building.
+  - Hardened prompt profile discovery in `prompt-config.ts` to strictly ignore non-prompt JSON configs.
+
+---
 
 ## [v1.0.0] - 2026-11-14
 

@@ -416,6 +416,7 @@ export function listPromptProfiles(): PromptProfileSummary[] {
   const allFiles = fs.readdirSync(CONFIG_DIR);
   for (const f of allFiles) {
     if (!f.endsWith(".json")) continue;
+    if (!f.startsWith("prompts.") && !f.startsWith("weaver-prompts")) continue;
     if (
       f === "prompts.default.json" ||
       f === "prompts.local.json" ||

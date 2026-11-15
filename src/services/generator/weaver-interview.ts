@@ -148,28 +148,80 @@ Output STRICT JSON matching this schema:
   }
 
   // --- Parallel Jev / Clef Decision Model Gate ---
-  // Evaluates every candidate question simultaneously in parallel.
-  // Questions must score >= 0.65 to survive. If survivors < 2, perform up to 3 deepening swap rounds.
+  // Evaluates every candidate question AND its options simultaneously in parallel.
+  // 1. Question relevance & high-leverage tension score >= 0.65.
+  // 2. Options quality: checks whether at least one generated option genuinely and compellingly answers the question.
+  // If options are poor, rerolls options up to 10 times.
   async function filterQuestionsWithJev(qs: any[]): Promise<any[]> {
     if (!request.decisionConfig || request.decisionConfig.provider === "disabled") {
       return qs;
     }
-    const scoreResults = await Promise.all(
-      qs.map(async (q) => {
-        try {
-          const res = await decideScore({
-            statement: "This interview question targets a crucial, high-leverage tension or unexplored psychological contradiction specific to this concept, avoiding generic cliches.",
-            text: `Concept: ${request.concept}\nCategory: ${q.category}\nQuestion: ${q.question}`,
+    const vetted: any[] = [];
+    for (const q of qs) {
+      try {
+        // Step A: Question Relevance Check
+        const scoreRes = await decideScore({
+          statement: "This interview question targets a crucial, high-leverage tension or unexplored psychological contradiction specific to this concept, avoiding generic cliches.",
+          text: `Concept: ${request.concept}\nCategory: ${q.category}\nQuestion: ${q.question}`,
+          config: request.decisionConfig,
+        });
+
+        if (scoreRes.score < 0.65) {
+          console.log(`[Weaver Jev Gate] Question [${q.category}] failed relevance score (${scoreRes.score.toFixed(2)} < 0.65). Dropping.`);
+          continue;
+        }
+
+        // Step B: Options Quality & Direct Responsiveness Check
+        let currentOpts = [...q.options];
+        let optionsValid = false;
+        let optRerolls = 0;
+
+        while (optRerolls < 10) {
+          const evalState = `Concept: "${request.concept}"\nQuestion: [${q.category}] ${q.question}\nOption 1: "${currentOpts[0] || ""}"\nOption 2: "${currentOpts[1] || ""}"\nOption 3: "${currentOpts[2] || ""}"`;
+          const optChoice = await decideChoice({
+            state: evalState,
+            schema: {
+              options_valid: ["valid_and_relevant", "evasive_or_poor"],
+              recommended_pick: ["1", "2", "3", "none"],
+            },
             config: request.decisionConfig,
           });
-          return res.score;
-        } catch (err) {
-          console.warn("Jev question scoring warning:", err);
-          return 0.75; // Fail-open on network hiccup
+
+          if (optChoice.decision.options_valid === "valid_and_relevant" && optChoice.decision.recommended_pick !== "none") {
+            optionsValid = true;
+            const pickIdx = optChoice.decision.recommended_pick === "1" ? 0 : optChoice.decision.recommended_pick === "2" ? 1 : 2;
+            q.recommendedOptionIndex = pickIdx;
+            q.options = currentOpts;
+            break;
+          }
+
+          optRerolls++;
+          console.log(`[Weaver Jev Gate] Options for [${q.category}] were judged poor/evasive. Rerolling options (${optRerolls}/10)...`);
+          const rerolled = await rerollWeaverQuestionOptions({
+            concept: request.concept,
+            category: q.category,
+            question: q.question,
+            currentOptions: currentOpts,
+            genre: request.genre,
+            tone: request.tone,
+            nsfw: request.nsfw,
+            influence: request.influence,
+            provider: request.provider,
+          });
+          currentOpts = rerolled.options;
         }
-      })
-    );
-    return qs.filter((_, i) => scoreResults[i] >= 0.65);
+
+        if (optionsValid) {
+          vetted.push(q);
+        } else {
+          console.warn(`[Weaver Jev Gate] Dropped question [${q.category}] because even after 10 rerolls, its options were not satisfactory.`);
+        }
+      } catch (err) {
+        console.warn("Jev question/options check warning:", err);
+        vetted.push(q); // Fail-open on network glitch
+      }
+    }
+    return vetted;
   }
 
   let vettedQuestions = await filterQuestionsWithJev(candidateQuestions);
@@ -325,15 +377,21 @@ export async function evaluateWeaverAnswerRelevance(params: {
   question: string;
   category: string;
   userAnswer: string;
+  options?: string[];
   decisionConfig?: any;
 }): Promise<{ answersQuestion: boolean; reason?: string }> {
   if (!params.decisionConfig || params.decisionConfig.provider === "disabled") {
     return { answersQuestion: true };
   }
 
+  console.log(`\n--- [Weaver Answer Validation] ---`);
+  console.log(`Category: [${params.category}]`);
+  console.log(`Question: "${params.question}"`);
+  console.log(`Answer: "${params.userAnswer}"`);
+
   try {
     const res = await decideChoice({
-      state: `Question Category: ${params.category}\nQuestion: "${params.question}"\nUser Answer: "${params.userAnswer}"`,
+      state: `Question Category: ${params.category}\nQuestion: "${params.question}"\nProposed Answer to evaluate: "${params.userAnswer}"`,
       schema: {
         answers_question: ["yes", "no_or_evasive"],
       },
@@ -341,6 +399,7 @@ export async function evaluateWeaverAnswerRelevance(params: {
     });
 
     const isYes = res.decision.answers_question === "yes";
+    console.log(`Result from Jev: ${res.decision.answers_question} (Pass: ${isYes})\n----------------------------------\n`);
     return {
       answersQuestion: isYes,
       reason: isYes ? undefined : "The provided answer does not directly address the question dimension.",

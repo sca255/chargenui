@@ -1,6 +1,6 @@
 {
   "name": "chargenui",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Uncensored Roleplay Character Generator, Enhancer & Vision Harness",
   "main": "src/server.ts",
   "type": "module",

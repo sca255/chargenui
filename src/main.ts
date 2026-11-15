@@ -30,6 +30,14 @@ import { withCors, handleCors, errorWithCors, notFoundWithCors } from "./middlew
 import { serverIpc } from "./services/ipc/server-ipc";
 import { PORT, PUBLIC_DIR, CHARGEN_IPC_SOCKET } from "./config/constants";
 import { startAvifPrewarmJob } from "./services/image/avif-cache";
+import { buildHtmlFile } from "../scripts/build_html";
+
+// Ensure runtime modular HTML is assembled on startup
+try {
+  buildHtmlFile();
+} catch (e) {
+  console.warn("Could not pre-assemble index.html on boot:", e);
+}
 
 const allRoutes = [
   ...healthRoutes,

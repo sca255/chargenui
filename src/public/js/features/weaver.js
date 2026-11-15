@@ -165,6 +165,9 @@ async function submitWeaverForge() {
   const concept = el.genConcept.value.trim();
   if (!concept) return;
 
+  const btn = el.btnWeaverSubmitForge;
+  if (!btn) return;
+
   // Gather answers from inputs
   const cards = document.querySelectorAll(".weaver-question-card");
   const answers = [];
@@ -199,10 +202,12 @@ async function submitWeaverForge() {
     let hasEvasiveAnswer = false;
     for (const ans of answers) {
       try {
+        const qObj = state.weaverInterview?.questions?.find((q) => q.id === ans.questionId);
         const checkRes = await apiPost("/api/weaver/check-answer", {
           question: ans.question,
           category: ans.category,
           userAnswer: ans.selectedAnswer,
+          options: qObj?.options || [],
           decisionConfig: state.decisionConfig,
         });
 
@@ -232,7 +237,6 @@ async function submitWeaverForge() {
     }
   }
 
-  const btn = el.btnWeaverSubmitForge;
   btn.disabled = true;
   btn.innerHTML = `<span class="spinner"></span> <span>Synthesizing Bible &amp; Forging Card...</span>`;
 

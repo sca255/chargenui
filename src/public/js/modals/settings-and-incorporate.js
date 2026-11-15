@@ -417,11 +417,11 @@ export function toggleDecisionFields() {
     }
   } else if (p === "jev") {
     if (el.settingDecisionEndpoint && !el.settingDecisionEndpoint.value) {
-      el.settingDecisionEndpoint.placeholder = "https://api.typesafe.ai/v1/decide";
+      el.settingDecisionEndpoint.placeholder = "https://api.typesafe.ai/v1/systemone";
     }
   } else if (p === "custom_http") {
     if (el.settingDecisionEndpoint && !el.settingDecisionEndpoint.value) {
-      el.settingDecisionEndpoint.placeholder = "http://localhost:8000/v1/decide";
+      el.settingDecisionEndpoint.placeholder = "http://localhost:8017/v1/systemone";
     }
   }
 }
