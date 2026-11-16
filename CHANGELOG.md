@@ -2,6 +2,23 @@
 
 All notable changes to the **CharGen Harness & Studio** ecosystem are documented below.
 
+## [v1.2.0] - 2026-11-16
+
+### 🌟 Major Subsystem Updates & Modular Preset Engine
+- **📜 Dynamic Prompt Preset Architecture (`idea_generator/` & `src/services/config/`)**:
+  - Implemented modular, file-backed prompt preset discovery in both the Python Idea Forge pipeline and TypeScript runtime.
+  - Added dedicated preset selectors in PySide6/QML UI (`idea_generator/qml/Main.qml`), allowing one-click runtime switching between creative directives.
+  - Added dynamic getters for effective uncensored system prompts, agent harness directives, governance contracts, and story arc templates.
+- **🧠 Idea Generator Pipeline Modularization**:
+  - Refactored `idea_generator/pipeline.py` to route all prompt authoring through `idea_generator/prompt_presets.py`.
+  - Added fallback safe paths (`/tmp/chargenui`) for system log configurations.
+- **🎨 Configurable Story Arc, Vision & Enhancer Templates**:
+  - Added schema support and dynamic resolution for `storyArcPrompt`, `visionPrompts`, `enhancerPrompts`, and `reimagine` directives.
+- **🔒 Gitignore & Preset Directory Safeguards**:
+  - Configured Git ignores for `config/presets/` and `idea_generator/presets/` while maintaining `.gitkeep` directory anchors.
+
+---
+
 ## [v1.0.1] - 2026-11-15
 
 ### 🌟 Enhancements & Polish

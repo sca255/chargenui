@@ -3,6 +3,7 @@ import type { ProviderConfig } from "../../types/provider";
 import { routeLLMJson } from "../llm/provider-router";
 import { normalizeRpMacros, normalizeDialogueQuotes } from "../character/macro-engine";
 import { saveCardRecord } from "../character/card-storage";
+import { getEffectiveEnhancerPrompts } from "../config/prompt-config";
 
 export type MultiverseUniverseId =
   | "modern_slice_of_life"
@@ -113,12 +114,16 @@ export async function forkCharacterMultiverse(
       ? `ADDITIONAL USER CUSTOM STEERING:\n${request.customPrompt.trim()}`
       : "";
 
-  const systemPrompt = `You are the Multiverse Architect for the Weaver character authoring engine.
+  const baseForkerPrompt =
+    getEffectiveEnhancerPrompts(request.provider).multiverseForker ||
+    `You are the Multiverse Architect for the Weaver character authoring engine.
 Your mission is to take an existing roleplay character and FORK them into a parallel Alternate Universe (AU): "${meta.label}".
 
 PSYCHOMETRIC PRESERVATION PRINCIPLE:
 - PRESERVE the character's internal essence: their central psychological contradiction, their deepest craving vs aversion, their calibrated reaction gradient (what leaves them flat/neutral vs hard limits), and their distinct vocal cadence/rhythm.
-- TRANSFORM the external manifestation: their physical attire, equipment, and textures in [FORM], their formative history in [ARC], their current environment/scenario, and their opening message.
+- TRANSFORM the external manifestation: their physical attire, equipment, and textures in [FORM], their formative history in [ARC], their current environment/scenario, and their opening message.`;
+
+  const systemPrompt = `${baseForkerPrompt}
 
 AU DIRECTIVE:
 ${meta.promptDirective}

@@ -2,6 +2,7 @@ import type { RoleplayCharacter } from "../../types/character";
 import type { ProviderConfig } from "../../types/provider";
 import { routeLLMJson } from "../llm/provider-router";
 import { saveCardRecord } from "../character/card-storage";
+import { getEffectiveAudioDirectorPrompt } from "../config/prompt-config";
 
 export interface CharacterVoiceSpec {
   voiceName: string;
@@ -53,7 +54,9 @@ export async function generateAndStampVoiceSpec(
   const char = request.character;
   const charName = char.name || "Character";
 
-  const systemPrompt = `You are an elite Audio & Voice Director for AI speech synthesis (Qwen-TTS, CosyVoice, Kokoro, ElevenLabs).
+  const systemPrompt =
+    getEffectiveAudioDirectorPrompt(request.provider) ||
+    `You are an elite Audio & Voice Director for AI speech synthesis (Qwen-TTS, CosyVoice, Kokoro, ElevenLabs).
 Analyze this roleplay character's Voice & Language spec, physical presence/timbre from [FORM], and personality to generate a precise, actionable TTS Voice Specification.
 
 QWEN-TTS / COSYVOICE INSTRUCT PROMPT PRINCIPLES:

@@ -5,6 +5,7 @@ import type { AuthoringSpine } from "../generator/spine";
 import { routeLLMJson } from "../llm/provider-router";
 import { routeLLMCompletion } from "../llm/provider-router";
 import { UNCENSORED_SYSTEM_PROMPT } from "../generator/uncensored-prompts";
+import { getEffectiveEnhancerPrompts } from "../config/prompt-config";
 import { normalizeRpMacros, normalizeDialogueQuotes } from "../character/macro-engine";
 
 export async function punchUpGreetingsAndAlts(
@@ -192,8 +193,12 @@ ${Array.from({ length: targetAltCount }, (_, i) =>
   ]
 }`;
 
+  const altPrompt =
+    getEffectiveEnhancerPrompts(provider).greetingsPuncherAlt ||
+    "You are an elite dialogue specialist rendering the EXAMPLE DIALOGUES (Example Messages) and ALTERNATE GREETINGS from the Authoring Spine. You MUST follow ALL instructions exactly. You WILL generate the EXACT number of greetings requested. NO EXCUSES.";
+
   const messages = [
-    { role: "system" as const, content: "You are an elite dialogue specialist rendering the EXAMPLE DIALOGUES (Example Messages) and ALTERNATE GREETINGS from the Authoring Spine. You MUST follow ALL instructions exactly. You WILL generate the EXACT number of greetings requested. NO EXCUSES." },
+    { role: "system" as const, content: altPrompt },
     { role: "user" as const, content: prompt },
   ];
 
@@ -286,8 +291,12 @@ Output STRICT JSON:
   ]
 }`;
 
+  const improvePrompt =
+    getEffectiveEnhancerPrompts(provider).greetingsPuncherImprove ||
+    "You are an elite fiction author improving character greetings for interactive roleplay. You MUST follow ALL instructions exactly. Generate the EXACT number of greetings matching the current count. NO EXCUSES.";
+
   const messages = [
-    { role: "system" as const, content: "You are an elite fiction author improving character greetings for interactive roleplay. You MUST follow ALL instructions exactly. Generate the EXACT number of greetings matching the current count. NO EXCUSES." },
+    { role: "system" as const, content: improvePrompt },
     { role: "user" as const, content: prompt },
   ];
 

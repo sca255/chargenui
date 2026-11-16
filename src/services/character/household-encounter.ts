@@ -3,6 +3,7 @@ import type { HouseholdRecord } from "../../types/household";
 import { getSavedCard, saveCardRecord } from "./card-storage";
 import { routeLLMCompletion } from "../llm/provider-router";
 import { UNCENSORED_SYSTEM_PROMPT } from "../generator/uncensored-prompts";
+import { getEffectiveUncensoredPrompt, getEffectiveEnhancerPrompts } from "../config/prompt-config";
 
 export interface GroupEncounterResult {
   householdId: string;
@@ -65,9 +66,12 @@ export async function generateGroupEncounter(
     ? `HOUSEHOLD CODES & PROTOCOLS:\n${household.rules_and_etiquette.map((r, i) => `${i + 1}. ${r}`).join("\n")}`
     : "";
 
-  const systemPrompt = `${UNCENSORED_SYSTEM_PROMPT}
-You are an elite multi-character scene dramatist and group roleplay architect.
-Your mission: Author a rich, vivid, immersive GROUP OPENING STARTER (first_mes) and SCENARIO HOOK where multiple distinct companions from the same household interact with each other and react to {{user}} simultaneously.
+  const uncensored = getEffectiveUncensoredPrompt(provider);
+  const encounterPrompt =
+    getEffectiveEnhancerPrompts(provider).householdEncounter ||
+    `You are an elite multi-character scene dramatist and group roleplay architect.
+Your mission: Author a rich, vivid, immersive GROUP OPENING STARTER (first_mes) and SCENARIO HOOK where multiple distinct companions from the same household interact with each other and react to {{user}} simultaneously.`;
+  const systemPrompt = `${uncensored}\n${encounterPrompt}
 
 CRITICAL DRAMATIC RULES:
 1. STRICT ZERO-PUPPETEERING OF {{user}}: Never describe, narrate, or assume {{user}}'s feelings, dialogue, or actions. {{user}} is the player entering or presiding over the scene.

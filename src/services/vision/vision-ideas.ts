@@ -1,6 +1,6 @@
 import type { ProviderConfig, ChatMessage } from "../../types/provider";
 import { routeLLMJson } from "../llm/provider-router";
-import { UNCENSORED_SYSTEM_PROMPT } from "../generator/uncensored-prompts";
+import { getEffectiveUncensoredPrompt, getEffectiveVisionPrompts } from "../config/prompt-config";
 import { deconstructImageWithVision } from "./deconstruct";
 
 export interface VisionIdea {
@@ -34,14 +34,17 @@ export async function generateVisionIdeas(
 
   const visualSummary = `${vp.apparent_age || ""} ${vp.gender_presentation || ""}, ${vp.hair || ""}, ${vp.eyes || ""}. Wardrobe: ${vp.clothing_attire || ""}. Demeanor: ${vp.expression_demeanor || ""}. Suggested Archetype: ${ip.archetype || ""}.`;
 
-  const systemPrompt = `${UNCENSORED_SYSTEM_PROMPT}
-You are a visionary character architect, creative writing director, and master of narrative tropes.
+  const uncensored = getEffectiveUncensoredPrompt(provider);
+  const ideasPrompt =
+    getEffectiveVisionPrompts(provider).ideas ||
+    `You are a visionary character architect, creative writing director, and master of narrative tropes.
 Your mission is to look beyond surface-level visual traits and generate 3 to 4 DIVERGENT, DEEPLY COMPELLING character concepts inspired by the visual evidence.
 
 For each idea:
 1. Ground it in visible details from the image (accessories, posture, scars, clothing, expression).
 2. SUBVERT expected clichés (e.g. if dressed as a holy paladin, avoid standard righteous champion; explore a defrocked inquisitor carrying heretic contraband, or a devout soul whose faith demands horrific sacrifices).
 3. Formulate an actionable, vivid "characterPrompt" (3-5 sentences) that an author can drop directly into an uncensored roleplay card generator.`;
+  const systemPrompt = `${uncensored}\n${ideasPrompt}`;
 
   const userPrompt = `FORENSIC VISUAL EVIDENCE:
 - Appearance: ${vp.apparent_age || ""} ${vp.gender_presentation || ""}, ${vp.hair || ""}, ${vp.eyes || ""}, ${vp.physique || ""}

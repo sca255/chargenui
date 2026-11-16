@@ -19,6 +19,8 @@ data/
 reference_*/
 config/*.private.json
 config/*.custom.json
+config/presets/
+!config/presets/.gitkeep
 *.private.json
 *.custom.json
 .active-profile
@@ -50,6 +52,8 @@ idea_generator/config.json
 idea_generator/eras_db.json
 idea_generator/history.json
 idea_generator/user_eras.json
+idea_generator/presets/
+!idea_generator/presets/.gitkeep
 experimental/idea_generator/config.json
 experimental/idea_generator/eras_db.json
 ERA_AUTHORING_SPEC.md

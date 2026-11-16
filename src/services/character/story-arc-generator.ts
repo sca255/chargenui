@@ -7,6 +7,7 @@
 import type { ProviderConfig, ChatMessage } from "../../types/provider";
 import type { RoleplayCharacter } from "../../types/character";
 import { routeLLMCompletion } from "../llm/provider-router";
+import { getEffectiveStoryArcPrompt } from "../config/prompt-config";
 
 export interface StoryArcRequest {
   character: RoleplayCharacter;
@@ -63,8 +64,10 @@ export async function generateStoryArc(req: StoryArcRequest): Promise<StoryArcRe
     }
   }
 
-  const systemPrompt = isSpark
-    ? `You are an elite narrative designer and creative writer designing a compelling ${targetActs}-Act story arc trajectory for a new roleplay character (${name}) and {{user}}.
+  const systemPrompt =
+    getEffectiveStoryArcPrompt(isSpark, targetActs, name, provider) ||
+    (isSpark
+      ? `You are an elite narrative designer and creative writer designing a compelling ${targetActs}-Act story arc trajectory for a new roleplay character (${name}) and {{user}}.
 Synthesize a dramatic, high-tension narrative arc with escalating stakes, emotional tension, interpersonal conflict, and meaningful progression.
 
 STRICT OUTPUT RULES:
@@ -74,8 +77,8 @@ STRICT OUTPUT RULES:
 Act [N]: [Evocative Title]
 [Brief 1–2 sentence escalation beat detailing conflict, stakes, and progression]
 - Output ONLY the numbered acts. No preamble, conversational filler, or wrap-up.`
-    : isInspire
-    ? `You are an elite narrative designer crafting an INSPIRED story arc trajectory for ${name} and {{user}}.
+      : isInspire
+      ? `You are an elite narrative designer crafting an INSPIRED story arc trajectory for ${name} and {{user}}.
 Use the character's reference seeds as creative springboards: synthesize fresh, similarly sized narrative phases, surprising twists, and elevated stakes.
 
 STRICT OUTPUT RULES:
@@ -85,7 +88,7 @@ STRICT OUTPUT RULES:
 Act [N]: [Evocative Title]
 [Brief 1–2 sentence escalation beat detailing conflict, stakes, and progression]
 - Output ONLY the numbered acts. No preamble, conversational filler, or wrap-up.`
-    : `You are a master dramaturge and narrative architect for ${name} and {{user}}.
+      : `You are a master dramaturge and narrative architect for ${name} and {{user}}.
 Condense the existing character story, first message, and alternate scenes into an exact, high-tension ${targetActs}-Act trajectory.
 
 STRICT OUTPUT RULES:
@@ -96,7 +99,7 @@ STRICT OUTPUT RULES:
 - Use this concise format for each act (1–2 punchy sentences per act):
 Act [N]: [Evocative Title]
 [Brief 1–2 sentence escalation beat detailing conflict, stakes, and progression]
-- Output ONLY the numbered acts. No preamble, conversational filler, or wrap-up.`;
+- Output ONLY the numbered acts. No preamble, conversational filler, or wrap-up.`);
 
   const userPrompt = `CHARACTER PROFILE:
 Name: ${name}

@@ -2,6 +2,7 @@ import type { ProviderConfig, ChatMessage, ToolCallRequest } from "../../types/p
 import { routeLLMCompletion } from "../llm/provider-router";
 import { rawHttpPost } from "../llm/llamacpp";
 import { UNCENSORED_SYSTEM_PROMPT } from "../generator/uncensored-prompts";
+import { getEffectiveEraArchitectPrompt } from "../config/prompt-config";
 import {
   type EraDefinition,
   getAllEras,
@@ -807,7 +808,9 @@ export async function executeEraAgentTurn(
     error: message,
   });
 
-  const messages: ChatMessage[] = [{ role: "system", content: ERA_ARCHITECT_SYSTEM_PROMPT }];
+  const messages: ChatMessage[] = [
+    { role: "system", content: getEffectiveEraArchitectPrompt(provider) || ERA_ARCHITECT_SYSTEM_PROMPT },
+  ];
 
   if (request.chatHistory && request.chatHistory.length > 0) {
     for (const h of request.chatHistory.slice(-6)) {

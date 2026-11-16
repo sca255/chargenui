@@ -3,6 +3,11 @@ import type { RoleplayCharacter } from "../../types/character";
 import { routeLLMCompletion } from "../llm/provider-router";
 import { rawHttpPost } from "../llm/llamacpp";
 import { UNCENSORED_SYSTEM_PROMPT } from "../generator/uncensored-prompts";
+import {
+  getEffectiveAgentSystemPrompt,
+  getEffectiveAgentCompactPrompt,
+  getEffectiveGovernanceContracts,
+} from "../config/prompt-config";
 import { normalizeRpMacros, normalizeDialogueQuotes } from "../character/macro-engine";
 import { parseAgentResponse, CARD_AGENT_TOOL_SCHEMA, type TakeOption } from "./agent-tools";
 import { retrieveCharacterLore } from "../search/web-search";
@@ -319,7 +324,9 @@ export async function executeAgentModify(req: AgentModifyRequest): Promise<Agent
   const charName = character.name || "Custom Character";
 
   const useTagFallback = Boolean(process.env.CARD_AGENT_ALLOW_TAG_FALLBACK);
-  const systemPrompt = useTagFallback ? AGENT_SYSTEM_PROMPT_XML_FALLBACK : AGENT_SYSTEM_PROMPT_NATIVE;
+  const systemPrompt =
+    getEffectiveAgentSystemPrompt(useTagFallback ? "xml" : "native", provider) ||
+    (useTagFallback ? AGENT_SYSTEM_PROMPT_XML_FALLBACK : AGENT_SYSTEM_PROMPT_NATIVE);
 
   // Build card representation for agent
   const cardSnapshot: Record<string, any> = {
@@ -745,13 +752,7 @@ export async function executeAgentCompact(req: AgentCompactRequest): Promise<Age
   const promptMessages: ChatMessage[] = [
     {
       role: "system",
-      content: `You are an expert dialogue and character engineering summarizer.
-Your goal is to distill a multi-turn character card engineering conversation into a crystal-clear, dense executive summary.
-Capture:
-1. Core character revisions and creative decisions made so far for "${name}".
-2. Key user preferences, tone calibrations, and vetoes (what the user liked vs rejected).
-3. Active creative direction or pending tasks.
-Keep it concise, actionable, and structured (under 300 words). Do not include pleasantries.`,
+      content: getEffectiveAgentCompactPrompt(provider).replace(/\$\{name\}/g, name).replace(/"the character"/g, `"${name}"`),
     },
     {
       role: "user",

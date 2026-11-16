@@ -40,6 +40,7 @@ from pipeline import (
     normalize_rp_macros,
     normalize_concept_dict_macros
 )
+import prompt_presets
 from era_agent_harness import configure_logging
 from media_utils import load_media_payload, extract_fallback_keyframes, is_video_file, is_image_file
 from procedural_engine import (
@@ -168,7 +169,11 @@ def configure_app_logging() -> Path:
             Path.home() / ".local" / "state",
         )
     ) / "chargenui"
-    state_dir.mkdir(parents=True, exist_ok=True)
+    try:
+        state_dir.mkdir(parents=True, exist_ok=True)
+    except OSError:
+        state_dir = Path("/tmp/chargenui")
+        state_dir.mkdir(parents=True, exist_ok=True)
     log_path = state_dir / "idea-forge.log"
     configure_logging("INFO", str(log_path))
     LOGGER.info("Idea Forge logging enabled: %s", log_path)
@@ -213,6 +218,10 @@ class Backend(QObject):
     householdsChanged = Signal()
     householdEncounterGenerated = Signal(str, str)
 
+    # Prompt Presets Signals
+    activePromptPresetChanged = Signal(str)
+    promptPresetsChanged = Signal()
+
     def __init__(self):
         super().__init__()
         self._is_generating = False
@@ -222,7 +231,8 @@ class Backend(QObject):
         self._chargen_url = self._cfg.get("chargen_url", "http://localhost:3333")
         self._is_chargen_online = False
         self._model = self._cfg.get("model_name", "")
-        self._pipeline = IdeaPipeline(endpoint_url=self._endpoint, model_name=self._model)
+        self._active_preset = prompt_presets.get_active_preset_id()
+        self._pipeline = IdeaPipeline(endpoint_url=self._endpoint, model_name=self._model, preset_id=self._active_preset)
         self._history = self._load_history()
         self._grimoire = self._load_grimoire()
         self._households = self._load_households()
@@ -476,6 +486,42 @@ class Backend(QObject):
         return self._households
 
     households = Property(list, get_households, notify=householdsChanged)
+
+    # Prompt Presets Properties & Slots
+    def get_active_preset(self) -> str:
+        return self._active_preset
+
+    def set_active_preset(self, val: str):
+        cleaned = str(val or "default").strip()
+        if self._active_preset != cleaned:
+            self._active_preset = cleaned
+            self._cfg["active_prompt_preset"] = cleaned
+            save_config(self._cfg)
+            prompt_presets.set_active_preset_id(cleaned)
+            self._pipeline = IdeaPipeline(endpoint_url=self._endpoint, model_name=self._model, preset_id=self._active_preset)
+            self.activePromptPresetChanged.emit(self._active_preset)
+            self.toast.emit(f"⚙️ Prompt Preset: {cleaned}")
+
+    activePromptPreset = Property(str, get_active_preset, set_active_preset, notify=activePromptPresetChanged)
+
+    def get_available_presets(self) -> list:
+        return prompt_presets.list_presets()
+
+    availablePromptPresets = Property(list, get_available_presets, notify=promptPresetsChanged)
+
+    @Slot(str)
+    def setPromptPreset(self, preset_id: str):
+        self.set_active_preset(preset_id)
+
+    @Slot(result=list)
+    def getPromptPresetsList(self) -> list:
+        return prompt_presets.list_presets()
+
+    @Slot()
+    def reloadPromptPresets(self):
+        prompt_presets.load_all_presets(force_reload=True)
+        self.promptPresetsChanged.emit()
+        self.toast.emit("🔄 Reloaded prompt presets from presets directory")
 
     # Slots
     @Slot(str)

@@ -1,6 +1,15 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
-import type { PromptTemplateConfig, PromptProfileSummary, ImageGenerationConfig } from "../../types/prompt-config";
+import type {
+  PromptTemplateConfig,
+  PromptProfileSummary,
+  ImageGenerationConfig,
+  GovernanceContractsConfig,
+  AgentHarnessConfig,
+  ReimaginePromptConfig,
+  EnhancerPromptsConfig,
+  VisionPromptsConfig,
+} from "../../types/prompt-config";
 import type { ProviderConfig } from "../../types/provider";
 
 export const DEFAULT_IMAGE_GENERATION_CONFIG: ImageGenerationConfig = {
@@ -155,6 +164,7 @@ function resolveProjectRoot(): string {
 const PROJECT_ROOT = resolveProjectRoot();
 const CONFIG_DIR = path.resolve(PROJECT_ROOT, "config");
 const DEFAULT_CONFIG_PATH = path.join(CONFIG_DIR, "prompts.default.json");
+const OVERRIDE_DEFAULT_PATH = path.join(CONFIG_DIR, "presets", "_default.json");
 const LOCAL_CONFIG_PATH = path.join(CONFIG_DIR, "prompts.local.json");
 const LOCAL_BDSM_MALEDOM_CONFIG_PATH = path.join(CONFIG_DIR, "prompts.local-maledom-bdsm.json");
 const EVOLVED_CONFIG_PATH = path.join(CONFIG_DIR, "prompts.evolved.private.json");
@@ -227,14 +237,20 @@ function loadActiveConfig(): PromptTemplateConfig {
   }
 
   if (!loaded && currentProfileId === "default") {
-    loaded = readJsonFile<PromptTemplateConfig>(DEFAULT_CONFIG_PATH);
+    loaded = fs.existsSync(OVERRIDE_DEFAULT_PATH)
+      ? readJsonFile<PromptTemplateConfig>(OVERRIDE_DEFAULT_PATH)
+      : readJsonFile<PromptTemplateConfig>(DEFAULT_CONFIG_PATH);
   }
 
   // Dynamic profile lookup for any custom prompts.*.json files
   if (!loaded && currentProfileId) {
     const directPath = path.join(CONFIG_DIR, `${currentProfileId}.json`);
     const prefixPath = path.join(CONFIG_DIR, `prompts.${currentProfileId}.json`);
-    loaded = readJsonFile<PromptTemplateConfig>(directPath) || readJsonFile<PromptTemplateConfig>(prefixPath);
+    const presetPath = path.join(CONFIG_DIR, "presets", `${currentProfileId}.json`);
+    loaded =
+      readJsonFile<PromptTemplateConfig>(directPath) ||
+      readJsonFile<PromptTemplateConfig>(prefixPath) ||
+      readJsonFile<PromptTemplateConfig>(presetPath);
   }
 
   // Fallbacks if selected profile missing
@@ -248,7 +264,9 @@ function loadActiveConfig(): PromptTemplateConfig {
     loaded = readJsonFile<PromptTemplateConfig>(PRIVATE_CONFIG_PATH) || readJsonFile<PromptTemplateConfig>(WEAVER_CONFIG_PATH);
   }
   if (!loaded) {
-    loaded = readJsonFile<PromptTemplateConfig>(DEFAULT_CONFIG_PATH);
+    loaded = fs.existsSync(OVERRIDE_DEFAULT_PATH)
+      ? readJsonFile<PromptTemplateConfig>(OVERRIDE_DEFAULT_PATH)
+      : readJsonFile<PromptTemplateConfig>(DEFAULT_CONFIG_PATH);
   }
 
   if (!loaded) {
@@ -447,6 +465,34 @@ export function listPromptProfiles(): PromptProfileSummary[] {
     }
   }
 
+  // Scan config/presets/ directory dynamically
+  const presetsDir = path.join(CONFIG_DIR, "presets");
+  if (fs.existsSync(presetsDir)) {
+    try {
+      const presetFiles = fs.readdirSync(presetsDir);
+      for (const f of presetFiles) {
+        if (!f.endsWith(".json") || f === "_default.json") continue;
+        const fullPath = path.join(presetsDir, f);
+        const parsed = readJsonFile<PromptTemplateConfig>(fullPath);
+        if (parsed) {
+          const pId = parsed.id || f.replace(/\.json$/, "");
+          if (!profiles.some((p) => p.id === pId)) {
+            profiles.push({
+              id: pId,
+              name: parsed.name || f.replace(/\.json$/, "").replace(/_/g, " "),
+              description: parsed.description || `Preset from presets/${f}`,
+              isPrivate: !!parsed.isPrivate,
+              isCurrent: currentProfileId === pId,
+              version: parsed.version || 1,
+              parentId: parsed.parentId,
+              tags: parsed.tags || [],
+            });
+          }
+        }
+      }
+    } catch {}
+  }
+
   return profiles;
 }
 
@@ -560,4 +606,108 @@ export function getImageGenerationConfig(provider?: ProviderConfig): ImageGenera
     return active.imageGeneration;
   }
   return DEFAULT_IMAGE_GENERATION_CONFIG;
+}
+
+// =========================================================================
+// Effective Dynamic Subsystem Prompt Getters
+// =========================================================================
+
+export function getEffectiveUncensoredPrompt(provider?: ProviderConfig): string {
+  const active = getEffectivePromptConfig(provider);
+  if (active.uncensoredSystemPrompt && active.uncensoredSystemPrompt.trim()) {
+    return active.uncensoredSystemPrompt.trim();
+  }
+  const defaultCfg = readJsonFile<PromptTemplateConfig>(DEFAULT_CONFIG_PATH);
+  return defaultCfg?.uncensoredSystemPrompt?.trim() || active.systemPrompt?.trim() || "";
+}
+
+export function getEffectiveGovernanceContracts(provider?: ProviderConfig): GovernanceContractsConfig {
+  const active = getEffectivePromptConfig(provider);
+  const defaultCfg = readJsonFile<PromptTemplateConfig>(DEFAULT_CONFIG_PATH);
+  return {
+    ...(defaultCfg?.governanceContracts || {}),
+    ...(active.governanceContracts || {}),
+  };
+}
+
+export function getEffectiveAgentSystemPrompt(format: "native" | "xml" = "native", provider?: ProviderConfig): string {
+  const active = getEffectivePromptConfig(provider);
+  const defaultCfg = readJsonFile<PromptTemplateConfig>(DEFAULT_CONFIG_PATH);
+  const uncensored = getEffectiveUncensoredPrompt(provider);
+
+  const harnessCfg: AgentHarnessConfig = {
+    ...(defaultCfg?.agentHarness || {}),
+    ...(active.agentHarness || {}),
+  };
+
+  const baseTemplate = harnessCfg.systemPromptBase || "";
+  const specificTemplate = format === "xml" ? harnessCfg.systemPromptXml : harnessCfg.systemPromptNative;
+
+  if (baseTemplate && specificTemplate) {
+    return `${uncensored}\n${baseTemplate}\n\n${specificTemplate}`;
+  }
+  return specificTemplate || baseTemplate || uncensored;
+}
+
+export function getEffectiveAgentCompactPrompt(provider?: ProviderConfig): string {
+  const active = getEffectivePromptConfig(provider);
+  const defaultCfg = readJsonFile<PromptTemplateConfig>(DEFAULT_CONFIG_PATH);
+  return (
+    active.agentHarness?.compactSummaryPrompt ||
+    defaultCfg?.agentHarness?.compactSummaryPrompt ||
+    "You are an expert dialogue and character engineering summarizer.\nYour goal is to distill a multi-turn character card engineering conversation into a crystal-clear, dense executive summary.\nKeep it concise, actionable, and structured (under 300 words). Do not include pleasantries."
+  );
+}
+
+export function getEffectiveEraArchitectPrompt(provider?: ProviderConfig): string {
+  const active = getEffectivePromptConfig(provider);
+  const defaultCfg = readJsonFile<PromptTemplateConfig>(DEFAULT_CONFIG_PATH);
+  const uncensored = getEffectiveUncensoredPrompt(provider);
+  const body = active.eraArchitectPrompt || defaultCfg?.eraArchitectPrompt || "";
+  return `${uncensored}\n\n${body}`;
+}
+
+export function getEffectiveAudioDirectorPrompt(provider?: ProviderConfig): string {
+  const active = getEffectivePromptConfig(provider);
+  const defaultCfg = readJsonFile<PromptTemplateConfig>(DEFAULT_CONFIG_PATH);
+  return active.audioDirectorPrompt || defaultCfg?.audioDirectorPrompt || "";
+}
+
+export function getEffectiveStoryArcPrompt(
+  isSpark: boolean = false,
+  targetActs: number = 3,
+  name: string = "",
+  provider?: ProviderConfig
+): string {
+  const active = getEffectivePromptConfig(provider);
+  const defaultCfg = readJsonFile<PromptTemplateConfig>(DEFAULT_CONFIG_PATH);
+  const arcCfg = active.storyArcPrompt || defaultCfg?.storyArcPrompt;
+  let rawTemplate = "";
+  if (typeof arcCfg === "string") {
+    rawTemplate = arcCfg;
+  } else if (arcCfg && typeof arcCfg === "object") {
+    rawTemplate = isSpark ? (arcCfg.spark || "") : (arcCfg.standard || "");
+  }
+  if (!rawTemplate) {
+    rawTemplate = `You are an elite narrative designer and creative writer designing a compelling ${targetActs}-Act story arc trajectory for a new roleplay character (${name}) and {{user}}.`;
+  }
+  return rawTemplate.replace(/\$\{targetActs\}/g, String(targetActs)).replace(/\$\{name\}/g, name);
+}
+
+export function getEffectiveVisionPrompts(provider?: ProviderConfig): VisionPromptsConfig {
+  const active = getEffectivePromptConfig(provider);
+  const defaultCfg = readJsonFile<PromptTemplateConfig>(DEFAULT_CONFIG_PATH);
+  return {
+    ...(defaultCfg?.visionPrompts || {}),
+    ...(active.visionPrompts || {}),
+  };
+}
+
+export function getEffectiveEnhancerPrompts(provider?: ProviderConfig): EnhancerPromptsConfig {
+  const active = getEffectivePromptConfig(provider);
+  const defaultCfg = readJsonFile<PromptTemplateConfig>(DEFAULT_CONFIG_PATH);
+  return {
+    ...(defaultCfg?.enhancerPrompts || {}),
+    ...(active.enhancerPrompts || {}),
+  };
 }

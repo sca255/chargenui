@@ -71,6 +71,50 @@ export interface PromptTemplateConfig {
   };
 
   imageGeneration?: ImageGenerationConfig;
+
+  // Global & Subsystem Preset Directives
+  uncensoredSystemPrompt?: string;
+  governanceContracts?: GovernanceContractsConfig;
+  agentHarness?: AgentHarnessConfig;
+  reimagine?: ReimaginePromptConfig;
+  eraArchitectPrompt?: string;
+  audioDirectorPrompt?: string;
+  enhancerPrompts?: EnhancerPromptsConfig;
+  visionPrompts?: VisionPromptsConfig;
+  storyArcPrompt?: string | { spark?: string; standard?: string };
+}
+
+export interface GovernanceContractsConfig {
+  naturalSpokenDialogue?: string;
+  multiCharacter?: string;
+  rpgWorldGm?: string;
+  lorebookCompanion?: string;
+  chargenRoleplay?: string;
+}
+
+export interface AgentHarnessConfig {
+  systemPromptBase?: string;
+  systemPromptNative?: string;
+  systemPromptXml?: string;
+  compactSummaryPrompt?: string;
+}
+
+export interface ReimaginePromptConfig {
+  systemPromptTemplate?: string;
+  redesignObjective?: string;
+  inspireObjective?: string;
+}
+
+export interface EnhancerPromptsConfig {
+  multiverseForker?: string;
+  worldNodes?: string;
+  greetingsPuncherAlt?: string;
+  greetingsPuncherImprove?: string;
+}
+
+export interface VisionPromptsConfig {
+  deconstruct?: string;
+  ideas?: string;
 }
 
 export interface PromptProfileSummary {

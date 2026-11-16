@@ -1,7 +1,7 @@
 # 🔮 CharGen Harness
 > **The Uncensored Roleplay Character Engineer, Weaver Studio & Multimodal Vision Forge**
 
-[![Version](https://img.shields.io/badge/version-1.0.1-blue.svg)](https://github.com/sca255/chargenui/releases/tag/v1.0.1)
+[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](https://github.com/sca255/chargenui/releases/tag/v1.2.0)
 [![Runtime](https://img.shields.io/badge/runtime-Bun%201.0+-orange.svg)](https://bun.sh)
 [![Architecture](https://img.shields.io/badge/format-SillyTavern%20V2%2FV3%20%7C%20CharX-purple.svg)](https://github.com/sca255/chargenui)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)

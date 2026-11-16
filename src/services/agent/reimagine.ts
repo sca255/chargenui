@@ -111,15 +111,19 @@ YOUR CURRENT OPERATION: DIRECT COMPREHENSIVE ${isRedesign ? "REDESIGN" : "INSPIR
 Active Profile: "${cfg.name || "Default"}"
 
 ${isRedesign
-  ? `REDESIGN OBJECTIVE:
+  ? (cfg.reimagine?.redesignObjective
+      ? `REDESIGN OBJECTIVE:\n${cfg.reimagine.redesignObjective}`
+      : `REDESIGN OBJECTIVE:
 - Preserve the character's core identity, emotional DNA, and voice.
 - Enhance psychological contradictions, visceral subtext, and grounded tension.
 - Eliminate purple-prose cliches, robotic formulas, and sterile pacing.
-- If a Story Arc is provided, strictly condense and align the card (Scenario & First Message = Act 1).`
-  : `INSPIRE OBJECTIVE:
+- If a Story Arc is provided, strictly condense and align the card (Scenario & First Message = Act 1).`)
+  : (cfg.reimagine?.inspireObjective
+      ? `INSPIRE OBJECTIVE:\n${cfg.reimagine.inspireObjective}`
+      : `INSPIRE OBJECTIVE:
 - Create a fresh, inspired alternate interpretation of the character.
 - Keep the emotional core or intriguing premise, but inject novel hooks, fresh setting pressures, elevated stakes, and distinct scene dynamics.
-- If a Story Arc is provided, translate those beats into vibrant scene possibilities (Scenario & First Message = Act 1).`
+- If a Story Arc is provided, translate those beats into vibrant scene possibilities (Scenario & First Message = Act 1).`)
 }
 
 ${formatGuidance}

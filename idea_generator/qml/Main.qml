@@ -913,6 +913,67 @@ ApplicationWindow {
                     spacing: 8
                     height: 36
 
+                    // Prompt Preset Selector Pill
+                    Rectangle {
+                        id: presetPill
+                        height: 32
+                        radius: 16
+                        color: presetPillMa.containsMouse ? "#2e1065" : "#1e1b4b"
+                        border.color: "#8b5cf6"
+                        border.width: 1
+                        implicitWidth: presetPillRow.implicitWidth + 24
+
+                        RowLayout {
+                            id: presetPillRow
+                            anchors.fill: parent
+                            anchors.leftMargin: 10
+                            anchors.rightMargin: 10
+                            spacing: 6
+
+                            Text {
+                                text: "📜"
+                                font.pixelSize: 11
+                            }
+                            Text {
+                                text: "Preset: " + (backend.activePromptPreset === "default" ? "Default" : backend.activePromptPreset)
+                                font.pixelSize: 11
+                                font.bold: true
+                                color: "#ddd6fe"
+                            }
+                        }
+
+                        MouseArea {
+                            id: presetPillMa
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: presetMenu.open()
+                        }
+
+                        Menu {
+                            id: presetMenu
+                            y: parent.height + 4
+                            title: "Select Prompt Preset"
+
+                            Instantiator {
+                                model: backend.availablePromptPresets
+                                onObjectAdded: (index, object) => presetMenu.insertItem(index, object)
+                                onObjectRemoved: (index, object) => presetMenu.removeItem(object)
+                                delegate: MenuItem {
+                                    text: (modelData.id === backend.activePromptPreset ? "✓ " : "  ") + modelData.name
+                                    onTriggered: backend.setPromptPreset(modelData.id)
+                                }
+                            }
+
+                            MenuSeparator {}
+
+                            MenuItem {
+                                text: "🔄 Reload Presets from Disk"
+                                onTriggered: backend.reloadPromptPresets()
+                            }
+                        }
+                    }
+
                     // Endpoint Status Pill
                     Rectangle {
                         height: 32

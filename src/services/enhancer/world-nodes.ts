@@ -2,6 +2,7 @@ import type { RoleplayCharacter, CharacterBookEntry } from "../../types/characte
 import type { ProviderConfig } from "../../types/provider";
 import { routeLLMJson } from "../llm/provider-router";
 import { normalizeRpMacros } from "../character/macro-engine";
+import { getEffectiveEnhancerPrompts } from "../config/prompt-config";
 
 export type WorldNodeCategory =
   | "locations"
@@ -59,8 +60,12 @@ export async function generateWorldNodes(
   const directive = CATEGORY_DIRECTIVES[cat] || CATEGORY_DIRECTIVES.general;
   const count = Math.max(1, Math.min(5, request.count || 3));
 
-  const systemPrompt = `You are an elite Worldbuilding Lore Architect for the SillyTavern Character Bible system.
-Your task is to synthesize ${count} high-utility, atmospheric Character Bible (World Info) entries for the character "${charName}".
+  const baseNodesPrompt =
+    getEffectiveEnhancerPrompts(request.provider).worldNodes ||
+    `You are an elite Worldbuilding Lore Architect for the SillyTavern Character Bible system.
+Your task is to synthesize \${count} high-utility, atmospheric Character Bible (World Info) entries for the character "\${charName}".`;
+
+  const systemPrompt = `${baseNodesPrompt.replace(/\$\{count\}/g, String(count)).replace(/\$\{charName\}/g, charName)}
 
 CATEGORY FOCUS: ${cat.toUpperCase()}
 ${directive}
